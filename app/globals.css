@@ -8,9 +8,12 @@
   --background: #fafafa;
   --foreground: #1a1a1a;
   --primary: #d97706;
-  --primary-dark: #b45309;
-  --primary-light: #fbbf24;
-  --accent: #92400e;
+  --primary-dark: #92400e;
+  --primary-light: #f59e0b;
+  --accent: #b45309;
+  --africa-gold: #d4af37;
+  --africa-terracotta: #c85a3a;
+  --africa-earth: #8b4513;
 }
 
 * {
@@ -121,7 +124,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Custom utility classes - outside @layer for better compatibility */
 .gradient-text {
-  background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 30%, #ea580c 60%, #dc2626 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
