@@ -5,6 +5,7 @@ import {
   updateReservationStatus,
 } from '@/lib/data';
 import { Reservation } from '@/lib/types';
+import { sendConfirmationSMS, sendRejectionSMS } from '@/lib/sms';
 
 export async function GET() {
   try {
@@ -88,6 +89,18 @@ export async function PATCH(request: NextRequest) {
         { error: 'Reservation not found' },
         { status: 404 }
       );
+    }
+
+    // Send SMS notification based on status
+    try {
+      if (status === 'confirmed') {
+        await sendConfirmationSMS(reservation);
+      } else if (status === 'rejected') {
+        await sendRejectionSMS(reservation, rejectionReason);
+      }
+    } catch (error) {
+      // Log error but don't fail the request - SMS is optional
+      console.error('Failed to send SMS notification:', error);
     }
 
     return NextResponse.json(reservation);

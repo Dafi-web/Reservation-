@@ -54,11 +54,17 @@ This guide will help you deploy your Restaurant Menu application online. We'll u
      ```
      MONGODB_URI=mongodb+srv://your_connection_string
      ADMIN_PASSWORD=your_secure_password
+     
+     # Optional: SMS Notifications (Twilio)
+     TWILIO_ACCOUNT_SID=your_twilio_account_sid
+     TWILIO_AUTH_TOKEN=your_twilio_auth_token
+     TWILIO_PHONE_NUMBER=+1234567890
      ```
    - **Important:** 
      - Use your actual MongoDB connection string
      - Set a strong admin password (not the default `admin123`)
      - Make sure your MongoDB Atlas IP whitelist includes `0.0.0.0/0` (all IPs) for Vercel
+     - **SMS (Optional)**: Add Twilio credentials if you want SMS confirmations. Get them from [Twilio Console](https://console.twilio.com/)
 
 4. **Deploy:**
    - Click "Deploy"

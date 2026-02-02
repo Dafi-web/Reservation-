@@ -28,14 +28,20 @@ npm install
 
 2. Set up environment variables:
    - Create a `.env.local` file in the root directory
-   - Add your MongoDB connection string:
+   - Add your MongoDB connection string and other variables:
    ```
    MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
    ADMIN_PASSWORD=your_secure_password_here
+   
+   # Twilio SMS Configuration (Optional - for SMS confirmations)
+   TWILIO_ACCOUNT_SID=your_twilio_account_sid
+   TWILIO_AUTH_TOKEN=your_twilio_auth_token
+   TWILIO_PHONE_NUMBER=+1234567890
    ```
    - **Important**: 
      - Replace `MONGODB_URI` with your actual MongoDB connection string
      - Set `ADMIN_PASSWORD` to a secure password for admin access (default is `admin123` if not set)
+     - **SMS Notifications**: To enable SMS confirmations when admin accepts reservations, add your Twilio credentials. SMS is optional - the app works without it.
 
 3. Run the development server:
 ```bash
@@ -123,6 +129,19 @@ The application uses **MongoDB** for persistent data storage:
 3. The application will automatically connect when you start the server
 4. Run the seed endpoint to populate initial menu items
 
+## SMS Notifications
+
+The application supports SMS confirmations when reservations are accepted or rejected:
+
+- **When Admin Accepts**: Customer receives a confirmation SMS with reservation details
+- **When Admin Rejects**: Customer receives a notification SMS with rejection reason
+- **Setup**: Configure Twilio credentials in `.env.local`:
+  - Get your credentials from [Twilio Console](https://console.twilio.com/)
+  - Add `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_PHONE_NUMBER`
+  - SMS is optional - the app works without Twilio configured
+
+**Note**: Phone numbers should include country code (e.g., +1234567890)
+
 ## Security
 
 - **Admin Authentication**: The admin panel is protected with password authentication
@@ -133,7 +152,7 @@ The application uses **MongoDB** for persistent data storage:
 ## Future Enhancements
 
 - Enhanced authentication system
-- Email notifications
+- Email notifications (in addition to SMS)
 - Menu item images
 - Online ordering
 - Payment integration
