@@ -1,0 +1,54 @@
+{
+  "common": {
+    "menu": "القائمة",
+    "reservations": "الحجوزات",
+    "admin": "المسؤول",
+    "language": "اللغة",
+    "bookTable": "احجز طاولة",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "guests": "عدد الضيوف",
+    "specialRequests": "طلبات خاصة",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "back": "رجوع",
+    "price": "السعر",
+    "description": "الوصف",
+    "allergens": "مسببات الحساسية",
+    "vegetarian": "نباتي",
+    "vegan": "نباتي صرف",
+    "glutenFree": "خالي من الغلوتين",
+    "spicy": "حار"
+  },
+  "menu": {
+    "title": "قائمتنا",
+    "food": "طعام",
+    "drinks": "مشروبات",
+    "appetizers": "مقبلات",
+    "mainCourses": "الأطباق الرئيسية",
+    "desserts": "الحلويات",
+    "beverages": "مشروبات",
+    "wine": "نبيذ",
+    "beer": "بيرة",
+    "cocktails": "كوكتيلات"
+  },
+  "reservation": {
+    "title": "إجراء حجز",
+    "success": "تم تأكيد الحجز! سنتواصل معك قريباً.",
+    "error": "فشل الحجز. يرجى المحاولة مرة أخرى.",
+    "required": "هذا الحقل مطلوب"
+  },
+  "admin": {
+    "title": "إدارة الحجوزات",
+    "noReservations": "لم يتم العثور على حجوزات",
+    "upcoming": "القادمة",
+    "past": "السابقة",
+    "status": "الحالة",
+    "pending": "قيد الانتظار",
+    "confirmed": "مؤكد",
+    "rejected": "مرفوض"
+  }
+}

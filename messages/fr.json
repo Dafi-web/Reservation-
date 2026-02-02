@@ -1,0 +1,54 @@
+{
+  "common": {
+    "menu": "Menu",
+    "reservations": "Réservations",
+    "admin": "Administrateur",
+    "language": "Langue",
+    "bookTable": "Réserver une Table",
+    "name": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "date": "Date",
+    "time": "Heure",
+    "guests": "Nombre de Convives",
+    "specialRequests": "Demandes Spéciales",
+    "submit": "Soumettre",
+    "cancel": "Annuler",
+    "back": "Retour",
+    "price": "Prix",
+    "description": "Description",
+    "allergens": "Allergènes",
+    "vegetarian": "Végétarien",
+    "vegan": "Végétalien",
+    "glutenFree": "Sans Gluten",
+    "spicy": "Épicé"
+  },
+  "menu": {
+    "title": "Notre Menu",
+    "food": "Nourriture",
+    "drinks": "Boissons",
+    "appetizers": "Entrées",
+    "mainCourses": "Plats Principaux",
+    "desserts": "Desserts",
+    "beverages": "Boissons",
+    "wine": "Vin",
+    "beer": "Bière",
+    "cocktails": "Cocktails"
+  },
+  "reservation": {
+    "title": "Faire une Réservation",
+    "success": "Réservation confirmée ! Nous vous contacterons bientôt.",
+    "error": "Échec de la réservation. Veuillez réessayer.",
+    "required": "Ce champ est obligatoire"
+  },
+  "admin": {
+    "title": "Gestion des Réservations",
+    "noReservations": "Aucune réservation trouvée",
+    "upcoming": "À venir",
+    "past": "Passées",
+    "status": "Statut",
+    "pending": "En attente",
+    "confirmed": "Confirmée",
+    "rejected": "Rejetée"
+  }
+}

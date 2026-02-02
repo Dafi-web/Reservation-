@@ -1,0 +1,54 @@
+{
+  "common": {
+    "menu": "Menú",
+    "reservations": "Reservas",
+    "admin": "Administrador",
+    "language": "Idioma",
+    "bookTable": "Reservar Mesa",
+    "name": "Nombre",
+    "email": "Correo",
+    "phone": "Teléfono",
+    "date": "Fecha",
+    "time": "Hora",
+    "guests": "Número de Comensales",
+    "specialRequests": "Solicitudes Especiales",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "back": "Atrás",
+    "price": "Precio",
+    "description": "Descripción",
+    "allergens": "Alérgenos",
+    "vegetarian": "Vegetariano",
+    "vegan": "Vegano",
+    "glutenFree": "Sin Gluten",
+    "spicy": "Picante"
+  },
+  "menu": {
+    "title": "Nuestro Menú",
+    "food": "Comida",
+    "drinks": "Bebidas",
+    "appetizers": "Aperitivos",
+    "mainCourses": "Platos Principales",
+    "desserts": "Postres",
+    "beverages": "Bebidas",
+    "wine": "Vino",
+    "beer": "Cerveza",
+    "cocktails": "Cócteles"
+  },
+  "reservation": {
+    "title": "Hacer una Reserva",
+    "success": "¡Reserva confirmada! Te contactaremos pronto.",
+    "error": "Error al hacer la reserva. Por favor, inténtalo de nuevo.",
+    "required": "Este campo es obligatorio"
+  },
+  "admin": {
+    "title": "Gestión de Reservas",
+    "noReservations": "No se encontraron reservas",
+    "upcoming": "Próximas",
+    "past": "Pasadas",
+    "status": "Estado",
+    "pending": "Pendiente",
+    "confirmed": "Confirmada",
+    "rejected": "Rechazada"
+  }
+}

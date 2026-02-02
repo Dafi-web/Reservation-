@@ -1,0 +1,54 @@
+{
+  "common": {
+    "menu": "Menü",
+    "reservations": "Reservierungen",
+    "admin": "Administrator",
+    "language": "Sprache",
+    "bookTable": "Tisch Reservieren",
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "guests": "Anzahl der Gäste",
+    "specialRequests": "Besondere Wünsche",
+    "submit": "Absenden",
+    "cancel": "Abbrechen",
+    "back": "Zurück",
+    "price": "Preis",
+    "description": "Beschreibung",
+    "allergens": "Allergene",
+    "vegetarian": "Vegetarisch",
+    "vegan": "Vegan",
+    "glutenFree": "Glutenfrei",
+    "spicy": "Scharf"
+  },
+  "menu": {
+    "title": "Unser Menü",
+    "food": "Essen",
+    "drinks": "Getränke",
+    "appetizers": "Vorspeisen",
+    "mainCourses": "Hauptgerichte",
+    "desserts": "Desserts",
+    "beverages": "Getränke",
+    "wine": "Wein",
+    "beer": "Bier",
+    "cocktails": "Cocktails"
+  },
+  "reservation": {
+    "title": "Reservierung Buchen",
+    "success": "Reservierung bestätigt! Wir werden Sie bald kontaktieren.",
+    "error": "Reservierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "required": "Dieses Feld ist erforderlich"
+  },
+  "admin": {
+    "title": "Reservierungsverwaltung",
+    "noReservations": "Keine Reservierungen gefunden",
+    "upcoming": "Bevorstehend",
+    "past": "Vergangen",
+    "status": "Status",
+    "pending": "Ausstehend",
+    "confirmed": "Bestätigt",
+    "rejected": "Abgelehnt"
+  }
+}

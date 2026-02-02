@@ -1,0 +1,54 @@
+{
+  "common": {
+    "menu": "Menu",
+    "reservations": "Reservations",
+    "admin": "Admin",
+    "language": "Language",
+    "bookTable": "Book a Table",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "date": "Date",
+    "time": "Time",
+    "guests": "Number of Guests",
+    "specialRequests": "Special Requests",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "back": "Back",
+    "price": "Price",
+    "description": "Description",
+    "allergens": "Allergens",
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "glutenFree": "Gluten Free",
+    "spicy": "Spicy"
+  },
+  "menu": {
+    "title": "Our Menu",
+    "food": "Food",
+    "drinks": "Drinks",
+    "appetizers": "Appetizers",
+    "mainCourses": "Main Courses",
+    "desserts": "Desserts",
+    "beverages": "Beverages",
+    "wine": "Wine",
+    "beer": "Beer",
+    "cocktails": "Cocktails"
+  },
+  "reservation": {
+    "title": "Make a Reservation",
+    "success": "Reservation confirmed! We'll contact you soon.",
+    "error": "Failed to make reservation. Please try again.",
+    "required": "This field is required"
+  },
+  "admin": {
+    "title": "Reservation Management",
+    "noReservations": "No reservations found",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "status": "Status",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "rejected": "Rejected"
+  }
+}

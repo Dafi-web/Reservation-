@@ -1,0 +1,54 @@
+{
+  "common": {
+    "menu": "Menù",
+    "reservations": "Prenotazioni",
+    "admin": "Amministratore",
+    "language": "Lingua",
+    "bookTable": "Prenota un Tavolo",
+    "name": "Nome",
+    "email": "Email",
+    "phone": "Telefono",
+    "date": "Data",
+    "time": "Ora",
+    "guests": "Numero di Ospiti",
+    "specialRequests": "Richieste Speciali",
+    "submit": "Invia",
+    "cancel": "Annulla",
+    "back": "Indietro",
+    "price": "Prezzo",
+    "description": "Descrizione",
+    "allergens": "Allergeni",
+    "vegetarian": "Vegetariano",
+    "vegan": "Vegano",
+    "glutenFree": "Senza Glutine",
+    "spicy": "Piccante"
+  },
+  "menu": {
+    "title": "Il Nostro Menù",
+    "food": "Cibo",
+    "drinks": "Bevande",
+    "appetizers": "Antipasti",
+    "mainCourses": "Piatti Principali",
+    "desserts": "Dolci",
+    "beverages": "Bevande",
+    "wine": "Vino",
+    "beer": "Birra",
+    "cocktails": "Cocktail"
+  },
+  "reservation": {
+    "title": "Fare una Prenotazione",
+    "success": "Prenotazione confermata! Ti contatteremo presto.",
+    "error": "Prenotazione fallita. Per favore riprova.",
+    "required": "Questo campo è obbligatorio"
+  },
+  "admin": {
+    "title": "Gestione Prenotazioni",
+    "noReservations": "Nessuna prenotazione trovata",
+    "upcoming": "Prossime",
+    "past": "Passate",
+    "status": "Stato",
+    "pending": "In attesa",
+    "confirmed": "Confermata",
+    "rejected": "Rifiutata"
+  }
+}
