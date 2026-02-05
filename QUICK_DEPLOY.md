@@ -52,6 +52,17 @@ curl -X POST https://your-app.vercel.app/api/seed
 - **Admin Panel**: `https://your-app.vercel.app/en/admin`
 - **Password**: The `ADMIN_PASSWORD` you set in Step 2
 
+### Step 6: Add Custom Subdomain (Optional)
+
+To use `menu.dafitech.org`:
+1. In Vercel → Settings → Domains → Add `menu.dafitech.org`
+2. Add CNAME record in your DNS provider:
+   - Type: CNAME
+   - Name: `menu`
+   - Value: `cname.vercel-dns.com` (or value from Vercel)
+3. Wait 5-30 minutes for DNS propagation
+4. See `SUBDOMAIN_SETUP.md` for detailed instructions
+
 ## ✅ That's it! Your app is live!
 
 For detailed instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)

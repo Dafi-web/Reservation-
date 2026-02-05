@@ -92,18 +92,38 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Send SMS notification based on status
+    let smsSent = false;
+    let smsError = null;
+    
     try {
       if (status === 'confirmed') {
-        await sendConfirmationSMS(reservation);
+        console.log('📱 Attempting to send confirmation SMS...');
+        smsSent = await sendConfirmationSMS(reservation);
+        if (smsSent) {
+          console.log('✅ Confirmation SMS sent successfully');
+        } else {
+          console.warn('⚠️ Confirmation SMS was not sent (check Twilio configuration)');
+        }
       } else if (status === 'rejected') {
-        await sendRejectionSMS(reservation, rejectionReason);
+        console.log('📱 Attempting to send rejection SMS...');
+        smsSent = await sendRejectionSMS(reservation, rejectionReason);
+        if (smsSent) {
+          console.log('✅ Rejection SMS sent successfully');
+        } else {
+          console.warn('⚠️ Rejection SMS was not sent (check Twilio configuration)');
+        }
       }
-    } catch (error) {
-      // Log error but don't fail the request - SMS is optional
-      console.error('Failed to send SMS notification:', error);
+    } catch (error: any) {
+      smsError = error.message || 'Unknown error';
+      console.error('❌ Failed to send SMS notification:', error);
     }
 
-    return NextResponse.json(reservation);
+    // Return reservation with SMS status (for debugging)
+    return NextResponse.json({
+      ...reservation,
+      _smsStatus: smsSent ? 'sent' : 'not_sent',
+      _smsError: smsError || null,
+    });
   } catch (error) {
     console.error('Error updating reservation:', error);
     return NextResponse.json(

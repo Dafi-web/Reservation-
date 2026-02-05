@@ -130,12 +130,34 @@ This guide will help you deploy your Restaurant Menu application online. We'll u
    - Access admin panel at `/admin` (e.g., `https://your-app.vercel.app/en/admin`)
    - Login with your `ADMIN_PASSWORD`
 
-## Step 6: Custom Domain (Optional)
+## Step 6: Custom Subdomain Setup (menu.dafitech.org)
 
-1. **Add a custom domain in Vercel:**
-   - Go to Project Settings → Domains
-   - Add your domain
-   - Follow Vercel's DNS configuration instructions
+### Quick Setup:
+
+1. **In Vercel Dashboard:**
+   - Go to your project → **Settings** → **Domains**
+   - Click **Add Domain**
+   - Enter: `menu.dafitech.org`
+   - Click **Add**
+
+2. **In Your DNS Provider (where dafitech.org is managed):**
+   - Go to DNS Management
+   - Add a **CNAME record**:
+     - **Type**: CNAME
+     - **Name**: `menu` (or `menu.dafitech.org`)
+     - **Value**: `cname.vercel-dns.com` (or the value Vercel shows you)
+     - **TTL**: 3600
+
+3. **Wait for DNS Propagation:**
+   - Usually takes 5-30 minutes
+   - Vercel will show "Valid Configuration" when ready
+   - SSL certificate is automatically provided
+
+4. **Test:**
+   - Visit `https://menu.dafitech.org`
+   - Your app should be live!
+
+**For detailed instructions, see [SUBDOMAIN_SETUP.md](./SUBDOMAIN_SETUP.md)**
 
 ## Troubleshooting
 

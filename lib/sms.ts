@@ -17,7 +17,9 @@ const client = accountSid && authToken
 export async function sendConfirmationSMS(reservation: Reservation): Promise<boolean> {
   // Skip if Twilio is not configured
   if (!client || !fromNumber) {
-    console.warn('Twilio not configured. SMS will not be sent.');
+    console.warn('⚠️ Twilio not configured. SMS will not be sent.');
+    console.warn('   Missing:', !accountSid ? 'TWILIO_ACCOUNT_SID' : '', !authToken ? 'TWILIO_AUTH_TOKEN' : '', !fromNumber ? 'TWILIO_PHONE_NUMBER' : '');
+    console.warn('   Please add Twilio credentials to your .env.local file or environment variables');
     return false;
   }
 
@@ -30,11 +32,27 @@ export async function sendConfirmationSMS(reservation: Reservation): Promise<boo
   try {
     // Format phone number (ensure it starts with +)
     let phoneNumber = reservation.phone.trim();
+    
+    // Remove any non-digit characters except +
+    phoneNumber = phoneNumber.replace(/[^\d+]/g, '');
+    
+    // If no country code, try to add default (this is a fallback - should ideally have country code)
     if (!phoneNumber.startsWith('+')) {
-      // If no country code, assume it needs one (you may want to adjust this)
-      // For now, we'll try to send as-is and let Twilio handle it
-      phoneNumber = phoneNumber;
+      // Try to detect if it's a US number (starts with 1) or add a default
+      // For international numbers, user should include country code
+      if (phoneNumber.length === 10 && phoneNumber.startsWith('1') === false) {
+        // Likely a US number without country code
+        phoneNumber = '+1' + phoneNumber;
+      } else if (phoneNumber.length > 10 && !phoneNumber.startsWith('+')) {
+        // Might already have country code but missing +
+        phoneNumber = '+' + phoneNumber;
+      } else {
+        // Unknown format - log warning but try anyway
+        console.warn('Phone number format unclear:', phoneNumber);
+      }
     }
+    
+    console.log('Attempting to send SMS to:', phoneNumber);
 
     // Format date and time
     const date = new Date(`${reservation.date}T${reservation.time}`);
@@ -60,10 +78,18 @@ export async function sendConfirmationSMS(reservation: Reservation): Promise<boo
       to: phoneNumber,
     });
 
-    console.log('SMS sent successfully:', messageResult.sid);
+    console.log('✅ SMS sent successfully!');
+    console.log('   Message SID:', messageResult.sid);
+    console.log('   To:', phoneNumber);
+    console.log('   From:', fromNumber);
+    console.log('   Status:', messageResult.status);
     return true;
   } catch (error: any) {
-    console.error('Error sending SMS:', error);
+    console.error('❌ Error sending SMS:');
+    console.error('   Phone number:', phoneNumber);
+    console.error('   Error code:', error?.code);
+    console.error('   Error message:', error?.message);
+    console.error('   Full error:', error);
     // Don't throw error - SMS failure shouldn't break the reservation update
     return false;
   }
