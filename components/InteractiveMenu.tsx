@@ -10,6 +10,9 @@ interface InteractiveMenuProps {
     label: string;
     icon: string;
     color: string;
+    bgColor: string;
+    textColor: string;
+    borderColor: string;
   }>;
   menuItems: MenuItem[];
 }

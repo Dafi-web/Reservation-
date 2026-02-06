@@ -2,6 +2,7 @@
 
 import { MenuItem } from '@/lib/types';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 
 interface MenuItemModalProps {
   item: MenuItem | null;
@@ -27,10 +28,13 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
         <div className="relative">
           {item.image ? (
             <div className="relative h-64 w-full overflow-hidden">
-              <img
+              <Image
                 src={item.image}
                 alt={item.name}
+                width={800}
+                height={400}
                 className="w-full h-full object-cover"
+                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
               <button

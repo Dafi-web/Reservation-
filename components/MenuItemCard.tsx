@@ -3,6 +3,7 @@
 import { MenuItem } from '@/lib/types';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import Image from 'next/image';
 import MenuItemModal from './MenuItemModal';
 
 interface MenuItemCardProps {
@@ -29,22 +30,16 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
           <div className="mb-3 relative overflow-hidden rounded-lg">
             <div className="w-full h-40 bg-gradient-to-br from-amber-100 via-orange-100 to-red-100 group-hover:scale-105 transition-transform duration-300 relative">
               {item.image ? (
-                <img
+                <Image
                   src={item.image}
                   alt={item.name}
+                  width={400}
+                  height={300}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    // Fallback to placeholder if image fails to load
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    if (target.nextElementSibling) {
-                      (target.nextElementSibling as HTMLElement).style.display = 'flex';
-                    }
-                  }}
+                  unoptimized
                 />
-              ) : null}
-              <div className={`absolute inset-0 flex items-center justify-center ${item.image ? 'bg-black/0 group-hover:bg-black/20' : 'bg-gradient-to-br from-amber-100 via-orange-100 to-red-100'} transition-all duration-300`}>
-                {!item.image && (
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-amber-100 via-orange-100 to-red-100 flex items-center justify-center">
                   <span className="text-6xl opacity-60 group-hover:opacity-100 transition-opacity">
                     {item.category === 'appetizer' ? '🥗' : 
                      item.category === 'main' ? '🍽️' : 
@@ -53,7 +48,9 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
                      item.category === 'wine' ? '🍷' : 
                      item.category === 'beer' ? '🍺' : '🍹'}
                   </span>
-                )}
+                </div>
+              )}
+              <div className={`absolute inset-0 flex items-center justify-center ${item.image ? 'bg-black/0 group-hover:bg-black/20' : ''} transition-all duration-300`}>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-white text-xs font-semibold bg-black/50 px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                     Click for details
