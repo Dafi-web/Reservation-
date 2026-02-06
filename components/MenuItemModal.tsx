@@ -23,18 +23,43 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
         className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="relative bg-gradient-to-br from-amber-600 via-orange-600 to-red-600 p-8 text-white">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-          <h2 className="text-3xl md:text-4xl font-bold mb-2 pr-12">{item.name}</h2>
-          <div className="text-2xl font-bold text-amber-200">${item.price.toFixed(2)}</div>
+        {/* Header with Image */}
+        <div className="relative">
+          {item.image ? (
+            <div className="relative h-64 w-full overflow-hidden">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+              >
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <h2 className="text-3xl md:text-4xl font-bold mb-2">{item.name}</h2>
+                <div className="text-2xl font-bold text-amber-200">${item.price.toFixed(2)}</div>
+              </div>
+            </div>
+          ) : (
+            <div className="relative bg-gradient-to-br from-amber-600 via-orange-600 to-red-600 p-8 text-white">
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <h2 className="text-3xl md:text-4xl font-bold mb-2 pr-12">{item.name}</h2>
+              <div className="text-2xl font-bold text-amber-200">${item.price.toFixed(2)}</div>
+            </div>
+          )}
         </div>
 
         {/* Content */}

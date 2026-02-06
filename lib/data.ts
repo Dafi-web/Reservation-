@@ -13,6 +13,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'appetizer',
     tags: ['vegetarian'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1572441713132-51c75654db73?w=400&h=300&fit=crop',
   },
   {
     name: 'Caesar Salad',
@@ -21,6 +22,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'appetizer',
     tags: ['vegetarian'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=300&fit=crop',
   },
   {
     name: 'Shrimp Cocktail',
@@ -29,6 +31,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'appetizer',
     allergens: ['shellfish'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&h=300&fit=crop',
   },
   // Main Courses
   {
@@ -38,6 +41,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'main',
     tags: ['glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=300&fit=crop',
   },
   {
     name: 'Ribeye Steak',
@@ -45,6 +49,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     price: 32.99,
     category: 'main',
     available: true,
+    image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop',
   },
   {
     name: 'Vegetarian Risotto',
@@ -53,6 +58,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'main',
     tags: ['vegetarian', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1534939561126-855b8675edd7?w=400&h=300&fit=crop',
   },
   {
     name: 'Chicken Parmesan',
@@ -60,6 +66,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     price: 22.99,
     category: 'main',
     available: true,
+    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=300&fit=crop',
   },
   {
     name: 'Spicy Thai Curry',
@@ -68,6 +75,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'main',
     tags: ['spicy'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop',
   },
   // Desserts
   {
@@ -77,6 +85,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'dessert',
     tags: ['vegetarian'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1606312619070-d48d4e5b6916?w=400&h=300&fit=crop',
   },
   {
     name: 'Tiramisu',
@@ -85,6 +94,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'dessert',
     tags: ['vegetarian'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=300&fit=crop',
   },
   {
     name: 'Fresh Fruit Platter',
@@ -93,6 +103,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'dessert',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&h=300&fit=crop',
   },
   // Beverages
   {
@@ -102,6 +113,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'beverage',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=300&fit=crop',
   },
   {
     name: 'Iced Tea',
@@ -110,6 +122,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'beverage',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1556679343-c7306c197cbc?w=400&h=300&fit=crop',
   },
   {
     name: 'Espresso',
@@ -118,6 +131,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'beverage',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=400&h=300&fit=crop',
   },
   // Wine
   {
@@ -127,6 +141,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'wine',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=300&fit=crop',
   },
   {
     name: 'Cabernet Sauvignon',
@@ -135,6 +150,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'wine',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1506377247727-2a5f3a1a4d69?w=400&h=300&fit=crop',
   },
   {
     name: 'Pinot Grigio',
@@ -143,6 +159,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'wine',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=300&fit=crop',
   },
   // Beer
   {
@@ -152,6 +169,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'beer',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1535958637004-8967b8379f98?w=400&h=300&fit=crop',
   },
   {
     name: 'Wheat Beer',
@@ -160,6 +178,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'beer',
     tags: ['vegetarian', 'vegan'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=300&fit=crop',
   },
   // Cocktails
   {
@@ -169,6 +188,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'cocktail',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1536935338788-846bb9981813?w=400&h=300&fit=crop',
   },
   {
     name: 'Old Fashioned',
@@ -177,6 +197,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'cocktail',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1536935338788-846bb9981813?w=400&h=300&fit=crop',
   },
   {
     name: 'Margarita',
@@ -185,6 +206,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     category: 'cocktail',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
+    image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
   },
 ];
 

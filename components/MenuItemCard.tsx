@@ -25,21 +25,40 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
         </div>
 
         <div className="p-4 relative z-10">
-          {/* Clickable Image/Icon Area */}
-          <div className="mb-3 relative">
-            <div className="w-full h-32 bg-gradient-to-br from-amber-100 via-orange-100 to-red-100 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-              <span className="text-6xl opacity-60 group-hover:opacity-100 transition-opacity">
-                {item.category === 'appetizer' ? '🥗' : 
-                 item.category === 'main' ? '🍽️' : 
-                 item.category === 'dessert' ? '🍰' : 
-                 item.category === 'beverage' ? '☕' : 
-                 item.category === 'wine' ? '🍷' : 
-                 item.category === 'beer' ? '🍺' : '🍹'}
-              </span>
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 rounded-lg transition-colors flex items-center justify-center">
-                <span className="text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                  Click for details
-                </span>
+          {/* Clickable Image Area */}
+          <div className="mb-3 relative overflow-hidden rounded-lg">
+            <div className="w-full h-40 bg-gradient-to-br from-amber-100 via-orange-100 to-red-100 group-hover:scale-105 transition-transform duration-300 relative">
+              {item.image ? (
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to placeholder if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.nextElementSibling) {
+                      (target.nextElementSibling as HTMLElement).style.display = 'flex';
+                    }
+                  }}
+                />
+              ) : null}
+              <div className={`absolute inset-0 flex items-center justify-center ${item.image ? 'bg-black/0 group-hover:bg-black/20' : 'bg-gradient-to-br from-amber-100 via-orange-100 to-red-100'} transition-all duration-300`}>
+                {!item.image && (
+                  <span className="text-6xl opacity-60 group-hover:opacity-100 transition-opacity">
+                    {item.category === 'appetizer' ? '🥗' : 
+                     item.category === 'main' ? '🍽️' : 
+                     item.category === 'dessert' ? '🍰' : 
+                     item.category === 'beverage' ? '☕' : 
+                     item.category === 'wine' ? '🍷' : 
+                     item.category === 'beer' ? '🍺' : '🍹'}
+                  </span>
+                )}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-white text-xs font-semibold bg-black/50 px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    Click for details
+                  </span>
+                </div>
               </div>
             </div>
           </div>
