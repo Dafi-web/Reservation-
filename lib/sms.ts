@@ -29,10 +29,10 @@ export async function sendConfirmationSMS(reservation: Reservation): Promise<boo
     return false;
   }
 
+  // Format phone number (ensure it starts with +)
+  let phoneNumber = reservation.phone.trim();
+  
   try {
-    // Format phone number (ensure it starts with +)
-    let phoneNumber = reservation.phone.trim();
-    
     // Remove any non-digit characters except +
     phoneNumber = phoneNumber.replace(/[^\d+]/g, '');
     
