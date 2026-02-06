@@ -15,7 +15,10 @@ interface InteractiveMenuProps {
 }
 
 export default function InteractiveMenu({ categories, menuItems }: InteractiveMenuProps) {
-  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+  // Start with all categories expanded
+  const [openCategories, setOpenCategories] = useState<Set<string>>(
+    new Set(categories.map(cat => cat.key))
+  );
 
   const toggleCategory = (categoryKey: string) => {
     setOpenCategories((prev) => {
