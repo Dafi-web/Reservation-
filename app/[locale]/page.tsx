@@ -11,13 +11,13 @@ export default async function HomePage() {
   const menuItems = await getMenuItems();
 
   const categories = [
-    { key: 'appetizer', label: t('menu.appetizers'), icon: '🥗', color: 'from-green-600 to-emerald-700' },
-    { key: 'main', label: t('menu.mainCourses'), icon: '🍽️', color: 'from-amber-600 to-orange-700' },
-    { key: 'dessert', label: t('menu.desserts'), icon: '🍰', color: 'from-amber-500 to-red-600' },
-    { key: 'beverage', label: t('menu.beverages'), icon: '☕', color: 'from-amber-700 to-yellow-600' },
-    { key: 'wine', label: t('menu.wine'), icon: '🍷', color: 'from-red-700 to-amber-800' },
-    { key: 'beer', label: t('menu.beer'), icon: '🍺', color: 'from-yellow-600 to-amber-700' },
-    { key: 'cocktail', label: t('menu.cocktails'), icon: '🍹', color: 'from-orange-600 to-red-700' },
+    { key: 'appetizer', label: t('menu.appetizers'), icon: '🥗', color: 'from-emerald-500 via-teal-500 to-cyan-500', bgColor: 'from-emerald-50 to-teal-50', textColor: 'text-emerald-700', borderColor: 'border-emerald-200' },
+    { key: 'main', label: t('menu.mainCourses'), icon: '🍽️', color: 'from-amber-500 via-orange-500 to-red-500', bgColor: 'from-amber-50 to-orange-50', textColor: 'text-amber-700', borderColor: 'border-amber-200' },
+    { key: 'dessert', label: t('menu.desserts'), icon: '🍰', color: 'from-pink-500 via-rose-500 to-fuchsia-500', bgColor: 'from-pink-50 to-rose-50', textColor: 'text-pink-700', borderColor: 'border-pink-200' },
+    { key: 'beverage', label: t('menu.beverages'), icon: '☕', color: 'from-amber-600 via-yellow-500 to-orange-400', bgColor: 'from-amber-50 to-yellow-50', textColor: 'text-amber-700', borderColor: 'border-amber-200' },
+    { key: 'wine', label: t('menu.wine'), icon: '🍷', color: 'from-purple-600 via-red-600 to-pink-600', bgColor: 'from-purple-50 to-pink-50', textColor: 'text-purple-700', borderColor: 'border-purple-200' },
+    { key: 'beer', label: t('menu.beer'), icon: '🍺', color: 'from-yellow-400 via-amber-500 to-orange-500', bgColor: 'from-yellow-50 to-amber-50', textColor: 'text-yellow-700', borderColor: 'border-yellow-200' },
+    { key: 'cocktail', label: t('menu.cocktails'), icon: '🍹', color: 'from-orange-500 via-red-500 to-pink-500', bgColor: 'from-orange-50 to-red-50', textColor: 'text-orange-700', borderColor: 'border-orange-200' },
   ];
 
   return (
