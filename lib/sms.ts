@@ -86,7 +86,7 @@ export async function sendConfirmationSMS(reservation: Reservation): Promise<boo
     return true;
   } catch (error: any) {
     console.error('❌ Error sending SMS:');
-    console.error('   Phone number:', phoneNumber);
+    console.error('   Phone number:', phoneNumber || reservation.phone);
     console.error('   Error code:', error?.code);
     console.error('   Error message:', error?.message);
     console.error('   Full error:', error);
