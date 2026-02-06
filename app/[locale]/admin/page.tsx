@@ -18,6 +18,7 @@ export default function AdminPage() {
     reservationId: null,
   });
   const [rejectionReason, setRejectionReason] = useState('');
+  const [availability, setAvailability] = useState<{ availableSeats: number; totalCapacity: number; bookedSeats: number; confirmedBookedSeats: number; pendingBookedSeats: number } | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -58,10 +59,26 @@ export default function AdminPage() {
     }
   };
 
+  const fetchAvailability = async () => {
+    try {
+      const response = await fetch('/api/availability');
+      if (response.ok) {
+        const data = await response.json();
+        setAvailability(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch availability:', error);
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchReservations();
-      const interval = setInterval(fetchReservations, 30000);
+      fetchAvailability();
+      const interval = setInterval(() => {
+        fetchReservations();
+        fetchAvailability();
+      }, 30000);
       return () => clearInterval(interval);
     }
   }, [isAuthenticated]);
@@ -78,6 +95,7 @@ export default function AdminPage() {
 
       if (response.ok) {
         fetchReservations();
+        fetchAvailability(); // Refresh availability after status change
         setRejectModal({ open: false, reservationId: null });
         setRejectionReason('');
       }
@@ -108,6 +126,10 @@ export default function AdminPage() {
     }
     return true;
   });
+
+  // Get confirmed (booked) reservations
+  const bookedReservations = reservations.filter((reservation) => reservation.status === 'confirmed');
+  const totalBookedSeats = bookedReservations.reduce((total, res) => total + res.guests, 0);
 
   const getStatusColor = (status: Reservation['status']) => {
     switch (status) {
@@ -186,6 +208,59 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
+
+          {/* Availability Summary */}
+          {availability && (
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200 shadow-elegant">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-green-700 mb-1">Available Seats</p>
+                    <p className="text-3xl font-bold text-green-900">{availability.availableSeats}</p>
+                    <p className="text-xs text-green-600 mt-1">out of {availability.totalCapacity} total</p>
+                  </div>
+                  <div className="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border-2 border-amber-200 shadow-elegant">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-amber-700 mb-1">Confirmed Bookings</p>
+                    <p className="text-3xl font-bold text-amber-900">{availability.confirmedBookedSeats}</p>
+                    <p className="text-xs text-amber-600 mt-1">
+                      {bookedReservations.length} booking{bookedReservations.length !== 1 ? 's' : ''}
+                      {availability.pendingBookedSeats > 0 && (
+                        <span className="block mt-1 text-orange-600">+ {availability.pendingBookedSeats} pending</span>
+                      )}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-amber-200 rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 shadow-elegant">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-blue-700 mb-1">Total Capacity</p>
+                    <p className="text-3xl font-bold text-blue-900">{availability.totalCapacity}</p>
+                    <p className="text-xs text-blue-600 mt-1">maximum seats</p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setFilter('all')}
@@ -219,6 +294,69 @@ export default function AdminPage() {
             </button>
           </div>
         </div>
+
+        {/* Booked Users Section */}
+        {bookedReservations.length > 0 && (
+          <div className="mb-8">
+            <div className="bg-white rounded-2xl shadow-elegant-lg p-6 lg:p-8 border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    📋 Booked Users ({bookedReservations.length})
+                  </h2>
+                  <p className="text-gray-600">
+                    Total confirmed bookings: <span className="font-bold text-amber-700">{totalBookedSeats} seats</span>
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                {bookedReservations.map((reservation) => (
+                  <div
+                    key={reservation.id}
+                    className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border-2 border-green-200 hover:shadow-elegant transition-all"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-lg font-bold text-gray-900">{reservation.name}</h3>
+                          <span className="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-semibold">
+                            ✓ Confirmed
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <span className="font-medium">{reservation.phone}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="font-medium">{format(new Date(reservation.date), 'MMM dd, yyyy')}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="font-medium">{reservation.time}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <span className="font-medium font-bold text-amber-700">{reservation.guests} {reservation.guests === 1 ? 'Guest' : 'Guests'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {filteredReservations.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-elegant-lg p-12 text-center border border-gray-100">
