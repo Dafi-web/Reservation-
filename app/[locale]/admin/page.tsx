@@ -104,6 +104,24 @@ export default function AdminPage() {
     }
   };
 
+  const handleCheckIn = async (id: string, checkedIn: boolean) => {
+    try {
+      const response = await fetch('/api/reservations', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, checkedIn }),
+      });
+
+      if (response.ok) {
+        fetchReservations();
+      }
+    } catch (error) {
+      console.error('Failed to update check-in status:', error);
+    }
+  };
+
   const handleRejectClick = (id: string) => {
     setRejectModal({ open: true, reservationId: id });
     setRejectionReason('');
@@ -317,11 +335,19 @@ export default function AdminPage() {
                   >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
                           <h3 className="text-lg font-bold text-gray-900">{reservation.name}</h3>
                           <span className="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-semibold">
                             ✓ Confirmed
                           </span>
+                          {reservation.checkedIn && (
+                            <span className="px-2 py-1 bg-blue-200 text-blue-800 rounded-full text-xs font-semibold flex items-center gap-1">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              Checked In
+                            </span>
+                          )}
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
                           <div className="flex items-center gap-2 text-gray-600">
@@ -349,6 +375,16 @@ export default function AdminPage() {
                             <span className="font-medium font-bold text-amber-700">{reservation.guests} {reservation.guests === 1 ? 'Guest' : 'Guests'}</span>
                           </div>
                         </div>
+                        {reservation.checkedIn && reservation.checkedInAt && (
+                          <div className="mt-3 p-3 bg-blue-100 rounded-lg border border-blue-300">
+                            <p className="text-xs font-semibold text-blue-800 flex items-center gap-2">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              Checked In: {format(new Date(reservation.checkedInAt), 'PPpp')}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -382,11 +418,19 @@ export default function AdminPage() {
                         <h3 className="text-2xl font-bold text-gray-900 mb-1">
                           {reservation.name}
                         </h3>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 flex-wrap gap-2">
                           <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getStatusColor(reservation.status)}`}>
                             <span className="mr-1">{getStatusIcon(reservation.status)}</span>
                             {t(`admin.${reservation.status}`)}
                           </span>
+                          {reservation.checkedIn && (
+                            <span className="px-3 py-1 rounded-full text-sm font-semibold border bg-green-100 text-green-800 border-green-200 flex items-center gap-1">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              Checked In
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -424,6 +468,19 @@ export default function AdminPage() {
                         <span className="font-medium">{reservation.guests} {reservation.guests === 1 ? 'Guest' : 'Guests'}</span>
                       </div>
                     </div>
+                    {reservation.checkedIn && reservation.checkedInAt && (
+                      <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                        <p className="text-sm font-semibold text-blue-700 mb-1 flex items-center gap-2">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          Checked In
+                        </p>
+                        <p className="text-sm text-blue-600">
+                          Arrived at: {format(new Date(reservation.checkedInAt), 'PPpp')}
+                        </p>
+                      </div>
+                    )}
                     {reservation.specialRequests && (
                       <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <p className="text-sm font-semibold text-gray-700 mb-1">Special Requests:</p>
@@ -455,12 +512,32 @@ export default function AdminPage() {
                       </>
                     )}
                     {reservation.status === 'confirmed' && (
-                      <button
-                        onClick={() => handleRejectClick(reservation.id)}
-                        className="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 transition-all duration-300 font-semibold shadow-elegant hover:shadow-lg transform hover:scale-105"
-                      >
-                        ✕ Reject
-                      </button>
+                      <>
+                        {!reservation.checkedIn ? (
+                          <button
+                            onClick={() => handleCheckIn(reservation.id, true)}
+                            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold shadow-elegant hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-2"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Check In
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleCheckIn(reservation.id, false)}
+                            className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-300 font-semibold shadow-elegant hover:shadow-lg transform hover:scale-105"
+                          >
+                            Undo Check In
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleRejectClick(reservation.id)}
+                          className="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 transition-all duration-300 font-semibold shadow-elegant hover:shadow-lg transform hover:scale-105"
+                        >
+                          ✕ Reject
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

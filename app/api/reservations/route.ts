@@ -3,6 +3,7 @@ import {
   getReservations,
   createReservation,
   updateReservationStatus,
+  updateCheckedInStatus,
   checkAvailability,
 } from '@/lib/data';
 import { Reservation } from '@/lib/types';
@@ -72,9 +73,29 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, status, rejectionReason } = body;
+    const { id, status, rejectionReason, checkedIn } = body;
 
-    if (!id || !status) {
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Missing reservation ID' },
+        { status: 400 }
+      );
+    }
+
+    // Handle check-in status update
+    if (typeof checkedIn === 'boolean') {
+      const reservation = await updateCheckedInStatus(id, checkedIn);
+      if (!reservation) {
+        return NextResponse.json(
+          { error: 'Reservation not found' },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(reservation);
+    }
+
+    // Handle status update (pending, confirmed, rejected)
+    if (!status) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }

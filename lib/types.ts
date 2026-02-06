@@ -23,5 +23,7 @@ export interface Reservation {
   specialRequests?: string;
   status: 'pending' | 'confirmed' | 'rejected';
   rejectionReason?: string;
+  checkedIn?: boolean; // Whether the customer has checked in/arrived
+  checkedInAt?: string; // Timestamp when checked in
   createdAt: string;
 }

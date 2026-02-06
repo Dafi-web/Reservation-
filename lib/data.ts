@@ -258,6 +258,33 @@ export async function updateReservationStatus(
   } as Reservation;
 }
 
+export async function updateCheckedInStatus(
+  id: string,
+  checkedIn: boolean
+): Promise<Reservation | null> {
+  await connectDB();
+  const updateData: any = { 
+    checkedIn,
+    ...(checkedIn ? { checkedInAt: new Date().toISOString() } : { checkedInAt: undefined })
+  };
+  
+  const reservation = await ReservationModel.findOneAndUpdate(
+    { id },
+    updateData,
+    { new: true }
+  ).lean();
+  
+  if (!reservation) {
+    return null;
+  }
+  
+  const res = reservation as any;
+  return {
+    ...res,
+    id: res.id || res._id?.toString() || String(res._id),
+  } as Reservation;
+}
+
 // Seat availability functions
 const TOTAL_CAPACITY = 70;
 

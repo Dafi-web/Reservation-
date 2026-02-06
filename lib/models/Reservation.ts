@@ -47,6 +47,14 @@ const ReservationSchema = new Schema<Reservation>(
       type: String,
       required: false,
     },
+    checkedIn: {
+      type: Boolean,
+      default: false,
+    },
+    checkedInAt: {
+      type: String,
+      required: false,
+    },
     createdAt: {
       type: String,
       required: true,
