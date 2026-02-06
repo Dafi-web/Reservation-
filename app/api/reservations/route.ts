@@ -34,9 +34,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate date - only allow today or future dates
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const reservationDate = new Date(date);
+    reservationDate.setHours(0, 0, 0, 0);
+    
+    if (reservationDate < today) {
+      return NextResponse.json(
+        { error: 'Cannot create reservation for a past date' },
+        { status: 400 }
+      );
+    }
+
     const requestedGuests = parseInt(guests, 10);
     
-    // Check availability before creating reservation
+    // Check availability before creating reservation (only counts today's reservations)
     const availability = await checkAvailability(requestedGuests);
     
     if (!availability.available) {

@@ -310,20 +310,93 @@ export async function updateCheckedInStatus(
 // Seat availability functions
 const TOTAL_CAPACITY = 70;
 
+// Helper function to get today's date in YYYY-MM-DD format
+function getTodayDate(): string {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Helper function to check if a reservation is expired
+function isReservationExpired(reservation: any): boolean {
+  const today = getTodayDate();
+  const reservationDate = reservation.date;
+  
+  // If reservation is for a past date, it's expired
+  if (reservationDate < today) {
+    return true;
+  }
+  
+  // If reservation is for today, check the time
+  if (reservationDate === today) {
+    const now = new Date();
+    const [hours, minutes] = reservation.time.split(':').map(Number);
+    const reservationDateTime = new Date();
+    reservationDateTime.setHours(hours, minutes, 0, 0);
+    
+    // Consider expired if reservation time has passed (with 15 minute grace period)
+    const gracePeriod = 15 * 60 * 1000; // 15 minutes in milliseconds
+    return now.getTime() > (reservationDateTime.getTime() + gracePeriod);
+  }
+  
+  return false;
+}
+
+// Function to cancel expired reservations that haven't been checked in
+export async function cancelExpiredReservations(): Promise<number> {
+  await connectDB();
+  const today = getTodayDate();
+  
+  // Find all confirmed or pending reservations that are expired and not checked in
+  const activeReservations = await ReservationModel.find({
+    status: { $in: ['pending', 'confirmed'] },
+    checkedIn: { $ne: true }
+  }).lean();
+  
+  let cancelledCount = 0;
+  
+  for (const reservation of activeReservations) {
+    if (isReservationExpired(reservation)) {
+      await ReservationModel.findOneAndUpdate(
+        { id: reservation.id },
+        { 
+          status: 'rejected',
+          rejectionReason: 'Reservation expired - customer did not check in on time'
+        }
+      );
+      cancelledCount++;
+      console.log(`✅ Cancelled expired reservation: ${reservation.name} (${reservation.date} ${reservation.time})`);
+    }
+  }
+  
+  return cancelledCount;
+}
+
 export async function getAvailableSeats(): Promise<number> {
   await connectDB();
-  // Count both pending and confirmed reservations (rejected don't count)
+  const today = getTodayDate();
+  
+  // First, cancel any expired reservations
+  await cancelExpiredReservations();
+  
+  // Count both pending and confirmed reservations for TODAY only (rejected don't count)
   const activeReservations = await ReservationModel.find({ 
-    status: { $in: ['pending', 'confirmed'] } 
+    status: { $in: ['pending', 'confirmed'] },
+    date: today // Only count reservations for today
   }).lean();
+  
   const bookedSeats = activeReservations.reduce((total, res: any) => {
     return total + (res.guests || 0);
   }, 0);
+  
   const available = Math.max(0, TOTAL_CAPACITY - bookedSeats);
   return available;
 }
 
 export async function checkAvailability(requestedGuests: number): Promise<{ available: boolean; availableSeats: number }> {
+  // This will automatically cancel expired reservations and calculate today's availability
   const availableSeats = await getAvailableSeats();
   return {
     available: availableSeats >= requestedGuests,
