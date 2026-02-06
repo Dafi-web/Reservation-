@@ -40,8 +40,8 @@ export default function MenuSection({ category, items, isOpen, onToggle }: MenuS
           </div>
           
           {/* Title and Count - Centered */}
-          <div className="text-center">
-            <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${category.textColor} group-hover:scale-105 transition-transform duration-300 mb-2`}>
+          <div className="text-center w-full">
+            <h2 className={`text-3xl md:text-4xl lg:text-5xl font-extrabold ${category.textColor} group-hover:scale-105 transition-transform duration-300 mb-3 text-center`}>
               {category.label}
             </h2>
             <div className="flex items-center justify-center gap-3">
