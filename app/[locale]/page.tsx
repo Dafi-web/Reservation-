@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { getMenuItems } from '@/lib/data';
-import MenuItemCard from '@/components/MenuItemCard';
+import InteractiveMenu from '@/components/InteractiveMenu';
 import { Link } from '@/i18n/routing';
 
 // Force dynamic rendering to avoid build-time MongoDB connection
@@ -91,51 +91,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Menu Sections with Enhanced Design */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        {categories.map((category, index) => {
-          const items = menuItems.filter(
-            (item) => item.category === category.key
-          );
-          if (items.length === 0) return null;
-
-          return (
-            <section key={category.key} className="mb-24 last:mb-0">
-              {/* Category Header with Icon */}
-              <div className="flex items-center mb-10">
-                <div className="flex items-center space-x-6 flex-1">
-                  <div className={`relative p-4 rounded-2xl bg-gradient-to-br ${category.color} shadow-elegant-lg transform hover:scale-110 transition-transform duration-300`}>
-                    <span className="text-5xl relative z-10">{category.icon}</span>
-                    <div className="absolute inset-0 rounded-2xl bg-white opacity-20"></div>
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-2">
-                      {category.label}
-                    </h2>
-                    <div className="flex items-center space-x-2">
-                      <div className="h-1.5 w-32 bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 rounded-full"></div>
-                      <div className="decorative-dot"></div>
-                      <div className="h-1.5 w-16 bg-gradient-to-r from-amber-600 to-transparent rounded-full"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Menu Items Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                {items.map((item) => (
-                  <MenuItemCard key={item.id} item={item} />
-                ))}
-              </div>
-              
-              {/* Section Divider */}
-              {index < categories.length - 1 && (
-                <div className="section-divider mt-16"></div>
-              )}
-            </section>
-          );
-        })}
-      </div>
+      {/* Interactive Menu with Collapsible Categories */}
+      <InteractiveMenu categories={categories} menuItems={menuItems} />
 
       {/* Footer with Admin Access */}
       <footer className="bg-gradient-to-br from-amber-900 via-orange-900 to-red-900 text-amber-100 py-10 mt-20 border-t border-amber-800/50">
