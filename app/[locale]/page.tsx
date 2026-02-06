@@ -18,7 +18,7 @@ export default async function HomePage() {
     { key: 'wine', label: t('menu.wine'), icon: '🍷', color: 'from-red-700 to-amber-800' },
     { key: 'beer', label: t('menu.beer'), icon: '🍺', color: 'from-yellow-600 to-amber-700' },
     { key: 'cocktail', label: t('menu.cocktails'), icon: '🍹', color: 'from-orange-600 to-red-700' },
-  ] as const;
+  ];
 
   return (
     <div className="min-h-screen overflow-hidden">
