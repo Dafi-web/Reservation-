@@ -258,6 +258,30 @@ export async function updateReservationStatus(
   } as Reservation;
 }
 
+// Seat availability functions
+const TOTAL_CAPACITY = 70;
+
+export async function getAvailableSeats(): Promise<number> {
+  await connectDB();
+  // Count both pending and confirmed reservations (rejected don't count)
+  const activeReservations = await ReservationModel.find({ 
+    status: { $in: ['pending', 'confirmed'] } 
+  }).lean();
+  const bookedSeats = activeReservations.reduce((total, res: any) => {
+    return total + (res.guests || 0);
+  }, 0);
+  const available = Math.max(0, TOTAL_CAPACITY - bookedSeats);
+  return available;
+}
+
+export async function checkAvailability(requestedGuests: number): Promise<{ available: boolean; availableSeats: number }> {
+  const availableSeats = await getAvailableSeats();
+  return {
+    available: availableSeats >= requestedGuests,
+    availableSeats,
+  };
+}
+
 // Seed function to populate initial menu items
 export async function seedMenuItems(): Promise<void> {
   await connectDB();

@@ -51,7 +51,8 @@ export default function Navigation() {
     { href: '/reservations', label: t('reservations') },
   ];
 
-  // Only add admin link if authenticated
+  // Only add admin link if authenticated (for desktop navigation)
+  // Mobile uses floating button instead
   if (isAdmin) {
     navLinks.push({ href: '/admin', label: t('admin') });
   }

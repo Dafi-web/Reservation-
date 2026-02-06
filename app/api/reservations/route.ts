@@ -3,6 +3,7 @@ import {
   getReservations,
   createReservation,
   updateReservationStatus,
+  checkAvailability,
 } from '@/lib/data';
 import { Reservation } from '@/lib/types';
 import { sendConfirmationSMS, sendRejectionSMS } from '@/lib/sms';
@@ -32,13 +33,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const requestedGuests = parseInt(guests, 10);
+    
+    // Check availability before creating reservation
+    const availability = await checkAvailability(requestedGuests);
+    
+    if (!availability.available) {
+      return NextResponse.json(
+        { 
+          error: 'Not enough available seats',
+          availableSeats: availability.availableSeats,
+          requestedGuests,
+        },
+        { status: 400 }
+      );
+    }
+
     const reservation = await createReservation({
       name,
       email: '', // Email is optional, set to empty string
       phone,
       date,
       time,
-      guests: parseInt(guests, 10),
+      guests: requestedGuests,
       specialRequests: specialRequests || '',
     });
 

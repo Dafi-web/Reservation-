@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
+
+const CUSTOMER_SUPPORT_PHONE = '394567890';
 
 export default function ReservationsPage() {
   const t = useTranslations();
@@ -17,11 +19,47 @@ export default function ReservationsPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [availableSeats, setAvailableSeats] = useState<number | null>(null);
+  const [loadingAvailability, setLoadingAvailability] = useState(true);
+
+  useEffect(() => {
+    // Fetch available seats on component mount and when guests change
+    const fetchAvailability = async () => {
+      try {
+        setLoadingAvailability(true);
+        const response = await fetch('/api/availability');
+        if (response.ok) {
+          const data = await response.json();
+          setAvailableSeats(data.availableSeats);
+        }
+      } catch (error) {
+        console.error('Failed to fetch availability:', error);
+      } finally {
+        setLoadingAvailability(false);
+      }
+    };
+
+    fetchAvailability();
+    // Refresh availability every 30 seconds
+    const interval = setInterval(fetchAvailability, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage(null);
+
+    // Check availability before submitting
+    const requestedGuests = parseInt(formData.guests, 10);
+    if (availableSeats !== null && availableSeats < requestedGuests) {
+      setMessage({ 
+        type: 'error', 
+        text: `Not enough available seats. Only ${availableSeats} seat${availableSeats !== 1 ? 's' : ''} available. Please contact customer support at ${CUSTOMER_SUPPORT_PHONE}.` 
+      });
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const response = await fetch('/api/reservations', {
@@ -32,8 +70,16 @@ export default function ReservationsPage() {
         body: JSON.stringify(formData),
       });
 
+      const responseData = await response.json();
+
       if (response.ok) {
         setMessage({ type: 'success', text: t('reservation.success') });
+        // Refresh availability after successful booking
+        const availResponse = await fetch('/api/availability');
+        if (availResponse.ok) {
+          const availData = await availResponse.json();
+          setAvailableSeats(availData.availableSeats);
+        }
         setFormData({
           name: '',
           phone: '',
@@ -46,7 +92,14 @@ export default function ReservationsPage() {
           router.push('/');
         }, 2000);
       } else {
-        setMessage({ type: 'error', text: t('reservation.error') });
+        if (responseData.availableSeats !== undefined) {
+          setMessage({ 
+            type: 'error', 
+            text: `Not enough available seats. Only ${responseData.availableSeats} seat${responseData.availableSeats !== 1 ? 's' : ''} available. Please contact customer support at ${CUSTOMER_SUPPORT_PHONE}.` 
+          });
+        } else {
+          setMessage({ type: 'error', text: t('reservation.error') });
+        }
       }
     } catch (error) {
       setMessage({ type: 'error', text: t('reservation.error') });
@@ -91,6 +144,37 @@ export default function ReservationsPage() {
             <p className="text-gray-600 text-lg">
               Reserve your table and experience culinary excellence
             </p>
+            
+            {/* Available Seats Display */}
+            {availableSeats !== null && (
+              <div className={`mt-4 p-4 rounded-xl border-2 ${
+                availableSeats === 0 
+                  ? 'bg-red-50 border-red-300 text-red-800' 
+                  : availableSeats <= 10
+                  ? 'bg-amber-50 border-amber-300 text-amber-800'
+                  : 'bg-green-50 border-green-300 text-green-800'
+              }`}>
+                <div className="flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span className="font-semibold text-lg">
+                    {availableSeats === 0 
+                      ? 'No Availability' 
+                      : `${availableSeats} Seat${availableSeats !== 1 ? 's' : ''} Available`
+                    }
+                  </span>
+                </div>
+                {availableSeats === 0 && (
+                  <p className="text-center mt-2 text-sm">
+                    Please contact customer support at{' '}
+                    <a href={`tel:${CUSTOMER_SUPPORT_PHONE}`} className="font-bold underline hover:text-red-900">
+                      {CUSTOMER_SUPPORT_PHONE}
+                    </a>
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {message && (
@@ -188,6 +272,11 @@ export default function ReservationsPage() {
             <div>
               <label htmlFor="guests" className="block text-sm font-semibold text-gray-700 mb-2">
                 {t('common.guests')} <span className="text-red-500">*</span>
+                {availableSeats !== null && (
+                  <span className="ml-2 text-xs font-normal text-gray-500">
+                    (Max: {availableSeats} available)
+                  </span>
+                )}
               </label>
               <select
                 id="guests"
@@ -195,13 +284,20 @@ export default function ReservationsPage() {
                 required
                 value={formData.guests}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                disabled={availableSeats === 0}
+                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white ${
+                  availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                  <option key={num} value={num}>
-                    {num} {num === 1 ? 'Guest' : 'Guests'}
-                  </option>
-                ))}
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
+                  const isDisabled = availableSeats !== null && num > availableSeats;
+                  return (
+                    <option key={num} value={num} disabled={isDisabled}>
+                      {num} {num === 1 ? 'Guest' : 'Guests'}
+                      {isDisabled ? ' (Not Available)' : ''}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 
@@ -223,7 +319,7 @@ export default function ReservationsPage() {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || availableSeats === 0 || (availableSeats !== null && parseInt(formData.guests, 10) > availableSeats)}
                 className="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-amber-700 hover:to-orange-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-elegant-lg hover:shadow-2xl transform hover:scale-105 disabled:transform-none"
               >
                 {isSubmitting ? (

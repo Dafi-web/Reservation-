@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import Navigation from '@/components/Navigation';
+import FloatingAdminButton from '@/components/FloatingAdminButton';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -31,6 +32,7 @@ export default async function LocaleLayout({
           <div className="min-h-screen bg-gray-50">
             <Navigation />
             <main>{children}</main>
+            <FloatingAdminButton />
           </div>
         </NextIntlClientProvider>
       </body>
