@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { cancelExpiredReservations } from '@/lib/data';
+import { cancelExpiredReservations, cancelPreviousDayReservations } from '@/lib/data';
 
 /**
  * API endpoint to manually trigger cleanup of expired reservations
@@ -11,12 +11,20 @@ import { cancelExpiredReservations } from '@/lib/data';
  */
 export async function GET() {
   try {
-    const cancelledCount = await cancelExpiredReservations();
+    // First, cancel all previous day reservations (daily reset)
+    const previousDayCount = await cancelPreviousDayReservations();
+    
+    // Then, cancel expired reservations for today
+    const expiredCount = await cancelExpiredReservations();
+    
+    const totalCancelled = previousDayCount + expiredCount;
     
     return NextResponse.json({
       success: true,
-      cancelledCount,
-      message: `Cleanup completed. ${cancelledCount} expired reservation(s) cancelled.`,
+      cancelledCount: totalCancelled,
+      previousDayCount,
+      expiredCount,
+      message: `Cleanup completed. ${previousDayCount} previous day reservation(s) cancelled, ${expiredCount} expired reservation(s) cancelled.`,
     });
   } catch (error) {
     console.error('Error cleaning up expired reservations:', error);

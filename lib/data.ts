@@ -344,13 +344,39 @@ function isReservationExpired(reservation: any): boolean {
   return false;
 }
 
-// Function to cancel expired reservations that haven't been checked in
+// Function to cancel all reservations from previous days (daily reset)
+export async function cancelPreviousDayReservations(): Promise<number> {
+  await connectDB();
+  const today = getTodayDate();
+  
+  // Cancel ALL reservations from previous days (not just expired ones)
+  // This ensures seats reset to 70 each day
+  const result = await ReservationModel.updateMany(
+    {
+      date: { $lt: today }, // All dates before today
+      status: { $in: ['pending', 'confirmed'] } // Only active reservations
+    },
+    {
+      status: 'rejected',
+      rejectionReason: 'Reservation cancelled - daily seat reset'
+    }
+  );
+  
+  if (result.modifiedCount > 0) {
+    console.log(`✅ Daily reset: Cancelled ${result.modifiedCount} reservation(s) from previous days`);
+  }
+  
+  return result.modifiedCount;
+}
+
+// Function to cancel expired reservations that haven't been checked in (for today's reservations)
 export async function cancelExpiredReservations(): Promise<number> {
   await connectDB();
   const today = getTodayDate();
   
-  // Find all confirmed or pending reservations that are expired and not checked in
+  // Find all confirmed or pending reservations for TODAY that are expired and not checked in
   const activeReservations = await ReservationModel.find({
+    date: today, // Only today's reservations
     status: { $in: ['pending', 'confirmed'] },
     checkedIn: { $ne: true }
   }).lean();
@@ -378,7 +404,10 @@ export async function getAvailableSeats(): Promise<number> {
   await connectDB();
   const today = getTodayDate();
   
-  // First, cancel any expired reservations
+  // First, cancel all reservations from previous days (daily reset)
+  await cancelPreviousDayReservations();
+  
+  // Then, cancel any expired reservations for today
   await cancelExpiredReservations();
   
   // Count both pending and confirmed reservations for TODAY only (rejected don't count)
