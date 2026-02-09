@@ -69,7 +69,7 @@ export async function sendConfirmationSMS(reservation: Reservation): Promise<boo
     });
 
     // Create confirmation message
-    const message = `Hello ${reservation.name}! Your reservation at Africa Restorante has been confirmed. 📅 Date: ${formattedDate} ⏰ Time: ${formattedTime} 👥 Guests: ${reservation.guests} We look forward to serving you!`;
+    const message = `Hello ${reservation.name}! Your reservation at Ristorante Africa has been confirmed. 📅 Date: ${formattedDate} ⏰ Time: ${formattedTime} 👥 Guests: ${reservation.guests} We look forward to serving you!`;
 
     // Send SMS
     const messageResult = await client.messages.create({
@@ -115,7 +115,7 @@ export async function sendRejectionSMS(reservation: Reservation, reason?: string
       phoneNumber = phoneNumber;
     }
 
-    const message = `Hello ${reservation.name}, we're sorry to inform you that your reservation at Africa Restorante could not be confirmed.${reason ? ` Reason: ${reason}` : ''} Please contact us to make a new reservation. Thank you for your understanding.`;
+    const message = `Hello ${reservation.name}, we're sorry to inform you that your reservation at Ristorante Africa could not be confirmed.${reason ? ` Reason: ${reason}` : ''} Please contact us to make a new reservation. Thank you for your understanding.`;
 
     const messageResult = await client.messages.create({
       body: message,

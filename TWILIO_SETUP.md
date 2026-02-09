@@ -7,7 +7,7 @@ This guide will help you set up Twilio SMS notifications for reservation confirm
 When an admin accepts a reservation, the customer automatically receives an SMS confirmation with:
 - Reservation date and time
 - Number of guests
-- Restaurant name (Africa Restorante)
+- Restaurant name (Ristorante Africa)
 
 ## Step 1: Create a Twilio Account
 
@@ -55,7 +55,7 @@ TWILIO_PHONE_NUMBER=+1234567890
 
 **Confirmation SMS:**
 ```
-Hello [Name]! Your reservation at Africa Restorante has been confirmed. 
+Hello [Name]! Your reservation at Ristorante Africa has been confirmed. 
 📅 Date: [Formatted Date]
 ⏰ Time: [Time]
 👥 Guests: [Number]
@@ -64,7 +64,7 @@ We look forward to serving you!
 
 **Rejection SMS:**
 ```
-Hello [Name], we're sorry to inform you that your reservation at Africa Restorante could not be confirmed. 
+Hello [Name], we're sorry to inform you that your reservation at Ristorante Africa could not be confirmed. 
 Reason: [Rejection reason]
 Please contact us to make a new reservation. Thank you for your understanding.
 ```

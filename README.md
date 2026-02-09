@@ -1,6 +1,6 @@
-# Africa Restorante - Digital Menu & Reservation System
+# Ristorante Africa - Digital Menu & Reservation System
 
-A full-featured digital menu and reservation system for Africa Restorante, built with Next.js, TypeScript, and Tailwind CSS. This application supports multiple languages and provides a simple, intuitive interface for both customers and administrators.
+A full-featured digital menu and reservation system for Ristorante Africa, built with Next.js, TypeScript, and Tailwind CSS. This application supports multiple languages and provides a simple, intuitive interface for both customers and administrators.
 
 ## Features
 

@@ -185,7 +185,7 @@ TWILIO_PHONE_NUMBER= (optional)
 
 ## ✅ Deployment Complete!
 
-Once deployed, your Africa Restorante menu will be live and accessible worldwide!
+Once deployed, your Ristorante Africa menu will be live and accessible worldwide!
 
 **Next Steps:**
 1. Test all features (menu, reservations, admin)

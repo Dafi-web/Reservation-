@@ -70,7 +70,7 @@ export default function Navigation() {
                 </div>
               </div>
               <span className="text-2xl font-bold gradient-text">
-                Africa Restorante
+                Ristorante Africa
               </span>
             </Link>
             {/* Desktop Navigation */}

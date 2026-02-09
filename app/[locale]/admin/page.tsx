@@ -207,7 +207,7 @@ export default function AdminPage() {
                 {t('admin.title')}
               </h1>
               <p className="text-gray-600 text-lg">
-                Manage and track all Africa Restorante reservations
+                Manage and track all Ristorante Africa reservations
               </p>
             </div>
             <div className="flex items-center gap-4">

@@ -1,6 +1,6 @@
 # Subdomain Setup Guide - menu.dafitech.org
 
-This guide will help you set up a subdomain for your Africa Restorante menu application.
+This guide will help you set up a subdomain for your Ristorante Africa menu application.
 
 ## Option 1: Using Vercel (Recommended)
 

@@ -22,7 +22,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen overflow-hidden">
-      {/* Hero Section - Africa Restorante */}
+      {/* Hero Section - Ristorante Africa */}
       <section className="relative py-32 lg:py-40 overflow-hidden">
         {/* Background Image */}
         <div 
@@ -50,7 +50,7 @@ export default async function HomePage() {
             {/* Restaurant Name */}
             <div className="mb-8">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 text-white tracking-tight">
-                Africa Restorante
+                Ristorante Africa
               </h1>
               <div className="flex justify-center items-center mb-6 space-x-3">
                 <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
