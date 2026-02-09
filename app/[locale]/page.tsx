@@ -23,29 +23,34 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen overflow-hidden">
       {/* Hero Section - Ristorante Africa */}
-      <section className="relative py-32 lg:py-40 overflow-hidden">
+      <section className="relative py-32 lg:py-40 overflow-hidden min-h-screen">
         {/* Background Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 z-0"
           style={{
-            backgroundImage: `url('https://github.com/dawit-abrha/Restorante-Africa/raw/main/Ristorante%20Africa_page-0001.jpg')`,
+            backgroundImage: `url('https://raw.githubusercontent.com/dawit-abrha/Restorante-Africa/main/Ristorante%20Africa_page-0001.jpg')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            minHeight: '100vh',
+            width: '100%',
           }}
-        >
-          {/* Dark Overlay for Text Readability */}
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-900/85 via-orange-900/85 to-red-900/85"></div>
-          
-          {/* Overlay Pattern */}
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djJoLTJ2LTJoMnptMC0xNHYyaC0ydi0yaDJ6bS0xNCAxNHYyaC0ydi0yaDJ6bTAtMTR2MmgtMnYtMmgyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
-        </div>
+        />
+        
+        {/* Dark Overlay for Text Readability */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-br from-amber-900/85 via-orange-900/85 to-red-900/85"></div>
+        
+        {/* Overlay Pattern */}
+        <div className="absolute inset-0 z-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djJoLTJ2LTJoMnptMC0xNHYyaC0ydi0yaDJ6bS0xNCAxNHYyaC0ydi0yaDJ6bTAtMTR2MmgtMnYtMmgyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
         
         {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
           <div className="absolute top-20 left-10 w-96 h-96 bg-amber-600/10 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float"></div>
           <div className="absolute top-40 right-10 w-96 h-96 bg-orange-700/10 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '2s' }}></div>
           <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-red-800/10 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '4s' }}></div>
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
           <div className="text-center max-w-5xl mx-auto animate-fade-in-up">
             {/* Restaurant Name */}
             <div className="mb-8">
