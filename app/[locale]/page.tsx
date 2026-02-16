@@ -24,17 +24,17 @@ export default async function HomePage() {
     <div className="min-h-screen overflow-hidden">
       {/* Hero Section - Ristorante Africa */}
       <section className="relative py-32 lg:py-40 overflow-hidden min-h-screen">
-        {/* Dark Overlay for Text Readability */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-br from-amber-900/85 via-orange-900/85 to-red-900/85"></div>
+        {/* Background with logo-inspired colors - warm earth tones */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900"></div>
         
         {/* Overlay Pattern */}
-        <div className="absolute inset-0 z-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djJoLTJ2LTJoMnptMC0xNHYyaC0ydi0yaDJ6bS0xNCAxNHYyaC0ydi0yaDJ6bTAtMTR2MmgtMnYtMmgyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+        <div className="absolute inset-0 z-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djJoLTJ2LTJoMnptMC0xNHYyaC0ydi0yaDJ6bS0xNCAxNHYyaC0ydi0yaDJ6bTAtMTR2MmgtMnYtMmgyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
         
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-amber-600/10 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float"></div>
-          <div className="absolute top-40 right-10 w-96 h-96 bg-orange-700/10 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '2s' }}></div>
-          <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-red-800/10 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '4s' }}></div>
+          <div className="absolute top-20 left-10 w-96 h-96 bg-amber-700/15 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float"></div>
+          <div className="absolute top-40 right-10 w-96 h-96 bg-stone-700/15 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-amber-800/15 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '4s' }}></div>
         </div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
@@ -45,9 +45,9 @@ export default async function HomePage() {
                 Ristorante Africa
               </h1>
               <div className="flex justify-center items-center mb-6 space-x-3">
-                <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
-                <div className="text-amber-400 text-xl">✦</div>
-                <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+                <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
+                <div className="text-amber-500 text-xl">✦</div>
+                <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
               </div>
             </div>
             
@@ -55,18 +55,18 @@ export default async function HomePage() {
               {t('menu.title')}
             </h2>
             
-            <p className="text-lg md:text-xl text-amber-100 mb-12 leading-relaxed font-light max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-amber-50 mb-12 leading-relaxed font-light max-w-3xl mx-auto">
               Experience authentic African flavors with our carefully curated selection of traditional dishes and handcrafted beverages
               <br />
-              <span className="text-amber-300 font-medium mt-2 block">A journey through the rich culinary heritage of Africa</span>
+              <span className="text-amber-400 font-medium mt-2 block">A journey through the rich culinary heritage of Africa</span>
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <Link
                 href="/reservations"
-                className="group relative inline-flex items-center justify-center px-12 py-5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-white rounded-full font-bold text-lg shadow-2xl hover:shadow-amber-500/50 transition-all duration-300 transform hover:scale-105 overflow-hidden border-2 border-amber-400/30"
+                className="group relative inline-flex items-center justify-center px-12 py-5 bg-gradient-to-r from-amber-600 via-amber-700 to-stone-800 text-white rounded-full font-bold text-lg shadow-2xl hover:shadow-amber-600/50 transition-all duration-300 transform hover:scale-105 overflow-hidden border-2 border-amber-500/30"
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-amber-600 via-orange-600 to-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span className="absolute inset-0 bg-gradient-to-r from-amber-700 via-stone-800 to-stone-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <span className="relative z-10 flex items-center">
                   {t('common.bookTable')}
                   <svg className="ml-3 w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,13 +77,13 @@ export default async function HomePage() {
               
               <div className="flex items-center space-x-6 text-sm text-amber-200">
                 <div className="flex items-center">
-                  <svg className="w-5 h-5 text-amber-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 text-amber-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                   <span>Authentic Flavors</span>
                 </div>
                 <div className="flex items-center">
-                  <svg className="w-5 h-5 text-amber-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 text-amber-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                   <span>Traditional Recipes</span>
@@ -98,7 +98,7 @@ export default async function HomePage() {
       <InteractiveMenu categories={categories} menuItems={menuItems} />
 
       {/* Footer with Admin Access */}
-      <footer className="bg-gradient-to-br from-amber-900 via-orange-900 to-red-900 text-amber-100 py-10 mt-20 border-t border-amber-800/50">
+      <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-amber-100 py-10 mt-20 border-t border-stone-700/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm">
@@ -108,7 +108,7 @@ export default async function HomePage() {
             <div className="flex items-center gap-4">
               <Link
                 href="/admin"
-                className="text-sm text-amber-300 hover:text-amber-200 transition-colors flex items-center gap-2 border border-amber-700/50 px-4 py-2 rounded-lg hover:bg-amber-800/30"
+                className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-2 border border-stone-700/50 px-4 py-2 rounded-lg hover:bg-stone-800/30"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

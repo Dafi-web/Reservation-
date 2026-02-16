@@ -58,13 +58,13 @@ export default function Navigation() {
   }
 
   return (
-    <nav className="glass-effect shadow-elegant sticky top-0 z-50 border-b border-amber-200/30 bg-white/95">
+    <nav className="glass-effect shadow-elegant sticky top-0 z-50 border-b border-stone-200/30 bg-white/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center space-x-12">
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-stone-700 rounded-2xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
                 <img 
                   src="https://raw.githubusercontent.com/Dafi-web/Restorante-Africa/1db382115d05cb6560ddfb878de045d5315830ee/IMG-20250401-WA0000.jpg"
                   alt="Ristorante Africa Logo"
@@ -83,8 +83,8 @@ export default function Navigation() {
                   href={link.href}
                   className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 relative overflow-hidden ${
                     pathname === link.href 
-                      ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-elegant' 
-                      : 'text-gray-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-amber-700'
+                      ? 'bg-gradient-to-r from-amber-600 to-stone-700 text-white shadow-elegant' 
+                      : 'text-gray-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-stone-50 hover:text-amber-700'
                   }`}
                 >
                   {pathname === link.href && (
@@ -100,7 +100,7 @@ export default function Navigation() {
             <select
               onChange={handleLanguageChange}
               value={currentLocale}
-              className="px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-amber-600 transition-all cursor-pointer hover:border-amber-400 hover:shadow-elegant"
+              className="px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-amber-600 transition-all cursor-pointer hover:border-amber-500 hover:shadow-elegant"
             >
               {routing.locales.map((locale) => (
                 <option key={locale} value={locale}>
@@ -141,7 +141,7 @@ export default function Navigation() {
         </div>
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-amber-100/50 py-4 animate-fade-in-up">
+          <div className="md:hidden border-t border-stone-100/50 py-4 animate-fade-in-up">
             <div className="flex flex-col space-y-2">
               {navLinks.map((link) => (
                 <Link
@@ -150,8 +150,8 @@ export default function Navigation() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
                     pathname === link.href 
-                      ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-elegant' 
-                      : 'text-gray-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-amber-700'
+                      ? 'bg-gradient-to-r from-amber-600 to-stone-700 text-white shadow-elegant' 
+                      : 'text-gray-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-stone-50 hover:text-amber-700'
                   }`}
                 >
                   {link.label}
