@@ -4,16 +4,16 @@ import MenuItemModel from '@/lib/models/MenuItem';
 
 const newAppetizers = [
   {
-    name: 'Vegetarian Sambusa',
-    description: 'Parcel filled with mixed vegetables',
+    name: 'Vegetarian Samosa',
+    description: '(Price per person) Ingredients: Parcel filled with mixed vegetables',
     price: 3.00,
     category: 'appetizer',
     tags: ['vegetarian'],
     available: true,
   },
   {
-    name: 'Meat Sambusa',
-    description: 'Parcel filled with minced meat and parsley, slightly spicy',
+    name: 'Meat Samosal',
+    description: '(Price per Person) Ingredients: Parcel filled with minced meat and parsley, slightly spicy',
     price: 3.00,
     category: 'appetizer',
     tags: ['spicy'],
@@ -21,7 +21,7 @@ const newAppetizers = [
   },
   {
     name: 'Catagna',
-    description: 'Injera rolls (typical Eritrean bread) with ghee and chili pepper. ***Spicy',
+    description: '(Price per person) Injera rolls (typical Eritrean bread) with ghee and chili pepper. ***Spicy',
     price: 2.00,
     category: 'appetizer',
     tags: ['spicy'],
@@ -32,6 +32,18 @@ const newAppetizers = [
 export async function POST() {
   try {
     await connectDB();
+    
+    // Remove old items with old names
+    const oldItemNames = ['Vegetarian Sambusa', 'Meat Sambusa'];
+    let removedCount = 0;
+    for (const oldName of oldItemNames) {
+      const deleted = await MenuItemModel.deleteMany({ name: oldName });
+      if (deleted.deletedCount > 0) {
+        removedCount += deleted.deletedCount;
+        console.log(`Removed old menu item: ${oldName}`);
+      }
+    }
+    
     const addedItems = [];
     
     for (const item of newAppetizers) {
@@ -65,15 +77,17 @@ export async function POST() {
       }
     }
     
-    if (addedItems.length > 0) {
+    if (addedItems.length > 0 || removedCount > 0) {
       return NextResponse.json({ 
-        message: `Successfully added ${addedItems.length} menu item(s)`,
-        added: addedItems 
+        message: `Successfully updated appetizers. Added ${addedItems.length} item(s), removed ${removedCount} old item(s)`,
+        added: addedItems,
+        removed: removedCount
       });
     } else {
       return NextResponse.json({ 
         message: 'All items already exist',
-        added: [] 
+        added: [],
+        removed: 0
       });
     }
   } catch (error) {

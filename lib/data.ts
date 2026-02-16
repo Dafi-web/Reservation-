@@ -34,16 +34,16 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&h=300&fit=crop',
   },
   {
-    name: 'Vegetarian Sambusa',
-    description: 'Parcel filled with mixed vegetables',
+    name: 'Vegetarian Samosa',
+    description: '(Price per person) Ingredients: Parcel filled with mixed vegetables',
     price: 3.00,
     category: 'appetizer',
     tags: ['vegetarian'],
     available: true,
   },
   {
-    name: 'Meat Sambusa',
-    description: 'Parcel filled with minced meat and parsley, slightly spicy',
+    name: 'Meat Samosal',
+    description: '(Price per Person) Ingredients: Parcel filled with minced meat and parsley, slightly spicy',
     price: 3.00,
     category: 'appetizer',
     tags: ['spicy'],
@@ -51,7 +51,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
   },
   {
     name: 'Catagna',
-    description: 'Injera rolls (typical Eritrean bread) with ghee and chili pepper. ***Spicy',
+    description: '(Price per person) Injera rolls (typical Eritrean bread) with ghee and chili pepper. ***Spicy',
     price: 2.00,
     category: 'appetizer',
     tags: ['spicy'],
@@ -470,6 +470,12 @@ export async function seedMenuItems(): Promise<void> {
     await MenuItemModel.insertMany(itemsWithIds);
     console.log('Menu items seeded successfully');
   } else {
+    // Remove old items with old names that have been updated
+    const oldItemNames = ['Vegetarian Sambusa', 'Meat Sambusa'];
+    for (const oldName of oldItemNames) {
+      await MenuItemModel.deleteMany({ name: oldName });
+    }
+    
     // Add any missing items from initialMenuItems
     let addedCount = 0;
     for (const item of initialMenuItems) {
