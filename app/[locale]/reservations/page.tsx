@@ -123,17 +123,17 @@ export default function ReservationsPage() {
   const maxDateStr = maxDate.toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 py-12 lg:py-16 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-stone-100 to-stone-50 py-12 lg:py-16 relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-amber-200/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-stone-300/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
       </div>
       
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="glass-effect rounded-3xl shadow-elegant-lg p-8 lg:p-12 border border-white/50 animate-scale-in">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-600 to-stone-700 rounded-2xl mb-4">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -151,7 +151,7 @@ export default function ReservationsPage() {
                 availableSeats === 0 
                   ? 'bg-red-50 border-red-300 text-red-800' 
                   : availableSeats <= 10
-                  ? 'bg-amber-50 border-amber-300 text-amber-800'
+                  ? 'bg-amber-50 border-amber-400 text-amber-800'
                   : 'bg-green-50 border-green-300 text-green-800'
               }`}>
                 <div className="flex items-center justify-center gap-2">
@@ -213,7 +213,7 @@ export default function ReservationsPage() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="John Doe"
                 />
               </div>
@@ -229,7 +229,7 @@ export default function ReservationsPage() {
                   required
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="+1 (555) 123-4567"
                 />
               </div>
@@ -249,7 +249,7 @@ export default function ReservationsPage() {
                   max={maxDateStr}
                   value={formData.date}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                 />
               </div>
 
@@ -264,7 +264,7 @@ export default function ReservationsPage() {
                   required
                   value={formData.time}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                 />
               </div>
             </div>
@@ -285,7 +285,7 @@ export default function ReservationsPage() {
                 value={formData.guests}
                 onChange={handleChange}
                 disabled={availableSeats === 0}
-                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white ${
+                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white ${
                   availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
@@ -311,7 +311,7 @@ export default function ReservationsPage() {
                 rows={4}
                 value={formData.specialRequests}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white resize-none"
                 placeholder="Any dietary restrictions, allergies, or special requests..."
               />
             </div>
@@ -320,7 +320,7 @@ export default function ReservationsPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || availableSeats === 0 || (availableSeats !== null && parseInt(formData.guests, 10) > availableSeats)}
-                className="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-amber-700 hover:to-orange-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-elegant-lg hover:shadow-2xl transform hover:scale-105 disabled:transform-none"
+                className="flex-1 bg-gradient-to-r from-amber-600 to-stone-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-amber-700 hover:to-stone-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-elegant-lg hover:shadow-2xl transform hover:scale-105 disabled:transform-none"
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center">
