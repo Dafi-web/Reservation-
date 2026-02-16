@@ -33,6 +33,30 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     available: true,
     image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&h=300&fit=crop',
   },
+  {
+    name: 'Vegetarian Sambusa',
+    description: 'Parcel filled with mixed vegetables',
+    price: 3.00,
+    category: 'appetizer',
+    tags: ['vegetarian'],
+    available: true,
+  },
+  {
+    name: 'Meat Sambusa',
+    description: 'Parcel filled with minced meat and parsley, slightly spicy',
+    price: 3.00,
+    category: 'appetizer',
+    tags: ['spicy'],
+    available: true,
+  },
+  {
+    name: 'Catagna',
+    description: 'Injera rolls (typical Eritrean bread) with ghee and chili pepper. ***Spicy',
+    price: 2.00,
+    category: 'appetizer',
+    tags: ['spicy'],
+    available: true,
+  },
   // Main Courses
   {
     name: 'Grilled Salmon',
@@ -445,5 +469,46 @@ export async function seedMenuItems(): Promise<void> {
     }));
     await MenuItemModel.insertMany(itemsWithIds);
     console.log('Menu items seeded successfully');
+  } else {
+    // Add new items if they don't exist
+    const newItems = [
+      {
+        name: 'Vegetarian Sambusa',
+        description: 'Parcel filled with mixed vegetables',
+        price: 3.00,
+        category: 'appetizer',
+        tags: ['vegetarian'],
+        available: true,
+      },
+      {
+        name: 'Meat Sambusa',
+        description: 'Parcel filled with minced meat and parsley, slightly spicy',
+        price: 3.00,
+        category: 'appetizer',
+        tags: ['spicy'],
+        available: true,
+      },
+      {
+        name: 'Catagna',
+        description: 'Injera rolls (typical Eritrean bread) with ghee and chili pepper. ***Spicy',
+        price: 2.00,
+        category: 'appetizer',
+        tags: ['spicy'],
+        available: true,
+      },
+    ];
+
+    for (const item of newItems) {
+      const existing = await MenuItemModel.findOne({ name: item.name });
+      if (!existing) {
+        const maxId = await MenuItemModel.findOne().sort({ id: -1 }).lean();
+        const nextId = maxId ? (parseInt((maxId as any).id) + 1).toString() : '1';
+        await MenuItemModel.create({
+          ...item,
+          id: nextId,
+        });
+        console.log(`Added new menu item: ${item.name}`);
+      }
+    }
   }
 }
