@@ -51,7 +51,7 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
               </div>
             </div>
           ) : (
-            <div className="relative bg-gradient-to-br from-amber-600 via-orange-600 to-red-600 p-8 text-white">
+            <div className="relative bg-gradient-to-br from-amber-600 via-stone-700 to-stone-800 p-8 text-white">
               <button
                 onClick={onClose}
                 className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
@@ -82,7 +82,7 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
                 {item.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 rounded-full text-sm font-semibold border border-amber-200"
+                    className="px-4 py-2 bg-gradient-to-r from-amber-100 to-stone-100 text-amber-700 rounded-full text-sm font-semibold border border-amber-200"
                   >
                     {t(tag)}
                   </span>

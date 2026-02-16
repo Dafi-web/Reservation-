@@ -18,7 +18,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
     <>
       <div className="group bg-white rounded-xl shadow-elegant overflow-hidden hover-lift border border-gray-100/50 transition-all duration-300 relative cursor-pointer" onClick={() => setIsModalOpen(true)}>
         {/* Decorative Gradient Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/0 via-orange-50/0 to-amber-50/0 group-hover:from-amber-50/40 group-hover:via-orange-50/20 group-hover:to-amber-50/40 transition-all duration-500 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/0 via-stone-50/0 to-amber-50/0 group-hover:from-amber-50/40 group-hover:via-stone-50/20 group-hover:to-amber-50/40 transition-all duration-500 pointer-events-none"></div>
         
         {/* Shine Effect */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
@@ -28,7 +28,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
         <div className="p-4 relative z-10">
           {/* Clickable Image Area */}
           <div className="mb-3 relative overflow-hidden rounded-lg">
-            <div className="w-full h-40 bg-gradient-to-br from-amber-100 via-orange-100 to-red-100 group-hover:scale-105 transition-transform duration-300 relative">
+            <div className="w-full h-40 bg-gradient-to-br from-amber-100 via-stone-100 to-stone-200 group-hover:scale-105 transition-transform duration-300 relative">
               {item.image ? (
                 <Image
                   src={item.image}
@@ -39,7 +39,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
                   unoptimized
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-amber-100 via-orange-100 to-red-100 flex items-center justify-center">
+                <div className="w-full h-full bg-gradient-to-br from-amber-100 via-stone-100 to-stone-200 flex items-center justify-center">
                   <span className="text-6xl opacity-60 group-hover:opacity-100 transition-opacity">
                     {item.category === 'appetizer' ? '🥗' : 
                      item.category === 'main' ? '🍽️' : 
@@ -67,8 +67,8 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
             </h3>
             <div className="flex-shrink-0">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-lg blur-sm opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                <div className="relative px-3 py-1.5 bg-gradient-to-r from-amber-600 to-orange-600 rounded-lg shadow-elegant">
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-stone-600 rounded-lg blur-sm opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="relative px-3 py-1.5 bg-gradient-to-r from-amber-600 to-stone-700 rounded-lg shadow-elegant">
                   <span className="text-lg font-bold text-white">
                     ${item.price.toFixed(2)}
                   </span>
@@ -88,7 +88,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
               {item.tags.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 text-xs rounded-full font-semibold border border-amber-200/50"
+                  className="px-2 py-1 bg-gradient-to-r from-amber-50 to-stone-50 text-amber-700 text-xs rounded-full font-semibold border border-amber-200/50"
                 >
                   {t(tag)}
                 </span>
