@@ -24,19 +24,6 @@ export default async function HomePage() {
     <div className="min-h-screen overflow-hidden">
       {/* Hero Section - Ristorante Africa */}
       <section className="relative py-32 lg:py-40 overflow-hidden min-h-screen">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: `url('https://raw.githubusercontent.com/dawit-abrha/Restorante-Africa/main/Ristorante%20Africa_page-0001.jpg')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            minHeight: '100vh',
-            width: '100%',
-          }}
-        />
-        
         {/* Dark Overlay for Text Readability */}
         <div className="absolute inset-0 z-10 bg-gradient-to-br from-amber-900/85 via-orange-900/85 to-red-900/85"></div>
         

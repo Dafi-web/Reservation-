@@ -65,9 +65,11 @@ export default function Navigation() {
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
-                <div className="relative text-4xl transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-                  🍽️
-                </div>
+                <img 
+                  src="https://raw.githubusercontent.com/Dafi-web/Restorante-Africa/1db382115d05cb6560ddfb878de045d5315830ee/IMG-20250401-WA0000.jpg"
+                  alt="Ristorante Africa Logo"
+                  className="relative w-12 h-12 object-contain transform group-hover:scale-110 transition-all duration-300"
+                />
               </div>
               <span className="text-2xl font-bold gradient-text">
                 Ristorante Africa
