@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "node --loader tsx scripts/seed.ts"
+    "seed": "node --loader tsx scripts/seed.ts",
+    "update-appetizers": "node --loader tsx scripts/update-appetizers.ts"
   },
   "dependencies": {
     "date-fns": "^3.6.0",
