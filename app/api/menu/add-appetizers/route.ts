@@ -34,7 +34,13 @@ export async function POST() {
     await connectDB();
     
     // Remove old items with old names
-    const oldItemNames = ['Vegetarian Sambusa', 'Meat Sambusa'];
+    const oldItemNames = [
+      'Vegetarian Sambusa', 
+      'Meat Sambusa',
+      'Bruschetta Trio',
+      'Caesar Salad',
+      'Shrimp Cocktail'
+    ];
     let removedCount = 0;
     for (const oldName of oldItemNames) {
       const deleted = await MenuItemModel.deleteMany({ name: oldName });

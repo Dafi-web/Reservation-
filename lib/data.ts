@@ -7,33 +7,6 @@ import { MenuItem, Reservation } from './types';
 export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
   // Appetizers
   {
-    name: 'Bruschetta Trio',
-    description: 'Three varieties of bruschetta: classic tomato & basil, mushroom & truffle, and goat cheese & honey',
-    price: 12.99,
-    category: 'appetizer',
-    tags: ['vegetarian'],
-    available: true,
-    image: 'https://images.unsplash.com/photo-1572441713132-51c75654db73?w=400&h=300&fit=crop',
-  },
-  {
-    name: 'Caesar Salad',
-    description: 'Fresh romaine lettuce with parmesan cheese, croutons, and our signature Caesar dressing',
-    price: 10.99,
-    category: 'appetizer',
-    tags: ['vegetarian'],
-    available: true,
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=300&fit=crop',
-  },
-  {
-    name: 'Shrimp Cocktail',
-    description: 'Jumbo shrimp served with house-made cocktail sauce and lemon',
-    price: 15.99,
-    category: 'appetizer',
-    allergens: ['shellfish'],
-    available: true,
-    image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&h=300&fit=crop',
-  },
-  {
     name: 'Vegetarian Samosa',
     description: '(Price per person) Ingredients: Parcel filled with mixed vegetables',
     price: 3.00,
@@ -470,10 +443,19 @@ export async function seedMenuItems(): Promise<void> {
     await MenuItemModel.insertMany(itemsWithIds);
     console.log('Menu items seeded successfully');
   } else {
-    // Remove old items with old names that have been updated
-    const oldItemNames = ['Vegetarian Sambusa', 'Meat Sambusa'];
+    // Remove old items with old names that have been updated or removed
+    const oldItemNames = [
+      'Vegetarian Sambusa', 
+      'Meat Sambusa',
+      'Bruschetta Trio',
+      'Caesar Salad',
+      'Shrimp Cocktail'
+    ];
     for (const oldName of oldItemNames) {
-      await MenuItemModel.deleteMany({ name: oldName });
+      const deleted = await MenuItemModel.deleteMany({ name: oldName });
+      if (deleted.deletedCount > 0) {
+        console.log(`Removed old menu item: ${oldName}`);
+      }
     }
     
     // Add any missing items from initialMenuItems or update existing ones
