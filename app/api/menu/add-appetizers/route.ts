@@ -45,6 +45,7 @@ export async function POST() {
     }
     
     const addedItems = [];
+    const updatedItems = [];
     
     for (const item of newAppetizers) {
       const existing = await MenuItemModel.findOne({ name: item.name });
@@ -73,20 +74,39 @@ export async function POST() {
           console.error(`Failed to add ${item.name}:`, error.message);
         }
       } else {
-        console.log(`Menu item already exists: ${item.name}`);
+        // Update existing item
+        try {
+          await MenuItemModel.findOneAndUpdate(
+            { name: item.name },
+            {
+              description: item.description,
+              price: item.price,
+              tags: item.tags,
+              category: item.category,
+              available: item.available,
+            },
+            { new: true }
+          );
+          updatedItems.push(item.name);
+          console.log(`Updated menu item: ${item.name}`);
+        } catch (error: any) {
+          console.error(`Failed to update ${item.name}:`, error.message);
+        }
       }
     }
     
-    if (addedItems.length > 0 || removedCount > 0) {
+    if (addedItems.length > 0 || updatedItems.length > 0 || removedCount > 0) {
       return NextResponse.json({ 
-        message: `Successfully updated appetizers. Added ${addedItems.length} item(s), removed ${removedCount} old item(s)`,
+        message: `Successfully updated appetizers. Added ${addedItems.length} item(s), updated ${updatedItems.length} item(s), removed ${removedCount} old item(s)`,
         added: addedItems,
+        updated: updatedItems,
         removed: removedCount
       });
     } else {
       return NextResponse.json({ 
-        message: 'All items already exist',
+        message: 'No changes needed',
         added: [],
+        updated: [],
         removed: 0
       });
     }

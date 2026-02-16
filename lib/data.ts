@@ -476,8 +476,9 @@ export async function seedMenuItems(): Promise<void> {
       await MenuItemModel.deleteMany({ name: oldName });
     }
     
-    // Add any missing items from initialMenuItems
+    // Add any missing items from initialMenuItems or update existing ones
     let addedCount = 0;
+    let updatedCount = 0;
     for (const item of initialMenuItems) {
       const existing = await MenuItemModel.findOne({ name: item.name });
       if (!existing) {
@@ -504,12 +505,33 @@ export async function seedMenuItems(): Promise<void> {
         } catch (error: any) {
           console.error(`Failed to add ${item.name}:`, error.message);
         }
+      } else {
+        // Update existing item if description or other fields changed
+        try {
+          await MenuItemModel.findOneAndUpdate(
+            { name: item.name },
+            {
+              description: item.description,
+              price: item.price,
+              tags: item.tags,
+              category: item.category,
+              available: item.available,
+              image: item.image,
+              allergens: item.allergens,
+            },
+            { new: true }
+          );
+          console.log(`Updated menu item: ${item.name}`);
+          updatedCount++;
+        } catch (error: any) {
+          console.error(`Failed to update ${item.name}:`, error.message);
+        }
       }
     }
-    if (addedCount > 0) {
-      console.log(`Added ${addedCount} new menu item(s)`);
+    if (addedCount > 0 || updatedCount > 0) {
+      console.log(`Added ${addedCount} new menu item(s), updated ${updatedCount} existing item(s)`);
     } else {
-      console.log('All menu items already exist');
+      console.log('All menu items are up to date');
     }
   }
 }
