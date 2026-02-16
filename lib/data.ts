@@ -475,19 +475,29 @@ export async function seedMenuItems(): Promise<void> {
     for (const item of initialMenuItems) {
       const existing = await MenuItemModel.findOne({ name: item.name });
       if (!existing) {
-        // Find the highest ID and increment
-        const maxIdDoc = await MenuItemModel.findOne().sort({ id: -1 }).lean();
-        let nextId = '1';
-        if (maxIdDoc && (maxIdDoc as any).id) {
-          const maxId = parseInt((maxIdDoc as any).id);
-          nextId = (maxId + 1).toString();
+        // Find the highest numeric ID and increment
+        const allItems = await MenuItemModel.find().lean();
+        let maxId = 0;
+        for (const doc of allItems) {
+          const docId = (doc as any).id;
+          if (docId) {
+            const numId = parseInt(docId);
+            if (!isNaN(numId) && numId > maxId) {
+              maxId = numId;
+            }
+          }
         }
-        await MenuItemModel.create({
-          ...item,
-          id: nextId,
-        });
-        console.log(`Added new menu item: ${item.name}`);
-        addedCount++;
+        const nextId = (maxId + 1).toString();
+        try {
+          await MenuItemModel.create({
+            ...item,
+            id: nextId,
+          });
+          console.log(`Added new menu item: ${item.name} (ID: ${nextId})`);
+          addedCount++;
+        } catch (error: any) {
+          console.error(`Failed to add ${item.name}:`, error.message);
+        }
       }
     }
     if (addedCount > 0) {
