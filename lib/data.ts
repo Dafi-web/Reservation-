@@ -238,12 +238,15 @@ export async function getMenuItems(): Promise<MenuItem[]> {
   };
 
   try {
-    const timeoutMs = 5000;
+    // Prefer DB result; only use fallback on error or timeout (15s). This ensures saved items persist and display after refresh.
+    const timeoutMs = 15000;
     const result = await Promise.race([
       fromDb(),
-      new Promise<MenuItem[]>((resolve) => setTimeout(() => resolve(MENU_FALLBACK), timeoutMs)),
+      new Promise<MenuItem[]>((_, reject) =>
+        setTimeout(() => reject(new Error('Menu load timeout')), timeoutMs)
+      ),
     ]);
-    return Array.isArray(result) && result.length > 0 ? result : MENU_FALLBACK;
+    return result;
   } catch (e) {
     console.warn('Menu DB unavailable, using initial menu from data.ts:', (e as Error).message);
     return MENU_FALLBACK;
