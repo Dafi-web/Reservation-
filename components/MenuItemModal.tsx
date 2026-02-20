@@ -27,13 +27,13 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
         {/* Header with Image */}
         <div className="relative">
           {item.image ? (
-            <div className="relative h-64 w-full overflow-hidden">
+            <div className="relative w-full min-h-[280px] max-h-[70vh] flex items-center justify-center bg-gray-100 rounded-t-3xl overflow-hidden">
               <Image
                 src={item.image}
                 alt={item.name}
                 width={800}
-                height={400}
-                className="w-full h-full object-cover"
+                height={600}
+                className="w-full h-auto max-h-[70vh] object-contain"
                 unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>

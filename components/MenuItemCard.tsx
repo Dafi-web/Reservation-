@@ -28,14 +28,14 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
         <div className="p-4 relative z-10">
           {/* Clickable Image Area */}
           <div className="mb-3 relative overflow-hidden rounded-lg">
-            <div className="w-full h-40 bg-gradient-to-br from-amber-100 via-stone-100 to-stone-200 group-hover:scale-105 transition-transform duration-300 relative">
+            <div className="w-full h-48 bg-gradient-to-br from-amber-100 via-stone-100 to-stone-200 group-hover:scale-105 transition-transform duration-300 relative flex items-center justify-center">
               {item.image ? (
                 <Image
                   src={item.image}
                   alt={item.name}
                   width={400}
                   height={300}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   unoptimized
                 />
               ) : (
