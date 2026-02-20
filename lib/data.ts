@@ -439,109 +439,21 @@ export async function checkAvailability(requestedGuests: number): Promise<{ avai
   };
 }
 
-// Seed function to populate initial menu items
+// Seed function to populate initial menu items (full sync: DB menu = initialMenuItems)
 export async function seedMenuItems(): Promise<void> {
   await connectDB();
   const count = await MenuItemModel.countDocuments();
-  
-  if (count === 0) {
-    const itemsWithIds = initialMenuItems.map((item, index) => ({
-      ...item,
-      id: (index + 1).toString(),
-    }));
-    await MenuItemModel.insertMany(itemsWithIds);
-    console.log('Menu items seeded successfully');
-  } else {
-    // Remove old items with old names that have been updated or removed
-    const oldItemNames = [
-      'Vegetarian Sambusa',
-      'Meat Sambusa',
-      'Bruschetta Trio',
-      'Caesar Salad',
-      'Shrimp Cocktail',
-      // Old desserts
-      'Chocolate Lava Cake',
-      'Tiramisu',
-      'Fresh Fruit Platter',
-      // Old beverages
-      'Fresh Orange Juice',
-      'Iced Tea',
-      'Espresso',
-      // Old wine
-      'Chardonnay',
-      'Cabernet Sauvignon',
-      'Pinot Grigio',
-      // Old beer
-      'Craft IPA',
-      'Wheat Beer',
-      // Old cocktails
-      'Mojito',
-      'Old Fashioned',
-      'Margarita',
-    ];
-    for (const oldName of oldItemNames) {
-      const deleted = await MenuItemModel.deleteMany({ name: oldName });
-      if (deleted.deletedCount > 0) {
-        console.log(`Removed old menu item: ${oldName}`);
-      }
-    }
-    
-    // Add any missing items from initialMenuItems or update existing ones
-    let addedCount = 0;
-    let updatedCount = 0;
-    for (const item of initialMenuItems) {
-      const existing = await MenuItemModel.findOne({ name: item.name });
-      if (!existing) {
-        // Find the highest numeric ID and increment
-        const allItems = await MenuItemModel.find().lean();
-        let maxId = 0;
-        for (const doc of allItems) {
-          const docId = (doc as any).id;
-          if (docId) {
-            const numId = parseInt(docId);
-            if (!isNaN(numId) && numId > maxId) {
-              maxId = numId;
-            }
-          }
-        }
-        const nextId = (maxId + 1).toString();
-        try {
-          await MenuItemModel.create({
-            ...item,
-            id: nextId,
-          });
-          console.log(`Added new menu item: ${item.name} (ID: ${nextId})`);
-          addedCount++;
-        } catch (error: any) {
-          console.error(`Failed to add ${item.name}:`, error.message);
-        }
-      } else {
-        // Update existing item if description or other fields changed
-        try {
-          await MenuItemModel.findOneAndUpdate(
-            { name: item.name },
-            {
-              description: item.description,
-              price: item.price,
-              tags: item.tags,
-              category: item.category,
-              available: item.available,
-              image: item.image,
-              allergens: item.allergens,
-            },
-            { new: true }
-          );
-          console.log(`Updated menu item: ${item.name}`);
-          updatedCount++;
-        } catch (error: any) {
-          console.error(`Failed to update ${item.name}:`, error.message);
-        }
-      }
-    }
-    if (addedCount > 0 || updatedCount > 0) {
-      console.log(`Added ${addedCount} new menu item(s), updated ${updatedCount} existing item(s)`);
-    } else {
-      console.log('All menu items are up to date');
-    }
+
+  // Always replace entire menu with current initialMenuItems so DB matches code
+  if (count > 0) {
+    const deleted = await MenuItemModel.deleteMany({});
+    console.log(`Removed ${deleted.deletedCount} existing menu item(s) for full sync.`);
   }
+
+  const itemsWithIds = initialMenuItems.map((item, index) => ({
+    ...item,
+    id: (index + 1).toString(),
+  }));
+  await MenuItemModel.insertMany(itemsWithIds);
+  console.log(`Menu synced: ${itemsWithIds.length} item(s) from code.`);
 }

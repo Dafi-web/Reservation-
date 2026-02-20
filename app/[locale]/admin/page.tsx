@@ -19,6 +19,10 @@ export default function AdminPage() {
   });
   const [rejectionReason, setRejectionReason] = useState('');
   const [availability, setAvailability] = useState<{ availableSeats: number; totalCapacity: number; bookedSeats: number; confirmedBookedSeats: number; pendingBookedSeats: number } | null>(null);
+  const [syncMenuLoading, setSyncMenuLoading] = useState(false);
+  const [syncMenuMessage, setSyncMenuMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [clearMenuLoading, setClearMenuLoading] = useState(false);
+  const [clearMenuConfirm, setClearMenuConfirm] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -68,6 +72,48 @@ export default function AdminPage() {
       }
     } catch (error) {
       console.error('Failed to fetch availability:', error);
+    }
+  };
+
+  const syncMenu = async () => {
+    setSyncMenuLoading(true);
+    setSyncMenuMessage(null);
+    try {
+      const response = await fetch('/api/seed', { method: 'POST' });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        setSyncMenuMessage({ type: 'success', text: data.message || 'Menu synced successfully. Refresh the main page to see updates.' });
+      } else {
+        setSyncMenuMessage({ type: 'error', text: data.error || data.details || 'Failed to sync menu.' });
+      }
+    } catch (error) {
+      setSyncMenuMessage({ type: 'error', text: 'Failed to sync menu.' });
+    } finally {
+      setSyncMenuLoading(false);
+    }
+  };
+
+  const clearMenu = async () => {
+    if (!clearMenuConfirm) {
+      setClearMenuConfirm(true);
+      setSyncMenuMessage({ type: 'error', text: 'Click "Clear menu" again to confirm. All menu items will be removed.' });
+      return;
+    }
+    setClearMenuLoading(true);
+    setSyncMenuMessage(null);
+    setClearMenuConfirm(false);
+    try {
+      const response = await fetch('/api/menu/clear', { method: 'POST' });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        setSyncMenuMessage({ type: 'success', text: data.message || 'Menu cleared. All items removed.' });
+      } else {
+        setSyncMenuMessage({ type: 'error', text: data.error || data.details || 'Failed to clear menu.' });
+      }
+    } catch (error) {
+      setSyncMenuMessage({ type: 'error', text: 'Failed to clear menu.' });
+    } finally {
+      setClearMenuLoading(false);
     }
   };
 
@@ -219,6 +265,20 @@ export default function AdminPage() {
                 <span className="text-gray-500 text-sm">reservations</span>
               </div>
               <button
+                onClick={syncMenu}
+                disabled={syncMenuLoading}
+                className="px-4 py-2 bg-amber-100 text-amber-800 rounded-xl hover:bg-amber-200 transition-all duration-300 font-semibold text-sm border border-amber-200 disabled:opacity-50"
+              >
+                {syncMenuLoading ? 'Syncing…' : 'Sync menu'}
+              </button>
+              <button
+                onClick={clearMenu}
+                disabled={clearMenuLoading}
+                className={`px-4 py-2 rounded-xl transition-all duration-300 font-semibold text-sm border disabled:opacity-50 ${clearMenuConfirm ? 'bg-red-600 text-white border-red-600 hover:bg-red-700' : 'bg-white text-red-600 border-red-200 hover:bg-red-50'}`}
+              >
+                {clearMenuLoading ? 'Clearing…' : 'Clear menu'}
+              </button>
+              <button
                 onClick={handleLogout}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold text-sm border border-gray-200"
               >
@@ -226,6 +286,11 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
+          {syncMenuMessage && (
+            <div className={`mb-4 px-4 py-2 rounded-lg text-sm ${syncMenuMessage.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+              {syncMenuMessage.text}
+            </div>
+          )}
 
           {/* Availability Summary */}
           {availability && (
