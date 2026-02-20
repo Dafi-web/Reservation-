@@ -36,6 +36,20 @@ export default function AdminPage() {
     available: true,
   });
   const [showMenuSection, setShowMenuSection] = useState(false);
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    description: '',
+    price: '',
+    category: 'main' as MenuItem['category'],
+    image: '',
+    tags: [] as string[],
+    available: true,
+  });
+  const [editLoading, setEditLoading] = useState(false);
+  const [editMessage, setEditMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -90,7 +104,7 @@ export default function AdminPage() {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('/api/menu');
+      const response = await fetch('/api/menu?all=true');
       if (response.ok) {
         const data = await response.json();
         setMenuItems(data);
@@ -138,6 +152,85 @@ export default function AdminPage() {
       ...prev,
       tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag],
     }));
+  };
+
+  const openEdit = (item: MenuItem) => {
+    setEditingItem(item);
+    setEditForm({
+      name: item.name,
+      description: item.description,
+      price: String(item.price),
+      category: item.category,
+      image: item.image || '',
+      tags: item.tags || [],
+      available: item.available,
+    });
+    setEditMessage(null);
+  };
+
+  const closeEdit = () => {
+    setEditingItem(null);
+    setEditMessage(null);
+  };
+
+  const handleUpdateMenuItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingItem) return;
+    setEditMessage(null);
+    setEditLoading(true);
+    try {
+      const response = await fetch(`/api/menu/${editingItem.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editForm.name.trim(),
+          description: editForm.description.trim(),
+          price: Number(editForm.price),
+          category: editForm.category,
+          image: editForm.image.trim() || undefined,
+          tags: editForm.tags,
+          available: editForm.available,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        setEditMessage({ type: 'success', text: `"${editForm.name}" updated.` });
+        fetchMenuItems();
+        setTimeout(() => closeEdit(), 1000);
+      } else {
+        setEditMessage({ type: 'error', text: data.error || data.details || 'Failed to update.' });
+      }
+    } catch (error) {
+      setEditMessage({ type: 'error', text: 'Failed to update menu item.' });
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const toggleEditTag = (tag: string) => {
+    setEditForm((prev) => ({
+      ...prev,
+      tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag],
+    }));
+  };
+
+  const handleDeleteMenuItem = async () => {
+    if (!deleteItemId) return;
+    setDeleteLoading(true);
+    try {
+      const response = await fetch(`/api/menu/${deleteItemId}`, { method: 'DELETE' });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        setDeleteItemId(null);
+        fetchMenuItems();
+      } else {
+        setAddMenuItemMessage({ type: 'error', text: data.error || data.details || 'Failed to delete.' });
+      }
+    } catch (error) {
+      setAddMenuItemMessage({ type: 'error', text: 'Failed to delete menu item.' });
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const syncMenu = async () => {
@@ -485,12 +578,39 @@ export default function AdminPage() {
                   {menuItems.length === 0 ? (
                     <p className="text-gray-500 text-sm">No items yet. Add one above or use “Sync menu” to load the default list.</p>
                   ) : (
-                    <ul className="space-y-2 max-h-64 overflow-y-auto">
+                    <ul className="space-y-2 max-h-96 overflow-y-auto">
                       {menuItems.map((item) => (
-                        <li key={item.id} className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg text-sm">
-                          <span className="font-medium text-gray-900">{item.name}</span>
-                          <span className="text-amber-700 font-semibold">{item.category}</span>
-                          <span className="text-gray-600">€{item.price.toFixed(2)}</span>
+                        <li key={item.id} className="flex justify-between items-center gap-3 py-2 px-3 bg-gray-50 rounded-lg text-sm group">
+                          <div className="flex-1 min-w-0 flex items-center gap-2">
+                            <span className="font-medium text-gray-900 truncate">{item.name}</span>
+                            {!item.available && (
+                              <span className="px-1.5 py-0.5 bg-gray-300 text-gray-600 rounded text-xs font-medium shrink-0">Hidden</span>
+                            )}
+                          </div>
+                          <span className="text-amber-700 font-semibold shrink-0 capitalize">{item.category}</span>
+                          <span className="text-gray-600 shrink-0">€{item.price.toFixed(2)}</span>
+                          <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              type="button"
+                              onClick={() => openEdit(item)}
+                              className="p-2 text-amber-700 hover:bg-amber-100 rounded-lg transition-colors"
+                              title="Edit"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteItemId(item.id)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -864,6 +984,150 @@ export default function AdminPage() {
                   setRejectionReason('');
                 }}
                 className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold border border-gray-200"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit menu item modal */}
+      {editingItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Edit menu item</h2>
+            <form onSubmit={handleUpdateMenuItem} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.name}
+                  onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Description *</label>
+                <textarea
+                  required
+                  rows={3}
+                  value={editForm.description}
+                  onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 resize-none"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Price *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    required
+                    value={editForm.price}
+                    onChange={(e) => setEditForm((f) => ({ ...f, price: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
+                  <select
+                    value={editForm.category}
+                    onChange={(e) => setEditForm((f) => ({ ...f, category: e.target.value as MenuItem['category'] }))}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 bg-white"
+                  >
+                    <option value="appetizer">Appetizer</option>
+                    <option value="main">Main course</option>
+                    <option value="dessert">Dessert</option>
+                    <option value="beverage">Beverage</option>
+                    <option value="wine">Wine</option>
+                    <option value="beer">Beer</option>
+                    <option value="cocktail">Cocktail</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Image URL (optional)</label>
+                <input
+                  type="url"
+                  value={editForm.image}
+                  onChange={(e) => setEditForm((f) => ({ ...f, image: e.target.value }))}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <span className="block text-sm font-semibold text-gray-700 mb-2">Tags (optional)</span>
+                <div className="flex flex-wrap gap-2">
+                  {['vegetarian', 'vegan', 'glutenFree', 'spicy'].map((tag) => (
+                    <label key={tag} className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer hover:bg-amber-50">
+                      <input
+                        type="checkbox"
+                        checked={editForm.tags.includes(tag)}
+                        onChange={() => toggleEditTag(tag)}
+                        className="rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                      />
+                      <span className="text-sm font-medium capitalize">{tag}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={editForm.available}
+                  onChange={(e) => setEditForm((f) => ({ ...f, available: e.target.checked }))}
+                  className="rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                />
+                <span className="text-sm font-semibold text-gray-700">Available (show on menu)</span>
+              </div>
+              {editMessage && (
+                <div className={`px-4 py-2 rounded-lg text-sm ${editMessage.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  {editMessage.text}
+                </div>
+              )}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={editLoading}
+                  className="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl hover:from-amber-700 hover:to-orange-700 font-semibold disabled:opacity-50"
+                >
+                  {editLoading ? 'Saving…' : 'Save changes'}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeEdit}
+                  className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-semibold border border-gray-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete menu item confirmation */}
+      {deleteItemId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Delete menu item?</h2>
+            <p className="text-gray-600 mb-6">
+              This will remove the item from the menu. This cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleDeleteMenuItem}
+                disabled={deleteLoading}
+                className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 font-semibold disabled:opacity-50"
+              >
+                {deleteLoading ? 'Deleting…' : 'Delete'}
+              </button>
+              <button
+                onClick={() => setDeleteItemId(null)}
+                disabled={deleteLoading}
+                className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-semibold border border-gray-200"
               >
                 Cancel
               </button>

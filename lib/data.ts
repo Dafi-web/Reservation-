@@ -286,6 +286,27 @@ export async function createMenuItem(payload: Omit<MenuItem, 'id'>): Promise<Men
   } as MenuItem;
 }
 
+export async function updateMenuItem(id: string, updates: Partial<Omit<MenuItem, 'id'>>): Promise<MenuItem | null> {
+  await connectDB();
+  const updated = await MenuItemModel.findOneAndUpdate(
+    { id },
+    { $set: updates },
+    { new: true }
+  ).lean();
+  if (!updated) return null;
+  const item = updated as any;
+  return {
+    ...item,
+    id: item.id || item._id?.toString() || String(item._id),
+  } as MenuItem;
+}
+
+export async function deleteMenuItem(id: string): Promise<boolean> {
+  await connectDB();
+  const result = await MenuItemModel.deleteOne({ id });
+  return result.deletedCount === 1;
+}
+
 export async function getReservations(): Promise<Reservation[]> {
   await connectDB();
   const reservations = await ReservationModel.find().lean().sort({ date: 1, time: 1 });

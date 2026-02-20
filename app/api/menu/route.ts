@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getMenuItems, createMenuItem } from '@/lib/data';
+import { getMenuItems, getAllMenuItems, createMenuItem } from '@/lib/data';
 import { MenuItem } from '@/lib/types';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const menuItems = await getMenuItems();
+    const { searchParams } = new URL(request.url);
+    const all = searchParams.get('all') === 'true';
+    const menuItems = all ? await getAllMenuItems() : await getMenuItems();
     return NextResponse.json(menuItems);
   } catch (error) {
     console.error('Error fetching menu items:', error);
