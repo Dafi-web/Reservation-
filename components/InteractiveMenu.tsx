@@ -18,6 +18,7 @@ interface InteractiveMenuProps {
 }
 
 export default function InteractiveMenu({ categories, menuItems }: InteractiveMenuProps) {
+  const items = Array.isArray(menuItems) ? menuItems : [];
   // Start with all categories expanded
   const [openCategories, setOpenCategories] = useState<Set<string>>(
     new Set(categories.map(cat => cat.key))
@@ -38,12 +39,12 @@ export default function InteractiveMenu({ categories, menuItems }: InteractiveMe
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {categories.map((category) => {
-        const items = menuItems.filter((item) => item.category === category.key);
+        const categoryItems = items.filter((item) => item.category === category.key);
         return (
           <MenuSection
             key={category.key}
             category={category}
-            items={items}
+            items={categoryItems}
             isOpen={openCategories.has(category.key)}
             onToggle={() => toggleCategory(category.key)}
           />

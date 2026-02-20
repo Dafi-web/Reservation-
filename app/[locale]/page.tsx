@@ -8,7 +8,13 @@ export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const t = await getTranslations();
-  const menuItems = await getMenuItems();
+  let menuItems: Awaited<ReturnType<typeof getMenuItems>>;
+  try {
+    menuItems = await getMenuItems();
+  } catch {
+    menuItems = [];
+  }
+  const safeMenuItems = Array.isArray(menuItems) ? menuItems : [];
 
   const categories = [
     { key: 'appetizer', label: t('menu.appetizers'), icon: '🥗', color: 'from-green-500 via-emerald-500 to-teal-500', bgColor: 'from-green-50 to-emerald-50', textColor: 'text-green-700', borderColor: 'border-green-300' },
@@ -95,7 +101,7 @@ export default async function HomePage() {
       </section>
 
       {/* Interactive Menu with Collapsible Categories */}
-      <InteractiveMenu categories={categories} menuItems={menuItems} />
+      <InteractiveMenu categories={categories} menuItems={safeMenuItems} />
 
       {/* Footer with Admin Access */}
       <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-amber-100 py-10 mt-20 border-t border-stone-700/50">

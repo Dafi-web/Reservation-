@@ -219,8 +219,13 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
   },
 ];
 
+const MENU_FALLBACK: MenuItem[] = initialMenuItems.map((item, index) => ({
+  ...item,
+  id: String(index + 1),
+})) as MenuItem[];
+
 export async function getMenuItems(): Promise<MenuItem[]> {
-  try {
+  const fromDb = async (): Promise<MenuItem[]> => {
     await connectDB();
     const items = await MenuItemModel.find({ available: true }).lean();
     if (items.length > 0) {
@@ -229,14 +234,20 @@ export async function getMenuItems(): Promise<MenuItem[]> {
         id: item.id || item._id?.toString() || String(item._id),
       })) as MenuItem[];
     }
+    return MENU_FALLBACK;
+  };
+
+  try {
+    const timeoutMs = 5000;
+    const result = await Promise.race([
+      fromDb(),
+      new Promise<MenuItem[]>((resolve) => setTimeout(() => resolve(MENU_FALLBACK), timeoutMs)),
+    ]);
+    return Array.isArray(result) && result.length > 0 ? result : MENU_FALLBACK;
   } catch (e) {
     console.warn('Menu DB unavailable, using initial menu from data.ts:', (e as Error).message);
+    return MENU_FALLBACK;
   }
-  // Fallback: display menu from data.ts when DB is empty or unavailable
-  return initialMenuItems.map((item, index) => ({
-    ...item,
-    id: String(index + 1),
-  })) as MenuItem[];
 }
 
 export async function getMenuItemsByCategory(category: MenuItem['category']): Promise<MenuItem[]> {
