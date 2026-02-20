@@ -217,11 +217,22 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
 ];
 
 export async function getMenuItems(): Promise<MenuItem[]> {
-  await connectDB();
-  const items = await MenuItemModel.find({ available: true }).lean();
-  return items.map((item: any) => ({
+  try {
+    await connectDB();
+    const items = await MenuItemModel.find({ available: true }).lean();
+    if (items.length > 0) {
+      return items.map((item: any) => ({
+        ...item,
+        id: item.id || item._id?.toString() || String(item._id),
+      })) as MenuItem[];
+    }
+  } catch (e) {
+    console.warn('Menu DB unavailable, using initial menu from data.ts:', (e as Error).message);
+  }
+  // Fallback: display menu from data.ts when DB is empty or unavailable
+  return initialMenuItems.map((item, index) => ({
     ...item,
-    id: item.id || item._id?.toString() || String(item._id),
+    id: String(index + 1),
   })) as MenuItem[];
 }
 
