@@ -4,7 +4,7 @@ import {
   createReservation,
   updateReservationStatus,
   updateCheckedInStatus,
-  checkAvailability,
+  checkAvailabilityForDate,
 } from '@/lib/data';
 import { Reservation } from '@/lib/types';
 import { sendConfirmationSMS, sendRejectionSMS } from '@/lib/sms';
@@ -48,9 +48,9 @@ export async function POST(request: NextRequest) {
     }
 
     const requestedGuests = parseInt(guests, 10);
-    
-    // Check availability before creating reservation (only counts today's reservations)
-    const availability = await checkAvailability(requestedGuests);
+    const dateStr = String(date).trim();
+
+    const availability = await checkAvailabilityForDate(dateStr, requestedGuests);
     
     if (!availability.available) {
       return NextResponse.json(

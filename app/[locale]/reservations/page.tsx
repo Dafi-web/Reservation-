@@ -22,12 +22,15 @@ export default function ReservationsPage() {
   const [availableSeats, setAvailableSeats] = useState<number | null>(null);
   const [loadingAvailability, setLoadingAvailability] = useState(true);
 
+  const today = new Date().toISOString().split('T')[0];
+  const effectiveDate = formData.date || today;
+
   useEffect(() => {
-    // Fetch available seats on component mount and when guests change
     const fetchAvailability = async () => {
       try {
         setLoadingAvailability(true);
-        const response = await fetch('/api/availability');
+        const url = effectiveDate ? `/api/availability?date=${effectiveDate}` : '/api/availability';
+        const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
           setAvailableSeats(data.availableSeats);
@@ -40,10 +43,9 @@ export default function ReservationsPage() {
     };
 
     fetchAvailability();
-    // Refresh availability every 30 seconds
-    const interval = setInterval(fetchAvailability, 30000);
+    const interval = setInterval(fetchAvailability, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [effectiveDate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,8 +76,8 @@ export default function ReservationsPage() {
 
       if (response.ok) {
         setMessage({ type: 'success', text: t('reservation.success') });
-        // Refresh availability after successful booking
-        const availResponse = await fetch('/api/availability');
+        const bookedDate = formData.date || today;
+        const availResponse = await fetch(`/api/availability?date=${bookedDate}`);
         if (availResponse.ok) {
           const availData = await availResponse.json();
           setAvailableSeats(availData.availableSeats);
@@ -117,7 +119,6 @@ export default function ReservationsPage() {
     });
   };
 
-  const today = new Date().toISOString().split('T')[0];
   const maxDate = new Date();
   maxDate.setMonth(maxDate.getMonth() + 3);
   const maxDateStr = maxDate.toISOString().split('T')[0];

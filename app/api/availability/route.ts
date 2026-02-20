@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { getAvailableSeats } from '@/lib/data';
+import { NextRequest, NextResponse } from 'next/server';
+import { getAvailableSeats, getAvailableSeatsForDate } from '@/lib/data';
 import connectDB from '@/lib/mongodb';
 import ReservationModel from '@/lib/models/Reservation';
 
@@ -12,26 +12,29 @@ function getTodayDate(): string {
   return `${year}-${month}-${day}`;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const availableSeats = await getAvailableSeats();
-    const totalBookedSeats = 70 - availableSeats;
+    const { searchParams } = new URL(request.url);
+    const dateParam = searchParams.get('date');
     const today = getTodayDate();
+    const date = dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? dateParam : today;
+
+    const availableSeats = await getAvailableSeatsForDate(date);
+    const totalBookedSeats = 70 - availableSeats;
     
-    // Get confirmed bookings count separately for display (only for today)
+    // Get confirmed/pending counts for the requested date
     await connectDB();
-    const confirmedReservations = await ReservationModel.find({ 
+    const confirmedReservations = await ReservationModel.find({
       status: 'confirmed',
-      date: today // Only count today's reservations
+      date,
     }).lean();
     const confirmedBookedSeats = confirmedReservations.reduce((total, res: any) => {
       return total + (res.guests || 0);
     }, 0);
-    
-    // Get pending bookings for today
-    const pendingReservations = await ReservationModel.find({ 
+
+    const pendingReservations = await ReservationModel.find({
       status: 'pending',
-      date: today // Only count today's reservations
+      date,
     }).lean();
     const pendingBookedSeats = pendingReservations.reduce((total, res: any) => {
       return total + (res.guests || 0);

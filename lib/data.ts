@@ -486,33 +486,49 @@ export async function cancelExpiredReservations(): Promise<number> {
   return cancelledCount;
 }
 
-export async function getAvailableSeats(): Promise<number> {
+/** Get available seats for a specific date (YYYY-MM-DD). For today, runs daily reset and expiry cleanup first. */
+export async function getAvailableSeatsForDate(date: string): Promise<number> {
   await connectDB();
   const today = getTodayDate();
-  
-  // First, cancel all reservations from previous days (daily reset)
-  await cancelPreviousDayReservations();
-  
-  // Then, cancel any expired reservations for today
-  await cancelExpiredReservations();
-  
-  // Count both pending and confirmed reservations for TODAY only (rejected don't count)
-  const activeReservations = await ReservationModel.find({ 
+
+  if (date < today) {
+    return 0; // Past date: no availability
+  }
+
+  if (date === today) {
+    await cancelPreviousDayReservations();
+    await cancelExpiredReservations();
+  }
+
+  const activeReservations = await ReservationModel.find({
     status: { $in: ['pending', 'confirmed'] },
-    date: today // Only count reservations for today
+    date,
   }).lean();
-  
+
   const bookedSeats = activeReservations.reduce((total, res: any) => {
     return total + (res.guests || 0);
   }, 0);
-  
-  const available = Math.max(0, TOTAL_CAPACITY - bookedSeats);
-  return available;
+
+  return Math.max(0, TOTAL_CAPACITY - bookedSeats);
+}
+
+export async function getAvailableSeats(): Promise<number> {
+  return getAvailableSeatsForDate(getTodayDate());
 }
 
 export async function checkAvailability(requestedGuests: number): Promise<{ available: boolean; availableSeats: number }> {
-  // This will automatically cancel expired reservations and calculate today's availability
   const availableSeats = await getAvailableSeats();
+  return {
+    available: availableSeats >= requestedGuests,
+    availableSeats,
+  };
+}
+
+export async function checkAvailabilityForDate(
+  date: string,
+  requestedGuests: number
+): Promise<{ available: boolean; availableSeats: number }> {
+  const availableSeats = await getAvailableSeatsForDate(date);
   return {
     available: availableSeats >= requestedGuests,
     availableSeats,
