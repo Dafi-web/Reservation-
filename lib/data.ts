@@ -519,21 +519,33 @@ export async function checkAvailability(requestedGuests: number): Promise<{ avai
   };
 }
 
-// Seed function to populate initial menu items (full sync: DB menu = initialMenuItems)
-export async function seedMenuItems(): Promise<void> {
+// Sync: add default menu items from code only if missing. Never delete existing (admin-added) items.
+// Returns the number of default items added.
+export async function seedMenuItems(): Promise<number> {
   await connectDB();
-  const count = await MenuItemModel.countDocuments();
+  const existing = await MenuItemModel.find().lean();
+  const existingKeys = new Set(existing.map((doc: any) => `${doc.name}|${doc.category}`));
 
-  // Always replace entire menu with current initialMenuItems so DB matches code
-  if (count > 0) {
-    const deleted = await MenuItemModel.deleteMany({});
-    console.log(`Removed ${deleted.deletedCount} existing menu item(s) for full sync.`);
+  const toInsert: typeof initialMenuItems = [];
+  for (let i = 0; i < initialMenuItems.length; i++) {
+    const item = initialMenuItems[i];
+    const key = `${item.name}|${item.category}`;
+    if (!existingKeys.has(key)) {
+      toInsert.push(item);
+      existingKeys.add(key);
+    }
   }
 
-  const itemsWithIds = initialMenuItems.map((item, index) => ({
+  if (toInsert.length === 0) {
+    console.log('Menu sync: all default items already present. No changes.');
+    return 0;
+  }
+
+  const itemsWithIds = toInsert.map((item, index) => ({
     ...item,
-    id: (index + 1).toString(),
+    id: `seed-${Date.now()}-${index}`,
   }));
   await MenuItemModel.insertMany(itemsWithIds);
-  console.log(`Menu synced: ${itemsWithIds.length} item(s) from code.`);
+  console.log(`Menu sync: added ${itemsWithIds.length} missing default item(s). Your added items were kept.`);
+  return itemsWithIds.length;
 }

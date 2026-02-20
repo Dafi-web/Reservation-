@@ -3,9 +3,12 @@ import { seedMenuItems } from '@/lib/data';
 
 export async function POST() {
   try {
-    await seedMenuItems();
+    const added = await seedMenuItems();
     return NextResponse.json({ 
-      message: 'Menu items seeded successfully',
+      message: added === 0 
+        ? 'Default menu items already present. Your custom items were kept.'
+        : `Added ${added} default item(s). Your custom items were kept.`,
+      added,
       timestamp: new Date().toISOString()
     });
   } catch (error: any) {
