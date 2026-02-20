@@ -241,6 +241,37 @@ export async function getMenuItemsByCategory(category: MenuItem['category']): Pr
   return items.filter(item => item.category === category);
 }
 
+/** Returns all menu items (including unavailable) for admin. */
+export async function getAllMenuItems(): Promise<MenuItem[]> {
+  try {
+    await connectDB();
+    const items = await MenuItemModel.find().lean().sort({ category: 1, name: 1 });
+    return items.map((item: any) => ({
+      ...item,
+      id: item.id || item._id?.toString() || String(item._id),
+    })) as MenuItem[];
+  } catch (e) {
+    return [];
+  }
+}
+
+export async function createMenuItem(payload: Omit<MenuItem, 'id'>): Promise<MenuItem> {
+  await connectDB();
+  const id = Date.now().toString();
+  const doc = {
+    ...payload,
+    id,
+    tags: payload.tags ?? [],
+    allergens: payload.allergens ?? [],
+  };
+  const created = await MenuItemModel.create(doc);
+  const saved = created.toObject() as any;
+  return {
+    ...saved,
+    id: saved.id || saved._id?.toString() || String(saved._id),
+  } as MenuItem;
+}
+
 export async function getReservations(): Promise<Reservation[]> {
   await connectDB();
   const reservations = await ReservationModel.find().lean().sort({ date: 1, time: 1 });

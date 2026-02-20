@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Reservation } from '@/lib/types';
+import { Reservation, MenuItem } from '@/lib/types';
 import { format } from 'date-fns';
 import AdminAuth from '@/components/AdminAuth';
 
@@ -23,6 +23,19 @@ export default function AdminPage() {
   const [syncMenuMessage, setSyncMenuMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [clearMenuLoading, setClearMenuLoading] = useState(false);
   const [clearMenuConfirm, setClearMenuConfirm] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [addMenuItemLoading, setAddMenuItemLoading] = useState(false);
+  const [addMenuItemMessage, setAddMenuItemMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [menuForm, setMenuForm] = useState({
+    name: '',
+    description: '',
+    price: '',
+    category: 'main' as MenuItem['category'],
+    image: '',
+    tags: [] as string[],
+    available: true,
+  });
+  const [showMenuSection, setShowMenuSection] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -75,6 +88,58 @@ export default function AdminPage() {
     }
   };
 
+  const fetchMenuItems = async () => {
+    try {
+      const response = await fetch('/api/menu');
+      if (response.ok) {
+        const data = await response.json();
+        setMenuItems(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch menu items:', error);
+    }
+  };
+
+  const handleAddMenuItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddMenuItemMessage(null);
+    setAddMenuItemLoading(true);
+    try {
+      const response = await fetch('/api/menu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: menuForm.name.trim(),
+          description: menuForm.description.trim(),
+          price: Number(menuForm.price),
+          category: menuForm.category,
+          image: menuForm.image.trim() || undefined,
+          tags: menuForm.tags,
+          available: menuForm.available,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        setAddMenuItemMessage({ type: 'success', text: `"${menuForm.name}" added to the menu. It will appear on the main menu page.` });
+        setMenuForm({ name: '', description: '', price: '', category: 'main', image: '', tags: [], available: true });
+        fetchMenuItems();
+      } else {
+        setAddMenuItemMessage({ type: 'error', text: data.error || data.details || 'Failed to add menu item.' });
+      }
+    } catch (error) {
+      setAddMenuItemMessage({ type: 'error', text: 'Failed to add menu item.' });
+    } finally {
+      setAddMenuItemLoading(false);
+    }
+  };
+
+  const toggleTag = (tag: string) => {
+    setMenuForm((prev) => ({
+      ...prev,
+      tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag],
+    }));
+  };
+
   const syncMenu = async () => {
     setSyncMenuLoading(true);
     setSyncMenuMessage(null);
@@ -121,6 +186,7 @@ export default function AdminPage() {
     if (isAuthenticated) {
       fetchReservations();
       fetchAvailability();
+      fetchMenuItems();
       const interval = setInterval(() => {
         fetchReservations();
         fetchAvailability();
@@ -291,6 +357,148 @@ export default function AdminPage() {
               {syncMenuMessage.text}
             </div>
           )}
+
+          {/* Menu items: Add form + list */}
+          <div className="mb-8">
+            <button
+              type="button"
+              onClick={() => setShowMenuSection(!showMenuSection)}
+              className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-amber-200 shadow-elegant hover:bg-amber-50 transition-all font-semibold text-gray-700 mb-4"
+            >
+              <span>{showMenuSection ? '▼' : '▶'}</span>
+              <span>Menu items</span>
+              <span className="text-sm font-normal text-gray-500">({menuItems.length} on menu)</span>
+            </button>
+            {showMenuSection && (
+              <div className="bg-white rounded-2xl shadow-elegant-lg p-6 lg:p-8 border border-gray-100">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Add menu item</h2>
+                <form onSubmit={handleAddMenuItem} className="space-y-4 max-w-2xl">
+                  <div>
+                    <label htmlFor="menu-name" className="block text-sm font-semibold text-gray-700 mb-1">Name *</label>
+                    <input
+                      id="menu-name"
+                      type="text"
+                      required
+                      value={menuForm.name}
+                      onChange={(e) => setMenuForm((f) => ({ ...f, name: e.target.value }))}
+                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      placeholder="e.g. Grilled Salmon"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="menu-description" className="block text-sm font-semibold text-gray-700 mb-1">Description *</label>
+                    <textarea
+                      id="menu-description"
+                      required
+                      rows={3}
+                      value={menuForm.description}
+                      onChange={(e) => setMenuForm((f) => ({ ...f, description: e.target.value }))}
+                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                      placeholder="Short description of the dish"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="menu-price" className="block text-sm font-semibold text-gray-700 mb-1">Price *</label>
+                      <input
+                        id="menu-price"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        required
+                        value={menuForm.price}
+                        onChange={(e) => setMenuForm((f) => ({ ...f, price: e.target.value }))}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="menu-category" className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
+                      <select
+                        id="menu-category"
+                        value={menuForm.category}
+                        onChange={(e) => setMenuForm((f) => ({ ...f, category: e.target.value as MenuItem['category'] }))}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white"
+                      >
+                        <option value="appetizer">Appetizer</option>
+                        <option value="main">Main course</option>
+                        <option value="dessert">Dessert</option>
+                        <option value="beverage">Beverage</option>
+                        <option value="wine">Wine</option>
+                        <option value="beer">Beer</option>
+                        <option value="cocktail">Cocktail</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="menu-image" className="block text-sm font-semibold text-gray-700 mb-1">Image URL (optional)</label>
+                    <input
+                      id="menu-image"
+                      type="url"
+                      value={menuForm.image}
+                      onChange={(e) => setMenuForm((f) => ({ ...f, image: e.target.value }))}
+                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div>
+                    <span className="block text-sm font-semibold text-gray-700 mb-2">Tags (optional)</span>
+                    <div className="flex flex-wrap gap-2">
+                      {['vegetarian', 'vegan', 'glutenFree', 'spicy'].map((tag) => (
+                        <label key={tag} className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer hover:bg-amber-50">
+                          <input
+                            type="checkbox"
+                            checked={menuForm.tags.includes(tag)}
+                            onChange={() => toggleTag(tag)}
+                            className="rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                          />
+                          <span className="text-sm font-medium capitalize">{tag}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="menu-available"
+                      type="checkbox"
+                      checked={menuForm.available}
+                      onChange={(e) => setMenuForm((f) => ({ ...f, available: e.target.checked }))}
+                      className="rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                    />
+                    <label htmlFor="menu-available" className="text-sm font-semibold text-gray-700">Available (show on menu)</label>
+                  </div>
+                  {addMenuItemMessage && (
+                    <div className={`px-4 py-2 rounded-lg text-sm ${addMenuItemMessage.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {addMenuItemMessage.text}
+                    </div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={addMenuItemLoading}
+                    className="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl hover:from-amber-700 hover:to-orange-700 font-semibold shadow-elegant disabled:opacity-50"
+                  >
+                    {addMenuItemLoading ? 'Adding…' : 'Add to menu'}
+                  </button>
+                </form>
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">Current menu items ({menuItems.length})</h3>
+                  {menuItems.length === 0 ? (
+                    <p className="text-gray-500 text-sm">No items yet. Add one above or use “Sync menu” to load the default list.</p>
+                  ) : (
+                    <ul className="space-y-2 max-h-64 overflow-y-auto">
+                      {menuItems.map((item) => (
+                        <li key={item.id} className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg text-sm">
+                          <span className="font-medium text-gray-900">{item.name}</span>
+                          <span className="text-amber-700 font-semibold">{item.category}</span>
+                          <span className="text-gray-600">€{item.price.toFixed(2)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Availability Summary */}
           {availability && (
