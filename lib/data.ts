@@ -104,13 +104,13 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
   },
   {
     name: 'Sorbetto',
-    description: 'Sorbet — Limone / mango / mela verde',
+    description: 'Limone / mango / mela verde',
     price: 5,
     category: 'dessert',
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
   },
-  // Beverages (Drinks)
+  // Drinks (Beverages)
   {
     name: 'Water',
     description: 'Still or sparkling',
@@ -151,48 +151,7 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
   },
-  // Wine
-  {
-    name: 'South African wine',
-    description: 'Shiraz, Pinotage',
-    price: 22,
-    category: 'wine',
-    tags: ['vegetarian', 'vegan', 'glutenFree'],
-    available: true,
-  },
-  {
-    name: 'Chianti 37.5 cl',
-    description: 'Chianti 37.5 cl',
-    price: 10,
-    category: 'wine',
-    tags: ['vegetarian', 'vegan', 'glutenFree'],
-    available: true,
-  },
-  {
-    name: 'Chianti 75 cl',
-    description: 'Chianti 75 cl bottle',
-    price: 10,
-    category: 'wine',
-    tags: ['vegetarian', 'vegan', 'glutenFree'],
-    available: true,
-  },
-  {
-    name: "Nero d'Avola 37.5 cl",
-    description: "Nero d'Avola 37.5 cl",
-    price: 20,
-    category: 'wine',
-    tags: ['vegetarian', 'vegan', 'glutenFree'],
-    available: true,
-  },
-  {
-    name: "Nero d'Avola 75 cl",
-    description: "Nero d'Avola 75 cl bottle",
-    price: 20,
-    category: 'wine',
-    tags: ['vegetarian', 'vegan', 'glutenFree'],
-    available: true,
-  },
-  // Beer
+  // Beer (under Drinks)
   {
     name: 'Beer 33 cl',
     description: 'Beer 33 cl',
@@ -215,6 +174,47 @@ export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
     price: 4,
     category: 'beer',
     tags: ['vegetarian', 'vegan'],
+    available: true,
+  },
+  // Wine
+  {
+    name: 'South African wine',
+    description: 'Shiraz, Pinotage',
+    price: 22,
+    category: 'wine',
+    tags: ['vegetarian', 'vegan', 'glutenFree'],
+    available: true,
+  },
+  {
+    name: 'Chianti 37.5 cl',
+    description: 'Chianti 37.5 cl',
+    price: 10,
+    category: 'wine',
+    tags: ['vegetarian', 'vegan', 'glutenFree'],
+    available: true,
+  },
+  {
+    name: 'Chianti 75 cl',
+    description: 'Chianti 75 cl',
+    price: 10,
+    category: 'wine',
+    tags: ['vegetarian', 'vegan', 'glutenFree'],
+    available: true,
+  },
+  {
+    name: "Nero d'Avola 37.5 cl",
+    description: "Nero d'Avola 37.5 cl",
+    price: 20,
+    category: 'wine',
+    tags: ['vegetarian', 'vegan', 'glutenFree'],
+    available: true,
+  },
+  {
+    name: "Nero d'Avola 75 cl",
+    description: "Nero d'Avola 75 cl",
+    price: 20,
+    category: 'wine',
+    tags: ['vegetarian', 'vegan', 'glutenFree'],
     available: true,
   },
 ];
