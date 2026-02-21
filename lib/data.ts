@@ -494,18 +494,13 @@ export async function cancelExpiredReservations(): Promise<number> {
   return cancelledCount;
 }
 
-/** Get available seats for a specific date (YYYY-MM-DD). For today, runs daily reset and expiry cleanup first. */
+/** Get available seats for a specific date (YYYY-MM-DD). Does not run cleanup (cleanup runs only via /api/reservations/cleanup) so new submissions stay pending for admin. */
 export async function getAvailableSeatsForDate(date: string): Promise<number> {
   await connectDB();
   const today = getTodayDate();
 
   if (date < today) {
     return 0; // Past date: no availability
-  }
-
-  if (date === today) {
-    await cancelPreviousDayReservations();
-    await cancelExpiredReservations();
   }
 
   // Only confirmed reservations reduce available seats; pending do not count until accepted

@@ -36,16 +36,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate date - only allow today or future dates
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const reservationDate = new Date(date);
-    reservationDate.setHours(0, 0, 0, 0);
-    
-    if (reservationDate < today) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const reservationDate = new Date(date + 'T12:00:00');
+    const reservationDateOnly = new Date(reservationDate.getFullYear(), reservationDate.getMonth(), reservationDate.getDate());
+    if (reservationDateOnly.getTime() < today.getTime()) {
       return NextResponse.json(
         { error: 'Cannot create reservation for a past date' },
         { status: 400 }
       );
+    }
+    // If booking for today, require the time to be in the future (so it does not get auto-expired)
+    if (reservationDateOnly.getTime() === today.getTime() && time) {
+      const [hours, minutes] = String(time).split(':').map(Number);
+      const slot = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours || 0, (minutes ?? 0), 0);
+      const graceMs = 5 * 60 * 1000; // 5 min grace
+      if (slot.getTime() < now.getTime() - graceMs) {
+        return NextResponse.json(
+          { error: 'Cannot create reservation for a time that has already passed. Please choose a future time.' },
+          { status: 400 }
+        );
+      }
     }
 
     const requestedGuests = parseInt(guests, 10);

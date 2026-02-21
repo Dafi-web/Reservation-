@@ -1,13 +1,21 @@
-import { Resend } from 'resend';
 import { Reservation } from './types';
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const ADMIN_EMAIL = 'fikrselina@gmail.com';
 const ADMIN_PHONE = '+393513468002';
 
-const client = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
-
 const FROM_EMAIL = 'Ristorante Africa <onboarding@resend.dev>';
+
+/** Lazy-load Resend so the reservations API still works if the package is missing. */
+async function getResendClient(): Promise<{ emails: { send: (opts: unknown) => Promise<{ data?: { id: string }; error: unknown }> } } | null> {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  try {
+    const { Resend } = await import('resend');
+    return new Resend(key) as unknown as { emails: { send: (opts: unknown) => Promise<{ data?: { id: string }; error: unknown }> } };
+  } catch {
+    return null;
+  }
+}
 
 function formatDate(dateStr: string): string {
   try {
@@ -30,9 +38,10 @@ function formatDate(dateStr: string): string {
 export async function sendAdminReservationNotification(
   reservation: Reservation
 ): Promise<boolean> {
+  const client = await getResendClient();
   if (!client) {
     console.warn(
-      '⚠️ Resend not configured. Admin email notification will not be sent. Set RESEND_API_KEY in .env.local'
+      '⚠️ Resend not configured. Admin email notification will not be sent. Set RESEND_API_KEY in .env.local (and run npm install resend)'
     );
     return false;
   }
