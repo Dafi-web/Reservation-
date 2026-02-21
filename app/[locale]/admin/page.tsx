@@ -301,8 +301,8 @@ export default function AdminPage() {
       });
 
       if (response.ok) {
-        fetchReservations();
-        fetchAvailability(); // Refresh availability after status change
+        await fetchReservations();
+        await fetchAvailability(); // Refresh so seat count updates immediately
         setRejectModal({ open: false, reservationId: null });
         setRejectionReason('');
       }

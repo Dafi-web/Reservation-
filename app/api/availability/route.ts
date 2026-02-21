@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAvailableSeats, getAvailableSeatsForDate } from '@/lib/data';
+import { getAvailableSeatsForDate } from '@/lib/data';
 import connectDB from '@/lib/mongodb';
 import ReservationModel from '@/lib/models/Reservation';
 
-// Helper function to get today's date in YYYY-MM-DD format
+// Always compute fresh; do not cache so seat count updates when admin accepts/rejects
+export const dynamic = 'force-dynamic';
+
 function getTodayDate(): string {
   const today = new Date();
   const year = today.getFullYear();
@@ -40,13 +42,20 @@ export async function GET(request: NextRequest) {
       return total + (res.guests || 0);
     }, 0);
     
-    return NextResponse.json({ 
-      availableSeats,
-      totalCapacity: 70,
-      bookedSeats: totalBookedSeats, // Total (pending + confirmed) for today
-      confirmedBookedSeats, // Only confirmed for today
-      pendingBookedSeats, // Only pending for today
-    });
+    return NextResponse.json(
+      {
+        availableSeats,
+        totalCapacity: 70,
+        bookedSeats: totalBookedSeats,
+        confirmedBookedSeats,
+        pendingBookedSeats,
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching availability:', error);
     return NextResponse.json(
