@@ -6,8 +6,6 @@ import { useState } from 'react';
 import Image from 'next/image';
 import MenuItemModal from './MenuItemModal';
 
-const MENU_CARD_BG_IMAGE = 'https://raw.githubusercontent.com/Dafi-web/digital-menu-list/master/photo_2025-04-07%2018.04.13.jpeg';
-
 interface MenuItemCardProps {
   item: MenuItem;
 }
@@ -18,17 +16,9 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
 
   return (
     <>
-      <div className="group rounded-xl shadow-elegant overflow-hidden hover-lift border border-gray-200/80 transition-all duration-300 relative cursor-pointer" onClick={() => setIsModalOpen(true)}>
-        {/* Card background image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${MENU_CARD_BG_IMAGE})` }}
-          aria-hidden
-        />
-        {/* Overlay so content stays readable */}
-        <div className="absolute inset-0 bg-white/92 group-hover:bg-white/88 transition-colors duration-300 pointer-events-none" />
-        {/* Decorative Gradient Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/0 via-stone-50/0 to-amber-50/0 group-hover:from-amber-50/30 group-hover:via-stone-50/15 group-hover:to-amber-50/30 transition-all duration-500 pointer-events-none"></div>
+      <div className="group rounded-xl shadow-elegant overflow-hidden hover-lift border border-gray-200/80 transition-all duration-300 relative cursor-pointer bg-gradient-to-br from-slate-50 via-gray-50 to-stone-100 hover:from-slate-100 hover:via-gray-100 hover:to-stone-200" onClick={() => setIsModalOpen(true)}>
+        {/* Subtle hover gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-transparent to-white/0 group-hover:from-amber-50/20 group-hover:via-transparent group-hover:to-stone-50/20 transition-all duration-500 pointer-events-none" />
         {/* Shine Effect */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
           <div className="absolute inset-0 shimmer"></div>

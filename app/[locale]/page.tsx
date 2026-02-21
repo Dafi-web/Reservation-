@@ -30,11 +30,8 @@ export default async function HomePage() {
     <div className="min-h-screen overflow-hidden">
       {/* Hero Section - Ristorante Africa */}
       <section className="relative py-32 lg:py-40 overflow-hidden min-h-screen">
-        {/* Background with logo-inspired colors - warm earth tones */}
+        {/* Background - professional gradient, no image */}
         <div className="absolute inset-0 z-10 bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900"></div>
-        
-        {/* Overlay Pattern */}
-        <div className="absolute inset-0 z-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djJoLTJ2LTJoMnptMC0xNHYyaC0ydi0yaDJ6bS0xNCAxNHYyaC0ydi0yaDJ6bTAtMTR2MmgtMnYtMmgyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
         
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
@@ -100,8 +97,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Interactive Menu with Collapsible Categories */}
-      <InteractiveMenu categories={categories} menuItems={safeMenuItems} />
+      {/* Interactive Menu with Collapsible Categories - professional color background, no image */}
+      <section className="bg-gradient-to-b from-stone-100 via-slate-50 to-gray-50">
+        <InteractiveMenu categories={categories} menuItems={safeMenuItems} />
+      </section>
 
       {/* Footer with Admin Access */}
       <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-amber-100 py-10 mt-20 border-t border-stone-700/50">
