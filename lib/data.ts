@@ -312,11 +312,19 @@ export async function deleteMenuItem(id: string): Promise<boolean> {
 
 export async function getReservations(): Promise<Reservation[]> {
   await connectDB();
-  const reservations = await ReservationModel.find().lean().sort({ date: 1, time: 1 });
-  return reservations.map((res: any) => ({
+  const raw = await ReservationModel.find().lean().sort({ createdAt: -1 });
+  const reservations = raw.map((res: any) => ({
     ...res,
     id: res.id || res._id?.toString() || String(res._id),
   })) as Reservation[];
+  // Pending first (new submissions on top), then by newest first
+  const statusOrder: Record<string, number> = { pending: 0, confirmed: 1, rejected: 2 };
+  reservations.sort((a, b) => {
+    const o = statusOrder[a.status] - statusOrder[b.status];
+    if (o !== 0) return o;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+  return reservations;
 }
 
 export async function createReservation(reservation: Omit<Reservation, 'id' | 'status' | 'createdAt'>): Promise<Reservation> {
@@ -500,12 +508,13 @@ export async function getAvailableSeatsForDate(date: string): Promise<number> {
     await cancelExpiredReservations();
   }
 
-  const activeReservations = await ReservationModel.find({
-    status: { $in: ['pending', 'confirmed'] },
+  // Only confirmed reservations reduce available seats; pending do not count until accepted
+  const confirmedReservations = await ReservationModel.find({
+    status: 'confirmed',
     date,
   }).lean();
 
-  const bookedSeats = activeReservations.reduce((total, res: any) => {
+  const bookedSeats = confirmedReservations.reduce((total, res: any) => {
     return total + (res.guests || 0);
   }, 0);
 

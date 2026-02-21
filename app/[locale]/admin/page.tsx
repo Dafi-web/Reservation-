@@ -58,6 +58,8 @@ export default function AdminPage() {
         setIsAuthenticated(true);
         setCheckingAuth(false);
         fetchReservations();
+        fetchAvailability();
+        fetchMenuItems();
       } else {
         setIsAuthenticated(false);
         setCheckingAuth(false);
@@ -627,7 +629,7 @@ export default function AdminPage() {
                 <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>Seat availability is calculated for <strong>today only</strong>. Seats reset to {availability.totalCapacity} each day. Expired reservations are automatically cancelled.</span>
+                <span>Available seats count down only when you <strong>accept</strong> a reservation. Pending requests do not reduce capacity. Seats reset to {availability.totalCapacity} each day.</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200 shadow-elegant">
@@ -806,144 +808,101 @@ export default function AdminPage() {
             <p className="text-gray-500">No reservations match your current filter</p>
           </div>
         ) : (
-          <div className="grid gap-6">
-            {filteredReservations.map((reservation) => (
-              <div
-                key={reservation.id}
-                className="bg-white rounded-2xl shadow-elegant-lg p-6 lg:p-8 hover:shadow-2xl transition-all duration-300 border border-gray-100"
-              >
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                          {reservation.name}
-                        </h3>
-                        <div className="flex items-center space-x-2 flex-wrap gap-2">
-                          <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getStatusColor(reservation.status)}`}>
-                            <span className="mr-1">{getStatusIcon(reservation.status)}</span>
-                            {t(`admin.${reservation.status}`)}
+          <div className="bg-white rounded-2xl shadow-elegant-lg border border-gray-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[800px]">
+                <thead>
+                  <tr className="bg-gradient-to-r from-amber-50 to-orange-50 border-b-2 border-amber-200">
+                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-800">Date</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-800">Time</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-800">Name</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-800">Phone</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-800">Guests</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-800">Status</th>
+                    <th className="text-right py-4 px-4 text-sm font-bold text-gray-800">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredReservations.map((reservation) => (
+                    <tr
+                      key={reservation.id}
+                      className={`border-b border-gray-100 hover:bg-amber-50/50 transition-colors ${reservation.status === 'pending' ? 'bg-amber-50/30' : ''}`}
+                    >
+                      <td className="py-3 px-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                        {format(new Date(reservation.date), 'MMM d, yyyy')}
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{reservation.time}</td>
+                      <td className="py-3 px-4 text-sm font-semibold text-gray-900">{reservation.name}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{reservation.phone}</td>
+                      <td className="py-3 px-4 text-sm font-semibold text-amber-700">{reservation.guests}</td>
+                      <td className="py-3 px-4">
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${getStatusColor(reservation.status)}`}>
+                          {getStatusIcon(reservation.status)} {t(`admin.${reservation.status}`)}
+                        </span>
+                        {reservation.checkedIn && (
+                          <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                            Checked in
                           </span>
-                          {reservation.checkedIn && (
-                            <span className="px-3 py-1 rounded-full text-sm font-semibold border bg-green-100 text-green-800 border-green-200 flex items-center gap-1">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                              </svg>
-                              Checked In
-                            </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex flex-wrap gap-2 justify-end">
+                          {reservation.status === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => updateStatus(reservation.id, 'confirmed')}
+                                className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors"
+                              >
+                                Accept
+                              </button>
+                              <button
+                                onClick={() => handleRejectClick(reservation.id)}
+                                className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          {reservation.status === 'confirmed' && (
+                            <>
+                              {!reservation.checkedIn ? (
+                                <button
+                                  onClick={() => handleCheckIn(reservation.id, true)}
+                                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                                >
+                                  Check In
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleCheckIn(reservation.id, false)}
+                                  className="px-3 py-1.5 bg-gray-500 text-white rounded-lg text-sm font-semibold hover:bg-gray-600 transition-colors"
+                                >
+                                  Undo
+                                </button>
+                              )}
+                              <button
+                                onClick={() => handleRejectClick(reservation.id)}
+                                className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          {reservation.status === 'rejected' && (
+                            <span className="text-gray-400 text-sm">—</span>
                           )}
                         </div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                      {reservation.email && (
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <svg className="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
-                          <span className="font-medium truncate">{reservation.email}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <svg className="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        <span className="font-medium">{reservation.phone}</span>
-                      </div>
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <svg className="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span className="font-medium">{format(new Date(reservation.date), 'PPP')}</span>
-                      </div>
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <svg className="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span className="font-medium">{reservation.time}</span>
-                      </div>
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <svg className="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <span className="font-medium">{reservation.guests} {reservation.guests === 1 ? 'Guest' : 'Guests'}</span>
-                      </div>
-                    </div>
-                    {reservation.checkedIn && reservation.checkedInAt && (
-                      <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                        <p className="text-sm font-semibold text-blue-700 mb-1 flex items-center gap-2">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          Checked In
-                        </p>
-                        <p className="text-sm text-blue-600">
-                          Arrived at: {format(new Date(reservation.checkedInAt), 'PPpp')}
-                        </p>
-                      </div>
-                    )}
-                    {reservation.specialRequests && (
-                      <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                        <p className="text-sm font-semibold text-gray-700 mb-1">Special Requests:</p>
-                        <p className="text-sm text-gray-600">{reservation.specialRequests}</p>
-                      </div>
-                    )}
-                    {reservation.rejectionReason && (
-                      <div className="mt-4 p-4 bg-red-50 rounded-xl border border-red-200">
-                        <p className="text-sm font-semibold text-red-700 mb-1">Rejection Reason:</p>
-                        <p className="text-sm text-red-600">{reservation.rejectionReason}</p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-3 lg:min-w-[200px]">
-                    {reservation.status === 'pending' && (
-                      <>
-                        <button
-                          onClick={() => updateStatus(reservation.id, 'confirmed')}
-                          className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 font-semibold shadow-elegant hover:shadow-lg transform hover:scale-105"
-                        >
-                          ✓ Accept
-                        </button>
-                        <button
-                          onClick={() => handleRejectClick(reservation.id)}
-                          className="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 transition-all duration-300 font-semibold shadow-elegant hover:shadow-lg transform hover:scale-105"
-                        >
-                          ✕ Reject
-                        </button>
-                      </>
-                    )}
-                    {reservation.status === 'confirmed' && (
-                      <>
-                        {!reservation.checkedIn ? (
-                          <button
-                            onClick={() => handleCheckIn(reservation.id, true)}
-                            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold shadow-elegant hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-2"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            Check In
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleCheckIn(reservation.id, false)}
-                            className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-300 font-semibold shadow-elegant hover:shadow-lg transform hover:scale-105"
-                          >
-                            Undo Check In
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleRejectClick(reservation.id)}
-                          className="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 transition-all duration-300 font-semibold shadow-elegant hover:shadow-lg transform hover:scale-105"
-                        >
-                          ✕ Reject
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {filteredReservations.some((r) => r.specialRequests || r.rejectionReason) && (
+              <div className="p-4 bg-gray-50 border-t border-gray-100 text-sm text-gray-600">
+                <strong>Details:</strong> Some rows have special requests or rejection reasons—check the &quot;Booked Users&quot; section or the reservation date/time for full info.
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
