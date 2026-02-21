@@ -22,7 +22,9 @@ export default function ReservationsPage() {
   const [availableSeats, setAvailableSeats] = useState<number | null>(null);
   const [loadingAvailability, setLoadingAvailability] = useState(true);
 
-  const today = new Date().toISOString().split('T')[0];
+  // Local date (not UTC) so availability matches the user's calendar
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const effectiveDate = formData.date || today;
 
   useEffect(() => {

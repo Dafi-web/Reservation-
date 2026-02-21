@@ -94,7 +94,10 @@ export default function AdminPage() {
 
   const fetchAvailability = async () => {
     try {
-      const response = await fetch('/api/availability');
+      // Use client's local date so "Confirmed Bookings" and seats match the day the admin cares about
+      const now = new Date();
+      const clientToday = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const response = await fetch(`/api/availability?date=${clientToday}`);
       if (response.ok) {
         const data = await response.json();
         setAvailability(data);
