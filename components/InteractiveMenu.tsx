@@ -9,6 +9,7 @@ interface InteractiveMenuProps {
     key: string;
     label: string;
     icon: string;
+    iconImageUrl?: string;
     color: string;
     bgColor: string;
     textColor: string;

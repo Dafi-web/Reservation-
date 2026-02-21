@@ -9,6 +9,7 @@ interface MenuSectionProps {
     key: string;
     label: string;
     icon: string;
+    iconImageUrl?: string;
     color: string;
     bgColor: string;
     textColor: string;
@@ -33,10 +34,19 @@ export default function MenuSection({ category, items, isOpen, onToggle }: MenuS
         <div className={`absolute inset-0 bg-gradient-to-r ${category.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
         
         <div className="relative z-10 flex flex-col items-center gap-4 w-full">
-          {/* Icon with Gradient Background */}
-          <div className={`relative p-4 rounded-2xl bg-gradient-to-br ${category.color} shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
-            <span className="text-5xl md:text-6xl relative z-10 block">{category.icon}</span>
-            <div className="absolute inset-0 rounded-2xl bg-white opacity-20"></div>
+          {/* Icon with Gradient Background (or image for e.g. beverage) */}
+          <div
+            className={`relative rounded-2xl shadow-lg transform group-hover:scale-110 transition-transform duration-300 overflow-hidden ${
+              category.iconImageUrl ? 'w-24 h-24 md:w-28 md:h-28' : `p-4 bg-gradient-to-br ${category.color}`
+            }`}
+            style={category.iconImageUrl ? { backgroundImage: `url(${category.iconImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+          >
+            {!category.iconImageUrl && (
+              <>
+                <span className="text-5xl md:text-6xl relative z-10 block">{category.icon}</span>
+                <div className="absolute inset-0 rounded-2xl bg-white opacity-20"></div>
+              </>
+            )}
           </div>
           
           {/* Title and Count - Centered */}
