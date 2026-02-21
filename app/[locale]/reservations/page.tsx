@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
 
-const CUSTOMER_SUPPORT_PHONE = '394567890';
+const ADMIN_CONTACT_PHONE = '+393513468002';
 
 export default function ReservationsPage() {
   const t = useTranslations();
@@ -59,7 +59,7 @@ export default function ReservationsPage() {
     if (availableSeats !== null && availableSeats < requestedGuests) {
       setMessage({ 
         type: 'error', 
-        text: `Not enough available seats. Only ${availableSeats} seat${availableSeats !== 1 ? 's' : ''} available. Please contact customer support at ${CUSTOMER_SUPPORT_PHONE}.` 
+        text: `Not enough available seats. Only ${availableSeats} seat${availableSeats !== 1 ? 's' : ''} available. Please contact customer support at ${ADMIN_CONTACT_PHONE}.` 
       });
       setIsSubmitting(false);
       return;
@@ -99,7 +99,7 @@ export default function ReservationsPage() {
         if (responseData.availableSeats !== undefined) {
           setMessage({ 
             type: 'error', 
-            text: `Not enough available seats. Only ${responseData.availableSeats} seat${responseData.availableSeats !== 1 ? 's' : ''} available. Please contact customer support at ${CUSTOMER_SUPPORT_PHONE}.` 
+            text: `Not enough available seats. Only ${responseData.availableSeats} seat${responseData.availableSeats !== 1 ? 's' : ''} available. Please contact customer support at ${ADMIN_CONTACT_PHONE}.` 
           });
         } else {
           setMessage({ type: 'error', text: t('reservation.error') });
@@ -171,8 +171,8 @@ export default function ReservationsPage() {
                 {availableSeats === 0 && (
                   <p className="text-center mt-2 text-sm">
                     Please contact customer support at{' '}
-                    <a href={`tel:${CUSTOMER_SUPPORT_PHONE}`} className="font-bold underline hover:text-red-900">
-                      {CUSTOMER_SUPPORT_PHONE}
+                    <a href={`tel:${ADMIN_CONTACT_PHONE}`} className="font-bold underline hover:text-red-900">
+                      {ADMIN_CONTACT_PHONE}
                     </a>
                   </p>
                 )}

@@ -8,6 +8,7 @@ import {
 } from '@/lib/data';
 import { Reservation } from '@/lib/types';
 import { sendConfirmationSMS, sendRejectionSMS } from '@/lib/sms';
+import { sendAdminReservationNotification } from '@/lib/email';
 
 export async function GET() {
   try {
@@ -72,6 +73,13 @@ export async function POST(request: NextRequest) {
       guests: requestedGuests,
       specialRequests: specialRequests || '',
     });
+
+    // Notify admin by email (non-blocking; do not fail the request if email fails)
+    try {
+      await sendAdminReservationNotification(reservation);
+    } catch (e) {
+      console.error('Admin reservation email failed:', e);
+    }
 
     return NextResponse.json(reservation, { status: 201 });
   } catch (error) {
