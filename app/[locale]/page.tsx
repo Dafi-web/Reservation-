@@ -59,9 +59,9 @@ export default async function HomePage() {
             </h2>
             
             <p className="text-lg md:text-xl text-amber-50 mb-12 leading-relaxed font-light max-w-3xl mx-auto">
-              Experience authentic African flavors with our carefully curated selection of traditional dishes and handcrafted beverages
+              {t('menu.heroSubtitle')}
               <br />
-              <span className="text-amber-400 font-medium mt-2 block">A journey through the rich culinary heritage of Africa</span>
+              <span className="text-amber-400 font-medium mt-2 block">{t('menu.heroTagline')}</span>
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
