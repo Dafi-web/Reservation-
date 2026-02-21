@@ -39,16 +39,21 @@ export default function InteractiveMenu({ categories, menuItems }: InteractiveMe
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {categories.map((category) => {
+      {categories.map((category, index) => {
         const categoryItems = items.filter((item) => item.category === category.key);
         return (
-          <MenuSection
+          <div
             key={category.key}
-            category={category}
-            items={categoryItems}
-            isOpen={openCategories.has(category.key)}
-            onToggle={() => toggleCategory(category.key)}
-          />
+            className="animate-fade-in-up opacity-0"
+            style={{ animationDelay: `${0.08 * index}s`, animationFillMode: 'both' }}
+          >
+            <MenuSection
+              category={category}
+              items={categoryItems}
+              isOpen={openCategories.has(category.key)}
+              onToggle={() => toggleCategory(category.key)}
+            />
+          </div>
         );
       })}
     </div>

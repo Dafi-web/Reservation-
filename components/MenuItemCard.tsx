@@ -8,15 +8,29 @@ import MenuItemModal from './MenuItemModal';
 
 interface MenuItemCardProps {
   item: MenuItem;
+  index?: number;
+  isVisible?: boolean;
 }
 
-export default function MenuItemCard({ item }: MenuItemCardProps) {
+export default function MenuItemCard({ item, index = 0, isVisible = true }: MenuItemCardProps) {
   const t = useTranslations('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const staggerDelay = isVisible ? index * 0.06 : 0;
 
   return (
     <>
-      <div className="group rounded-xl shadow-elegant overflow-hidden hover-lift border border-gray-200/80 transition-all duration-300 relative cursor-pointer bg-gradient-to-br from-slate-50 via-gray-50 to-stone-100 hover:from-slate-100 hover:via-gray-100 hover:to-stone-200" onClick={() => setIsModalOpen(true)}>
+      <div
+        className="group rounded-xl shadow-elegant overflow-hidden hover-lift border border-gray-200/80 transition-all duration-500 ease-out relative cursor-pointer bg-gradient-to-br from-slate-50 via-gray-50 to-stone-100 hover:from-slate-100 hover:via-gray-100 hover:to-stone-200"
+        style={
+          isVisible
+            ? {
+                animation: 'fadeInUpScale 0.5s cubic-bezier(0.22, 1, 0.36, 1) both',
+                animationDelay: `${staggerDelay}s`,
+              }
+            : undefined
+        }
+        onClick={() => setIsModalOpen(true)}
+      >
         {/* Subtle hover gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-transparent to-white/0 group-hover:from-amber-50/20 group-hover:via-transparent group-hover:to-stone-50/20 transition-all duration-500 pointer-events-none" />
         {/* Shine Effect */}
@@ -27,7 +41,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
         <div className="p-4 relative z-10">
           {/* Clickable Image Area */}
           <div className="mb-3 relative overflow-hidden rounded-lg">
-            <div className="w-full h-48 bg-gradient-to-br from-amber-100 via-stone-100 to-stone-200 group-hover:scale-105 transition-transform duration-300 relative flex items-center justify-center">
+            <div className="w-full h-48 bg-gradient-to-br from-amber-100 via-stone-100 to-stone-200 group-hover:scale-105 transition-transform duration-500 ease-out relative flex items-center justify-center overflow-hidden">
               {item.image ? (
                 <Image
                   src={item.image}

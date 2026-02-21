@@ -41,33 +41,33 @@ export default async function HomePage() {
         </div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
-          <div className="text-center max-w-5xl mx-auto animate-fade-in-up">
+          <div className="text-center max-w-5xl mx-auto">
             {/* Restaurant Name */}
-            <div className="mb-8">
+            <div className="mb-8 animate-fade-in-up animation-delay-100">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 text-white tracking-tight">
                 Ristorante Africa
               </h1>
               <div className="flex justify-center items-center mb-6 space-x-3">
                 <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
-                <div className="text-amber-500 text-xl">✦</div>
+                <div className="text-amber-500 text-xl animate-breathe">✦</div>
                 <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
               </div>
             </div>
             
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight text-white">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight text-white animate-fade-in-up animation-delay-200">
               {t('menu.title')}
             </h2>
             
-            <p className="text-lg md:text-xl text-amber-50 mb-12 leading-relaxed font-light max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-amber-50 mb-12 leading-relaxed font-light max-w-3xl mx-auto animate-fade-in-up animation-delay-300">
               {t('menu.heroSubtitle')}
               <br />
               <span className="text-amber-400 font-medium mt-2 block">{t('menu.heroTagline')}</span>
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in-up animation-delay-400">
               <Link
                 href="/reservations"
-                className="group relative inline-flex items-center justify-center px-12 py-5 bg-gradient-to-r from-amber-600 via-amber-700 to-stone-800 text-white rounded-full font-bold text-lg shadow-2xl hover:shadow-amber-600/50 transition-all duration-300 transform hover:scale-105 overflow-hidden border-2 border-amber-500/30"
+                className="group relative inline-flex items-center justify-center px-12 py-5 bg-gradient-to-r from-amber-600 via-amber-700 to-stone-800 text-white rounded-full font-bold text-lg shadow-2xl hover:shadow-amber-600/50 transition-all duration-300 transform hover:scale-105 overflow-hidden border-2 border-amber-500/30 animate-glow-pulse"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-amber-700 via-stone-800 to-stone-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <span className="relative z-10 flex items-center">
@@ -78,7 +78,7 @@ export default async function HomePage() {
                 </span>
               </Link>
               
-              <div className="flex items-center space-x-6 text-sm text-amber-200">
+              <div className="flex items-center space-x-6 text-sm text-amber-200 animate-fade-in-up animation-delay-500">
                 <div className="flex items-center">
                   <svg className="w-5 h-5 text-amber-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -103,7 +103,7 @@ export default async function HomePage() {
       </section>
 
       {/* Footer with Admin Access */}
-      <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-amber-100 py-10 mt-20 border-t border-stone-700/50">
+      <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-amber-100 py-10 mt-20 border-t border-stone-700/50 animate-fade-in-up animation-delay-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm">
