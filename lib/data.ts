@@ -506,14 +506,16 @@ export async function getAvailableSeatsForDate(date: string): Promise<number> {
   // Only confirmed reservations reduce available seats; pending do not count until accepted
   const confirmedReservations = await ReservationModel.find({
     status: 'confirmed',
-    date,
+    date: String(date),
   }).lean();
 
   const bookedSeats = confirmedReservations.reduce((total, res: any) => {
-    return total + (res.guests || 0);
+    const g = Number(res.guests);
+    return total + (Number.isFinite(g) && g > 0 ? g : 0);
   }, 0);
 
-  return Math.max(0, TOTAL_CAPACITY - bookedSeats);
+  const available = Math.max(0, TOTAL_CAPACITY - bookedSeats);
+  return Number.isFinite(available) ? available : TOTAL_CAPACITY;
 }
 
 export async function getAvailableSeats(): Promise<number> {

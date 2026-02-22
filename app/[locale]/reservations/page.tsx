@@ -33,13 +33,19 @@ export default function ReservationsPage() {
       try {
         setLoadingAvailability(true);
         const url = effectiveDate ? `/api/availability?date=${effectiveDate}` : '/api/availability';
-        const response = await fetch(url);
+        const response = await fetch(url, { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
-          setAvailableSeats(data.availableSeats);
+          const seats = typeof data.availableSeats === 'number' && Number.isFinite(data.availableSeats)
+            ? Math.max(0, data.availableSeats)
+            : 70;
+          setAvailableSeats(seats);
+        } else {
+          setAvailableSeats(70);
         }
       } catch (error) {
         console.error('Failed to fetch availability:', error);
+        setAvailableSeats(70);
       } finally {
         setLoadingAvailability(false);
       }
@@ -85,10 +91,13 @@ export default function ReservationsPage() {
       if (response.ok) {
         setMessage({ type: 'success', text: t('reservation.success') });
         const bookedDate = formData.date || today;
-        const availResponse = await fetch(`/api/availability?date=${bookedDate}`);
+        const availResponse = await fetch(`/api/availability?date=${bookedDate}`, { cache: 'no-store' });
         if (availResponse.ok) {
           const availData = await availResponse.json();
-          setAvailableSeats(availData.availableSeats);
+          const seats = typeof availData.availableSeats === 'number' && Number.isFinite(availData.availableSeats)
+            ? Math.max(0, availData.availableSeats)
+            : null;
+          if (seats !== null) setAvailableSeats(seats);
         }
         setFormData({
           name: '',

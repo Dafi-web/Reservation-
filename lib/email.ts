@@ -5,6 +5,17 @@ const ADMIN_PHONE = '+31686371240';
 
 const FROM_EMAIL = 'Ristorante Africa <onboarding@resend.dev>';
 
+/** Basic email format check so we don't call Resend with invalid addresses (avoids 400). */
+function isValidEmail(email: string): boolean {
+  const s = (email || '').trim();
+  if (s.length < 5 || s.length > 254) return false;
+  const at = s.indexOf('@');
+  if (at <= 0 || at === s.length - 1) return false;
+  const domain = s.slice(at + 1);
+  if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) return false;
+  return true;
+}
+
 /** Lazy-load Resend so the reservations API still works if the package is missing. */
 async function getResendClient(): Promise<{ emails: { send: (opts: unknown) => Promise<{ data?: { id: string }; error: unknown }> } } | null> {
   const key = process.env.RESEND_API_KEY;
@@ -152,7 +163,7 @@ export async function sendAdminReservationNotification(
       html,
     });
     if (error) {
-      console.error('❌ Resend error:', error);
+      console.error('❌ Resend error (admin email):', JSON.stringify(error));
       return false;
     }
     console.log('✅ Admin reservation email sent:', data?.id);
@@ -169,8 +180,8 @@ export async function sendAdminReservationNotification(
  */
 export async function sendCustomerConfirmationEmail(reservation: Reservation): Promise<boolean> {
   const to = (reservation.email || '').trim();
-  if (!to || !to.includes('@')) {
-    console.warn('[Email] Customer confirmation skipped: no valid email on reservation');
+  if (!isValidEmail(to)) {
+    console.warn('[Email] Customer confirmation skipped: invalid or missing email on reservation');
     return false;
   }
   const client = await getResendClient();
@@ -224,7 +235,7 @@ export async function sendCustomerConfirmationEmail(reservation: Reservation): P
       html,
     });
     if (error) {
-      console.error('❌ Customer confirmation email error:', error);
+      console.error('❌ Customer confirmation email error (Resend 400/422):', JSON.stringify(error));
       return false;
     }
     console.log('✅ Customer confirmation email sent to', to);
