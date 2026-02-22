@@ -1,11 +1,17 @@
 import { Reservation } from './types';
 
-const ADMIN_EMAIL = 'fikrselina@gmail.com';
+const ADMIN_EMAIL = 'wediabrhana@gmail.com';
 const ADMIN_PHONE = '+31686371240';
 
-const FROM_EMAIL = 'Ristorante Africa <onboarding@resend.dev>';
+/** Resend: use RESEND_FROM_EMAIL after verifying a domain so emails reach any address. With onboarding@resend.dev, Resend only allows sending to the account owner email (403 to other addresses). */
+const FROM_EMAIL_RESEND = process.env.RESEND_FROM_EMAIL?.trim() || 'Ristorante Africa <onboarding@resend.dev>';
 
-/** Basic email format check so we don't call Resend with invalid addresses (avoids 400). */
+/** Gmail: no domain needed. Set GMAIL_USER and GMAIL_APP_PASSWORD in Vercel to send to any address (admin + guests). */
+const GMAIL_USER = process.env.GMAIL_USER?.trim();
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD?.trim();
+const USE_GMAIL = GMAIL_USER && GMAIL_APP_PASSWORD;
+
+/** Basic email format check. */
 function isValidEmail(email: string): boolean {
   const s = (email || '').trim();
   if (s.length < 5 || s.length > 254) return false;
@@ -16,15 +22,53 @@ function isValidEmail(email: string): boolean {
   return true;
 }
 
-/** Lazy-load Resend so the reservations API still works if the package is missing. */
-async function getResendClient(): Promise<{ emails: { send: (opts: unknown) => Promise<{ data?: { id: string }; error: unknown }> } } | null> {
+/** Send one email to one or more recipients. Uses Gmail if configured (no domain needed), else Resend. */
+async function sendEmail(to: string[], subject: string, html: string): Promise<boolean> {
+  if (to.length === 0) return false;
+  const toList = to.filter((e) => isValidEmail(e));
+  if (toList.length === 0) return false;
+
+  if (USE_GMAIL && GMAIL_USER) {
+    try {
+      const nodemailer = await import('nodemailer');
+      const transport = nodemailer.default.createTransport({
+        service: 'gmail',
+        auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD },
+      });
+      await transport.sendMail({
+        from: `"Ristorante Africa" <${GMAIL_USER}>`,
+        to: toList.join(', '),
+        subject,
+        html,
+      });
+      console.log('✅ Email sent via Gmail to', toList.join(', '));
+      return true;
+    } catch (err) {
+      console.error('❌ Gmail send failed:', err);
+      return false;
+    }
+  }
+
   const key = process.env.RESEND_API_KEY;
-  if (!key) return null;
+  if (!key) return false;
   try {
     const { Resend } = await import('resend');
-    return new Resend(key) as unknown as { emails: { send: (opts: unknown) => Promise<{ data?: { id: string }; error: unknown }> } };
-  } catch {
-    return null;
+    const client = new Resend(key);
+    const { error } = await client.emails.send({
+      from: FROM_EMAIL_RESEND,
+      to: toList,
+      subject,
+      html,
+    });
+    if (error) {
+      console.error('❌ Resend error:', JSON.stringify(error));
+      return false;
+    }
+    console.log('✅ Email sent via Resend to', toList.join(', '));
+    return true;
+  } catch (err) {
+    console.error('❌ Resend send failed:', err);
+    return false;
   }
 }
 
@@ -43,17 +87,14 @@ function formatDate(dateStr: string): string {
 }
 
 /**
- * Send a nice HTML email to the admin when a new reservation is submitted.
- * Does not throw; returns false if Resend is not configured or send fails.
+ * Send email to the admin when a new reservation is submitted.
+ * Uses Gmail (no domain) or Resend if configured.
  */
 export async function sendAdminReservationNotification(
   reservation: Reservation
 ): Promise<boolean> {
-  const client = await getResendClient();
-  if (!client) {
-    console.warn(
-      '⚠️ Resend not configured. Admin email notification will not be sent. Set RESEND_API_KEY in .env.local (and run npm install resend)'
-    );
+  if (!USE_GMAIL && !process.env.RESEND_API_KEY?.trim()) {
+    console.warn('⚠️ No email configured. Set GMAIL_USER + GMAIL_APP_PASSWORD (no domain) or RESEND_API_KEY in Vercel.');
     return false;
   }
 
@@ -155,40 +196,59 @@ export async function sendAdminReservationNotification(
 </html>
 `.trim();
 
-  try {
-    const { data, error } = await client.emails.send({
-      from: FROM_EMAIL,
-      to: [ADMIN_EMAIL],
-      subject,
-      html,
-    });
-    if (error) {
-      console.error('❌ Resend error (admin email):', JSON.stringify(error));
-      return false;
-    }
-    console.log('✅ Admin reservation email sent:', data?.id);
-    return true;
-  } catch (err) {
-    console.error('❌ Failed to send admin reservation email:', err);
-    return false;
-  }
+  return sendEmail([ADMIN_EMAIL], subject, html);
 }
 
 /**
- * Send confirmation email to the customer when admin confirms the reservation.
- * Only sends if reservation.email is set.
+ * Send "We received your request" email to the guest when they submit (if they gave an email).
+ */
+export async function sendGuestRequestReceivedEmail(reservation: Reservation): Promise<boolean> {
+  const to = (reservation.email || '').trim();
+  if (!isValidEmail(to)) return false;
+  if (!USE_GMAIL && !process.env.RESEND_API_KEY?.trim()) return false;
+  const formattedDate = formatDate(reservation.date);
+  const subject = `We received your reservation request – Ristorante Africa`;
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f5f5;padding:24px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+        <tr><td style="background:linear-gradient(135deg,#b45309 0%,#92400e 100%);padding:28px 32px;text-align:center;">
+          <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Ristorante Africa</h1>
+          <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Request received</p>
+        </td></tr>
+        <tr><td style="padding:32px 28px;">
+          <p style="margin:0 0 20px;color:#374151;font-size:16px;">Hello ${escapeHtml(reservation.name)},</p>
+          <p style="margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;">We have received your table reservation request. You will receive another email once we confirm it.</p>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:16px;">
+            <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;">
+              <span style="color:#64748b;font-size:12px;">Your request</span><br/>
+              <span style="color:#1c1917;font-size:16px;font-weight:600;">${escapeHtml(formattedDate)} · ${escapeHtml(reservation.time)} · ${reservation.guests} guest${reservation.guests !== 1 ? 's' : ''}</span>
+            </td></tr>
+          </table>
+          <p style="margin:24px 0 0;color:#64748b;font-size:13px;">Thank you for choosing Ristorante Africa.</p>
+        </td></tr>
+        <tr><td style="padding:16px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
+          <p style="margin:0;color:#64748b;font-size:12px;">Ristorante Africa</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+  return sendEmail([to], subject, html);
+}
+
+/**
+ * Send confirmation email to the customer when admin confirms (if they gave an email).
  */
 export async function sendCustomerConfirmationEmail(reservation: Reservation): Promise<boolean> {
   const to = (reservation.email || '').trim();
-  if (!isValidEmail(to)) {
-    console.warn('[Email] Customer confirmation skipped: invalid or missing email on reservation');
-    return false;
-  }
-  const client = await getResendClient();
-  if (!client) {
-    console.warn('[Email] Customer confirmation skipped: RESEND_API_KEY not set');
-    return false;
-  }
+  if (!isValidEmail(to)) return false;
+  if (!USE_GMAIL && !process.env.RESEND_API_KEY?.trim()) return false;
   const formattedDate = formatDate(reservation.date);
   const subject = `Your reservation at Ristorante Africa is confirmed – ${formattedDate}`;
   const html = `
@@ -227,23 +287,7 @@ export async function sendCustomerConfirmationEmail(reservation: Reservation): P
   </table>
 </body>
 </html>`.trim();
-  try {
-    const { data, error } = await client.emails.send({
-      from: FROM_EMAIL,
-      to: [to],
-      subject,
-      html,
-    });
-    if (error) {
-      console.error('❌ Customer confirmation email error (Resend 400/422):', JSON.stringify(error));
-      return false;
-    }
-    console.log('✅ Customer confirmation email sent to', to);
-    return true;
-  } catch (err) {
-    console.error('❌ Failed to send customer confirmation email:', err);
-    return false;
-  }
+  return sendEmail([to], subject, html);
 }
 
 function escapeHtml(text: string): string {

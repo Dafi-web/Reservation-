@@ -8,7 +8,7 @@ import {
 } from '@/lib/data';
 import { Reservation } from '@/lib/types';
 import { sendConfirmationSMS, sendRejectionSMS, sendAdminReservationWhatsApp, sendAdminReservationSMS } from '@/lib/sms';
-import { sendAdminReservationNotification, sendCustomerConfirmationEmail } from '@/lib/email';
+import { sendAdminReservationNotification, sendCustomerConfirmationEmail, sendGuestRequestReceivedEmail } from '@/lib/email';
 
 export async function GET() {
   try {
@@ -102,6 +102,11 @@ export async function POST(request: NextRequest) {
       else console.log('[Reservation] Admin email sent');
     } catch (e) {
       console.error('[Reservation] Admin email error:', e);
+    }
+    try {
+      await sendGuestRequestReceivedEmail(reservation);
+    } catch (e) {
+      console.error('[Reservation] Guest request-received email error:', e);
     }
     try {
       whatsappOk = await sendAdminReservationWhatsApp(reservation);

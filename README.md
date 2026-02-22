@@ -53,7 +53,7 @@ npm install
 
    **Not getting admin notifications?** When a user makes a reservation, the server tries SMS, email, and WhatsApp. Check your **server logs** (terminal or hosting logs): you’ll see either `Admin SMS sent` / `Admin email sent` / `Admin WhatsApp sent` or a warning listing which env var is missing. Required for each:
    - **SMS**: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER` (your Twilio phone number), and optionally `ADMIN_PHONE` (default +31686371240).
-   - **Email**: `RESEND_API_KEY` (get one at [resend.com](https://resend.com)). Admin receives at fikrselina@gmail.com.
+   - **Email**: `RESEND_API_KEY` (get one at [resend.com](https://resend.com)). Admin receives at wediabrhana@gmail.com.
    - **WhatsApp**: Same Twilio SID/Token, plus `TWILIO_WHATSAPP_NUMBER` (e.g. +14155238886). Admin number is `ADMIN_PHONE`. On a Twilio trial, the admin number must join the WhatsApp sandbox first.
 
 3. Run the development server:
