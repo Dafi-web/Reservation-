@@ -74,7 +74,12 @@ export default function ReservationsPage() {
         body: JSON.stringify(formData),
       });
 
-      const responseData = await response.json();
+      let responseData: { error?: string; availableSeats?: number } = {};
+      try {
+        responseData = await response.json();
+      } catch {
+        responseData = { error: t('reservation.error') };
+      }
 
       if (response.ok) {
         setMessage({ type: 'success', text: t('reservation.success') });
@@ -97,12 +102,15 @@ export default function ReservationsPage() {
         }, 2000);
       } else {
         if (responseData.availableSeats !== undefined) {
-          setMessage({ 
-            type: 'error', 
-            text: `Not enough available seats. Only ${responseData.availableSeats} seat${responseData.availableSeats !== 1 ? 's' : ''} available. Please contact customer support at ${ADMIN_CONTACT_PHONE}.` 
+          setMessage({
+            type: 'error',
+            text: `Not enough available seats. Only ${responseData.availableSeats} seat${responseData.availableSeats !== 1 ? 's' : ''} available. Please contact customer support at ${ADMIN_CONTACT_PHONE}.`,
           });
         } else {
-          setMessage({ type: 'error', text: t('reservation.error') });
+          setMessage({
+            type: 'error',
+            text: (responseData.error && typeof responseData.error === 'string') ? responseData.error : t('reservation.error'),
+          });
         }
       }
     } catch (error) {

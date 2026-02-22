@@ -305,12 +305,17 @@ export default function AdminPage() {
 
       if (response.ok) {
         await fetchReservations();
-        await fetchAvailability(); // Refresh so seat count updates immediately
+        await fetchAvailability();
         setRejectModal({ open: false, reservationId: null });
         setRejectionReason('');
+      } else {
+        const data = await response.json().catch(() => ({}));
+        const msg = (data as { error?: string }).error || `Request failed (${response.status})`;
+        alert(msg);
       }
     } catch (error) {
       console.error('Failed to update reservation:', error);
+      alert('Network error. Please try again.');
     }
   };
 
