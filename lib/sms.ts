@@ -1,13 +1,17 @@
 import twilio from 'twilio';
 import { Reservation } from './types';
 
-// Initialize Twilio client
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
+// Initialize Twilio client (supports TWILIO_ACCOUNT_SID or TWILIO_SID, TWILIO_AUTH_TOKEN or TWILIO_TOKEN)
+const accountSid = process.env.TWILIO_ACCOUNT_SID || process.env.TWILIO_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN || process.env.TWILIO_TOKEN;
 const fromNumber = process.env.TWILIO_PHONE_NUMBER;
+const whatsappFrom = process.env.TWILIO_WHATSAPP_NUMBER || '+14155238886'; // Twilio WhatsApp sandbox default
+
+// Admin receives new-reservation SMS and WhatsApp on this number
+const ADMIN_PHONE = process.env.ADMIN_PHONE || '+393513468002';
 
 // Only initialize if credentials are available
-const client = accountSid && authToken 
+const client = accountSid && authToken
   ? twilio(accountSid, authToken)
   : null;
 
@@ -127,6 +131,97 @@ export async function sendRejectionSMS(reservation: Reservation, reason?: string
     return true;
   } catch (error: any) {
     console.error('Error sending rejection SMS:', error);
+    return false;
+  }
+}
+
+/**
+ * Send WhatsApp notification to admin when a new reservation is submitted.
+ * Uses Twilio WhatsApp API; "from" must be a WhatsApp-enabled Twilio number (e.g. sandbox).
+ */
+export async function sendAdminReservationWhatsApp(reservation: Reservation): Promise<boolean> {
+  if (!client || !whatsappFrom || !whatsappFrom.trim()) {
+    console.warn(
+      '⚠️ Twilio WhatsApp not configured. Set TWILIO_WHATSAPP_NUMBER (e.g. +14155238886 for sandbox) in .env.local'
+    );
+    return false;
+  }
+
+  let to = ADMIN_PHONE.trim().replace(/[^\d+]/g, '');
+  if (!to.startsWith('+')) to = '+' + to;
+  if (to.length < 10) {
+    console.warn('Admin WhatsApp number too short');
+    return false;
+  }
+
+  try {
+    const from = whatsappFrom.replace(/^whatsapp:/i, '').trim();
+    const body = [
+      '📅 New reservation – Ristorante Africa',
+      `Name: ${reservation.name}`,
+      `Date: ${reservation.date}`,
+      `Time: ${reservation.time}`,
+      `Guests: ${reservation.guests}`,
+      ...(reservation.specialRequests?.trim() ? [`Request: ${reservation.specialRequests.trim()}`] : []),
+      'Confirm or reject in admin panel.',
+    ].join('\n');
+
+    const messageResult = await client.messages.create({
+      body,
+      from: `whatsapp:${from}`,
+      to: `whatsapp:${to.replace(/^whatsapp:/i, '').trim()}`,
+    });
+
+    console.log('✅ Admin WhatsApp sent:', messageResult.sid);
+    return true;
+  } catch (error: any) {
+    console.error('❌ Admin WhatsApp failed:', error?.message || error);
+    return false;
+  }
+}
+
+/**
+ * Send SMS to admin when a new reservation is submitted.
+ * Uses same Twilio credentials as customer SMS (TWILIO_PHONE_NUMBER).
+ */
+export async function sendAdminReservationSMS(reservation: Reservation): Promise<boolean> {
+  if (!client || !fromNumber) {
+    console.warn('⚠️ Twilio not configured. Admin SMS will not be sent.');
+    return false;
+  }
+
+  let to = ADMIN_PHONE.trim().replace(/[^\d+]/g, '');
+  if (!to.startsWith('+')) to = '+' + to;
+  if (to.length < 10) {
+    console.warn('Admin phone number too short');
+    return false;
+  }
+
+  try {
+    const dateFormatted = new Date(`${reservation.date}T12:00:00`).toLocaleDateString('en-GB', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+    const body = [
+      'Ristorante Africa – New reservation',
+      `${reservation.name} | ${reservation.phone}`,
+      `${dateFormatted} ${reservation.time} | ${reservation.guests} guest${reservation.guests !== 1 ? 's' : ''}`,
+      ...(reservation.specialRequests?.trim() ? [`Request: ${reservation.specialRequests.trim()}`] : []),
+      'Confirm or reject in admin panel.',
+    ].join('\n');
+
+    await client.messages.create({
+      body,
+      from: fromNumber,
+      to,
+    });
+
+    console.log('✅ Admin SMS sent');
+    return true;
+  } catch (error: any) {
+    console.error('❌ Admin SMS failed:', error?.message || error);
     return false;
   }
 }

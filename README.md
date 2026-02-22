@@ -37,6 +37,9 @@ npm install
    TWILIO_ACCOUNT_SID=your_twilio_account_sid
    TWILIO_AUTH_TOKEN=your_twilio_auth_token
    TWILIO_PHONE_NUMBER=+1234567890
+   # WhatsApp (Optional - admin gets new-reservation alerts on WhatsApp)
+   TWILIO_WHATSAPP_NUMBER=+14155238886
+   ADMIN_PHONE=+393513468002
 
    # Resend (Optional - admin email when a reservation is submitted)
    RESEND_API_KEY=re_xxxxxxxxxxxx
@@ -45,7 +48,8 @@ npm install
      - Replace `MONGODB_URI` with your actual MongoDB connection string
      - Set `ADMIN_PASSWORD` to a secure password for admin access (default is `admin123` if not set)
      - **SMS Notifications**: To enable SMS confirmations when admin accepts reservations, add your Twilio credentials. SMS is optional - the app works without it.
-- **Admin email**: When a customer submits a reservation, the admin (fikrselina@gmail.com) can receive an email notification. Sign up at [resend.com](https://resend.com), create an API key, and set `RESEND_API_KEY` in `.env.local`. Optional - the app works without it.
+- **Admin email**: When a customer submits a reservation, the admin can receive an email. Set `RESEND_API_KEY` in `.env.local`. Optional.
+- **Admin WhatsApp**: The admin can receive new-reservation alerts on WhatsApp. Use the same Twilio account: enable [Twilio WhatsApp Sandbox](https://www.twilio.com/docs/whatsapp/sandbox), set `TWILIO_WHATSAPP_NUMBER` (e.g. sandbox number +14155238886) and `ADMIN_PHONE` (e.g. +393513468002). Optional.
 
 3. Run the development server:
 ```bash

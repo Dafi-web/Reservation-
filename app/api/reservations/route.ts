@@ -7,7 +7,7 @@ import {
   checkAvailabilityForDate,
 } from '@/lib/data';
 import { Reservation } from '@/lib/types';
-import { sendConfirmationSMS, sendRejectionSMS } from '@/lib/sms';
+import { sendConfirmationSMS, sendRejectionSMS, sendAdminReservationWhatsApp, sendAdminReservationSMS } from '@/lib/sms';
 import { sendAdminReservationNotification } from '@/lib/email';
 
 export async function GET() {
@@ -85,11 +85,21 @@ export async function POST(request: NextRequest) {
       specialRequests: specialRequests || '',
     });
 
-    // Notify admin by email (non-blocking; do not fail the request if email fails)
+    // Notify admin by SMS, email, and WhatsApp (non-blocking)
+    try {
+      await sendAdminReservationSMS(reservation);
+    } catch (e) {
+      console.error('Admin reservation SMS failed:', e);
+    }
     try {
       await sendAdminReservationNotification(reservation);
     } catch (e) {
       console.error('Admin reservation email failed:', e);
+    }
+    try {
+      await sendAdminReservationWhatsApp(reservation);
+    } catch (e) {
+      console.error('Admin reservation WhatsApp failed:', e);
     }
 
     return NextResponse.json(reservation, { status: 201 });
