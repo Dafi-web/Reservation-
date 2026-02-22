@@ -41,7 +41,8 @@
     "title": "Make a Reservation",
     "success": "Reservation confirmed! We'll contact you soon.",
     "error": "Failed to make reservation. Please try again.",
-    "required": "This field is required"
+    "required": "This field is required",
+    "emailOptional": "optional, for confirmation email"
   },
   "admin": {
     "title": "Reservation Management",

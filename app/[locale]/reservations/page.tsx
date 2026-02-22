@@ -11,6 +11,7 @@ export default function ReservationsPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     phone: '',
     date: '',
     time: '',
@@ -91,6 +92,7 @@ export default function ReservationsPage() {
         }
         setFormData({
           name: '',
+          email: '',
           phone: '',
           date: '',
           time: '',
@@ -99,7 +101,7 @@ export default function ReservationsPage() {
         });
         setTimeout(() => {
           router.push('/');
-        }, 2000);
+        }, 6000);
       } else {
         if (responseData.availableSeats !== undefined) {
           setMessage({
@@ -242,6 +244,21 @@ export default function ReservationsPage() {
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="+1 (555) 123-4567"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                  {t('common.email')} <span className="text-gray-400 font-normal">({t('reservation.emailOptional')})</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  placeholder="you@example.com"
                 />
               </div>
             </div>

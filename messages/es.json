@@ -41,7 +41,8 @@
     "title": "Hacer una Reserva",
     "success": "¡Reserva confirmada! Te contactaremos pronto.",
     "error": "Error al hacer la reserva. Por favor, inténtalo de nuevo.",
-    "required": "Este campo es obligatorio"
+    "required": "Este campo es obligatorio",
+    "emailOptional": "opcional, para confirmación por correo"
   },
   "admin": {
     "title": "Gestión de Reservas",

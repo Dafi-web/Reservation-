@@ -8,7 +8,7 @@ import {
 } from '@/lib/data';
 import { Reservation } from '@/lib/types';
 import { sendConfirmationSMS, sendRejectionSMS, sendAdminReservationWhatsApp, sendAdminReservationSMS } from '@/lib/sms';
-import { sendAdminReservationNotification } from '@/lib/email';
+import { sendAdminReservationNotification, sendCustomerConfirmationEmail } from '@/lib/email';
 
 export async function GET() {
   try {
@@ -26,7 +26,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, phone, date, time, guests, specialRequests } = body;
+    const { name, phone, date, time, guests, specialRequests, email } = body;
 
     if (!name || !phone || !date || !time || !guests) {
       return NextResponse.json(
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     const reservation = await createReservation({
       name,
-      email: '', // Email is optional, set to empty string
+      email: (typeof email === 'string' && email.trim()) ? email.trim() : '',
       phone,
       date,
       time,
@@ -86,20 +86,29 @@ export async function POST(request: NextRequest) {
     });
 
     // Notify admin by SMS, email, and WhatsApp (non-blocking)
+    let smsOk = false;
+    let emailOk = false;
+    let whatsappOk = false;
     try {
-      await sendAdminReservationSMS(reservation);
+      smsOk = await sendAdminReservationSMS(reservation);
+      if (!smsOk) console.warn('[Reservation] Admin SMS not sent (check TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER in .env.local)');
+      else console.log('[Reservation] Admin SMS sent to', process.env.ADMIN_PHONE || '+31686371240');
     } catch (e) {
-      console.error('Admin reservation SMS failed:', e);
+      console.error('[Reservation] Admin SMS error:', e);
     }
     try {
-      await sendAdminReservationNotification(reservation);
+      emailOk = await sendAdminReservationNotification(reservation);
+      if (!emailOk) console.warn('[Reservation] Admin email not sent (set RESEND_API_KEY in .env.local for email)');
+      else console.log('[Reservation] Admin email sent');
     } catch (e) {
-      console.error('Admin reservation email failed:', e);
+      console.error('[Reservation] Admin email error:', e);
     }
     try {
-      await sendAdminReservationWhatsApp(reservation);
+      whatsappOk = await sendAdminReservationWhatsApp(reservation);
+      if (!whatsappOk) console.warn('[Reservation] Admin WhatsApp not sent (Twilio WhatsApp: set TWILIO_WHATSAPP_NUMBER or use sandbox)');
+      else console.log('[Reservation] Admin WhatsApp sent');
     } catch (e) {
-      console.error('Admin reservation WhatsApp failed:', e);
+      console.error('[Reservation] Admin WhatsApp error:', e);
     }
 
     return NextResponse.json(reservation, { status: 201 });
@@ -171,27 +180,26 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // Send SMS notification based on status
+    // Send SMS and email notifications based on status
     let smsSent = false;
     let smsError = null;
-    
+
     try {
       if (status === 'confirmed') {
         console.log('📱 Attempting to send confirmation SMS...');
         smsSent = await sendConfirmationSMS(reservation);
-        if (smsSent) {
-          console.log('✅ Confirmation SMS sent successfully');
-        } else {
-          console.warn('⚠️ Confirmation SMS was not sent (check Twilio configuration)');
+        if (smsSent) console.log('✅ Confirmation SMS sent');
+        else console.warn('⚠️ Confirmation SMS not sent (check Twilio)');
+        try {
+          await sendCustomerConfirmationEmail(reservation);
+        } catch (e) {
+          console.error('Customer confirmation email failed:', e);
         }
       } else if (status === 'rejected') {
         console.log('📱 Attempting to send rejection SMS...');
         smsSent = await sendRejectionSMS(reservation, rejectionReason);
-        if (smsSent) {
-          console.log('✅ Rejection SMS sent successfully');
-        } else {
-          console.warn('⚠️ Rejection SMS was not sent (check Twilio configuration)');
-        }
+        if (smsSent) console.log('✅ Rejection SMS sent');
+        else console.warn('⚠️ Rejection SMS not sent (check Twilio)');
       }
     } catch (error: any) {
       smsError = error.message || 'Unknown error';

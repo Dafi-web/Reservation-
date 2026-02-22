@@ -41,7 +41,8 @@
     "title": "Fare una Prenotazione",
     "success": "Prenotazione confermata! Ti contatteremo presto.",
     "error": "Prenotazione fallita. Per favore riprova.",
-    "required": "Questo campo è obbligatorio"
+    "required": "Questo campo è obbligatorio",
+    "emailOptional": "opzionale, per conferma via email"
   },
   "admin": {
     "title": "Gestione Prenotazioni",

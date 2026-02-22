@@ -54,12 +54,35 @@ Click **"Environment Variables"** and add these **3 required variables**:
    ```
    - Environment: Select **Production**, **Preview**, and **Development**
 
-5. **TWILIO_PHONE_NUMBER** (Optional - for SMS)
+5. **TWILIO_PHONE_NUMBER** (Optional - for SMS & admin alerts)
    ```
-   (Leave empty if not using SMS)
+   (Your Twilio phone number, e.g. +1234567890)
    ```
-   - Format: `+1234567890` (with country code)
+   - Format: `+1234567890` (with country code). This is the number that **sends** SMS/WhatsApp, not the admin’s number.
    - Environment: Select **Production**, **Preview**, and **Development**
+
+6. **ADMIN_PHONE** (Optional - who receives new-reservation alerts)
+   ```
+   +31686371240
+   ```
+   - Admin receives SMS and WhatsApp at this number. Default is +31686371240 if not set.
+   - Environment: **Production** (and Preview/Development if you want)
+
+7. **TWILIO_WHATSAPP_NUMBER** (Optional - for admin WhatsApp alerts)
+   ```
+   +14155238886
+   ```
+   - Use Twilio’s WhatsApp sandbox number (or your WhatsApp-enabled Twilio number). Get it from [Twilio WhatsApp Sandbox](https://www.twilio.com/docs/whatsapp/sandbox).
+   - Environment: **Production** (and others if needed)
+
+8. **RESEND_API_KEY** (Optional - for admin email alerts)
+   ```
+   re_xxxxxxxxxxxx
+   ```
+   - Get an API key at [resend.com](https://resend.com). Admin receives new-reservation emails at fikrselina@gmail.com.
+   - Environment: **Production** (and others if needed)
+
+**After adding or changing any variable:** go to **Deployments** → open the **⋯** menu on the latest deployment → **Redeploy**. Env vars are applied on the next deploy.
 
 ### 2.5 Deploy
 1. Click **"Deploy"** button
@@ -167,16 +190,29 @@ Vercel will show you DNS records to add. Follow these steps:
   2. Check phone number format: `+1234567890` (with country code)
   3. See `TWILIO_SETUP.md` for setup instructions
 
+### Not Getting Admin Notifications (SMS / Email / WhatsApp)
+- **Solution**:
+  1. In Vercel: **Project** → **Settings** → **Environment Variables**. Add (for **Production**):
+     - **SMS**: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, and optionally `ADMIN_PHONE` (e.g. +31686371240).
+     - **Email**: `RESEND_API_KEY` (from [resend.com](https://resend.com)).
+     - **WhatsApp**: same Twilio SID/Token, plus `TWILIO_WHATSAPP_NUMBER` (e.g. +14155238886). Admin number = `ADMIN_PHONE`; on a Twilio trial, that number must join the WhatsApp sandbox first.
+  2. **Redeploy**: **Deployments** → **⋯** on latest → **Redeploy**. Env vars only apply after a new deploy.
+  3. Check **Vercel** → **Logs** (or **Functions** tab) after a test reservation; you’ll see either “Admin SMS sent” or a warning listing which variable is missing.
+
 ## 📝 Quick Reference
 
 ### Environment Variables Summary
 ```
-MONGODB_URI=mongodb+srv://wediabrhana_db_user:yesno1212@cluster0.xgobxlz.mongodb.net/?appName=Cluster0
-ADMIN_PASSWORD=admin123 (CHANGE THIS!)
-TWILIO_ACCOUNT_SID= (optional)
-TWILIO_AUTH_TOKEN= (optional)
-TWILIO_PHONE_NUMBER= (optional)
+MONGODB_URI=          (required)
+ADMIN_PASSWORD=       (required; change from default!)
+TWILIO_ACCOUNT_SID=   (optional – SMS + WhatsApp)
+TWILIO_AUTH_TOKEN=    (optional)
+TWILIO_PHONE_NUMBER=  (optional – Twilio “from” number for SMS)
+ADMIN_PHONE=          (optional – admin receives alerts, default +31686371240)
+TWILIO_WHATSAPP_NUMBER= (optional – e.g. +14155238886 for WhatsApp)
+RESEND_API_KEY=       (optional – admin email alerts)
 ```
+**Redeploy after changing env vars.**
 
 ### Important URLs
 - **Vercel Dashboard**: https://vercel.com/dashboard

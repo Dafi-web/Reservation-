@@ -140,10 +140,13 @@ export async function sendRejectionSMS(reservation: Reservation, reason?: string
  * Uses Twilio WhatsApp API; "from" must be a WhatsApp-enabled Twilio number (e.g. sandbox).
  */
 export async function sendAdminReservationWhatsApp(reservation: Reservation): Promise<boolean> {
-  if (!client || !whatsappFrom || !whatsappFrom.trim()) {
-    console.warn(
-      '⚠️ Twilio WhatsApp not configured. Set TWILIO_WHATSAPP_NUMBER (e.g. +14155238886 for sandbox) in .env.local'
-    );
+  if (!client) {
+    console.warn('⚠️ Admin WhatsApp skipped: need TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN in .env.local');
+    return false;
+  }
+  const from = (whatsappFrom || '').trim();
+  if (!from) {
+    console.warn('⚠️ Admin WhatsApp skipped: set TWILIO_WHATSAPP_NUMBER (e.g. +14155238886) in .env.local');
     return false;
   }
 
@@ -155,7 +158,7 @@ export async function sendAdminReservationWhatsApp(reservation: Reservation): Pr
   }
 
   try {
-    const from = whatsappFrom.replace(/^whatsapp:/i, '').trim();
+    const fromClean = from.replace(/^whatsapp:/i, '');
     const body = [
       '📅 New reservation – Ristorante Africa',
       `Name: ${reservation.name}`,
@@ -168,7 +171,7 @@ export async function sendAdminReservationWhatsApp(reservation: Reservation): Pr
 
     const messageResult = await client.messages.create({
       body,
-      from: `whatsapp:${from}`,
+      from: `whatsapp:${fromClean}`,
       to: `whatsapp:${to.replace(/^whatsapp:/i, '').trim()}`,
     });
 
@@ -186,7 +189,7 @@ export async function sendAdminReservationWhatsApp(reservation: Reservation): Pr
  */
 export async function sendAdminReservationSMS(reservation: Reservation): Promise<boolean> {
   if (!client || !fromNumber) {
-    console.warn('⚠️ Twilio not configured. Admin SMS will not be sent.');
+    console.warn('⚠️ Admin SMS skipped: need TWILIO_ACCOUNT_SID (or TWILIO_SID), TWILIO_AUTH_TOKEN (or TWILIO_TOKEN), and TWILIO_PHONE_NUMBER in .env.local');
     return false;
   }
 

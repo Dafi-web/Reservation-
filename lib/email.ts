@@ -163,6 +163,78 @@ export async function sendAdminReservationNotification(
   }
 }
 
+/**
+ * Send confirmation email to the customer when admin confirms the reservation.
+ * Only sends if reservation.email is set.
+ */
+export async function sendCustomerConfirmationEmail(reservation: Reservation): Promise<boolean> {
+  const to = (reservation.email || '').trim();
+  if (!to || !to.includes('@')) {
+    console.warn('[Email] Customer confirmation skipped: no valid email on reservation');
+    return false;
+  }
+  const client = await getResendClient();
+  if (!client) {
+    console.warn('[Email] Customer confirmation skipped: RESEND_API_KEY not set');
+    return false;
+  }
+  const formattedDate = formatDate(reservation.date);
+  const subject = `Your reservation at Ristorante Africa is confirmed – ${formattedDate}`;
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f5f5;padding:24px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+        <tr><td style="background:linear-gradient(135deg,#b45309 0%,#92400e 100%);padding:28px 32px;text-align:center;">
+          <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Ristorante Africa</h1>
+          <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Reservation confirmed</p>
+        </td></tr>
+        <tr><td style="padding:32px 28px;">
+          <p style="margin:0 0 20px;color:#374151;font-size:16px;">Hello ${escapeHtml(reservation.name)},</p>
+          <p style="margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;">Your table reservation has been <strong>confirmed</strong>. We look forward to welcoming you.</p>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:16px;border-collapse:collapse;">
+            <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;margin-bottom:8px;">
+              <span style="color:#64748b;font-size:12px;">Date & time</span><br/>
+              <span style="color:#1c1917;font-size:16px;font-weight:600;">${escapeHtml(formattedDate)} · ${escapeHtml(reservation.time)}</span>
+            </td></tr>
+            <tr><td style="height:8px;"></td></tr>
+            <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;">
+              <span style="color:#64748b;font-size:12px;">Guests</span><br/>
+              <span style="color:#1c1917;font-size:16px;font-weight:600;">${reservation.guests} ${reservation.guests === 1 ? 'guest' : 'guests'}</span>
+            </td></tr>
+          </table>
+          <p style="margin:24px 0 0;color:#64748b;font-size:13px;">If you need to change or cancel, please contact us.</p>
+        </td></tr>
+        <tr><td style="padding:16px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
+          <p style="margin:0;color:#64748b;font-size:12px;">Ristorante Africa</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+  try {
+    const { data, error } = await client.emails.send({
+      from: FROM_EMAIL,
+      to: [to],
+      subject,
+      html,
+    });
+    if (error) {
+      console.error('❌ Customer confirmation email error:', error);
+      return false;
+    }
+    console.log('✅ Customer confirmation email sent to', to);
+    return true;
+  } catch (err) {
+    console.error('❌ Failed to send customer confirmation email:', err);
+    return false;
+  }
+}
+
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
     '&': '&amp;',

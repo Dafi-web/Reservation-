@@ -41,7 +41,8 @@
     "title": "Reservierung Buchen",
     "success": "Reservierung bestätigt! Wir werden Sie bald kontaktieren.",
     "error": "Reservierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
-    "required": "Dieses Feld ist erforderlich"
+    "required": "Dieses Feld ist erforderlich",
+    "emailOptional": "optional, für E-Mail-Bestätigung"
   },
   "admin": {
     "title": "Reservierungsverwaltung",
