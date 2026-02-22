@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
 
-const ADMIN_CONTACT_PHONE = '+393513468002';
+const ADMIN_CONTACT_PHONE = '+31686371240';
 
 export default function ReservationsPage() {
   const t = useTranslations();

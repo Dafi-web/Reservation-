@@ -8,7 +8,7 @@ const fromNumber = process.env.TWILIO_PHONE_NUMBER;
 const whatsappFrom = process.env.TWILIO_WHATSAPP_NUMBER || '+14155238886'; // Twilio WhatsApp sandbox default
 
 // Admin receives new-reservation SMS and WhatsApp on this number
-const ADMIN_PHONE = process.env.ADMIN_PHONE || '+393513468002';
+const ADMIN_PHONE = process.env.ADMIN_PHONE || '+31686371240';
 
 // Only initialize if credentials are available
 const client = accountSid && authToken

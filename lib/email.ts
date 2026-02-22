@@ -1,7 +1,7 @@
 import { Reservation } from './types';
 
 const ADMIN_EMAIL = 'fikrselina@gmail.com';
-const ADMIN_PHONE = '+393513468002';
+const ADMIN_PHONE = '+31686371240';
 
 const FROM_EMAIL = 'Ristorante Africa <onboarding@resend.dev>';
 
