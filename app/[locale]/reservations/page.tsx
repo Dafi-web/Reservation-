@@ -20,6 +20,8 @@ export default function ReservationsPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState(30);
   const [availableSeats, setAvailableSeats] = useState<number | null>(null);
   const [loadingAvailability, setLoadingAvailability] = useState(true);
 
@@ -27,6 +29,23 @@ export default function ReservationsPage() {
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const effectiveDate = formData.date || today;
+
+  // Success popup: 30s countdown then redirect to home
+  useEffect(() => {
+    if (!showSuccessPopup) return;
+    const redirectTimer = setTimeout(() => {
+      setShowSuccessPopup(false);
+      setMessage(null);
+      router.push('/');
+    }, 30000);
+    const countdownInterval = setInterval(() => {
+      setRedirectCountdown((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+    return () => {
+      clearTimeout(redirectTimer);
+      clearInterval(countdownInterval);
+    };
+  }, [showSuccessPopup, router]);
 
   useEffect(() => {
     const fetchAvailability = async () => {
@@ -89,7 +108,10 @@ export default function ReservationsPage() {
       }
 
       if (response.ok) {
-        setMessage({ type: 'success', text: t('reservation.success') });
+        const successText = t('reservation.success');
+        setMessage({ type: 'success', text: successText });
+        setShowSuccessPopup(true);
+        setRedirectCountdown(30);
         const bookedDate = formData.date || today;
         const availResponse = await fetch(`/api/availability?date=${bookedDate}`, { cache: 'no-store' });
         if (availResponse.ok) {
@@ -108,9 +130,6 @@ export default function ReservationsPage() {
           guests: '2',
           specialRequests: '',
         });
-        setTimeout(() => {
-          router.push('/');
-        }, 6000);
       } else {
         if (responseData.availableSeats !== undefined) {
           setMessage({
@@ -145,27 +164,48 @@ export default function ReservationsPage() {
   const maxDateStr = maxDate.toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-stone-100 to-stone-50 py-12 lg:py-16 relative overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-amber-200/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-stone-300/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
-      </div>
-      
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="glass-effect rounded-3xl shadow-elegant-lg p-8 lg:p-12 border border-white/50 animate-scale-in">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-600 to-stone-700 rounded-2xl mb-4">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-              {t('reservation.title')}
-            </h1>
-            <p className="text-gray-600 text-lg">
-              Reserve your table and experience culinary excellence
-            </p>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Hero strip - same as home page */}
+      <section className="relative py-16 lg:py-20 overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900" />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-amber-700/15 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" />
+          <div className="absolute top-40 right-10 w-96 h-96 bg-stone-700/15 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-amber-800/15 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '4s' }} />
+        </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-amber-500/20 rounded-2xl mb-4 border border-amber-400/30">
+            <svg className="w-7 h-7 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2">
+            {t('reservation.title')}
+          </h1>
+          <div className="flex justify-center items-center mb-4 space-x-3">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+            <span className="text-amber-400 text-lg">✦</span>
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+          </div>
+          <p className="text-amber-100/90 text-lg max-w-xl mx-auto">
+            Reserve your table and experience culinary excellence
+          </p>
+        </div>
+      </section>
+
+      {/* Form section - same background as home menu */}
+      <section className="relative py-12 lg:py-16 bg-gradient-to-b from-stone-100 via-slate-50 to-gray-50">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-amber-700/15 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-stone-700/15 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] bg-amber-800/10 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '4s' }} />
+        </div>
+
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="glass-effect rounded-3xl shadow-elegant-lg p-8 lg:p-12 border border-amber-200/40 bg-white/90 backdrop-blur-sm">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-stone-800 mb-1">Your details</h2>
+              <p className="text-stone-600 text-sm">Fill in the form below to book your table</p>
             
             {/* Available Seats Display */}
             {availableSeats !== null && (
@@ -199,25 +239,31 @@ export default function ReservationsPage() {
             )}
           </div>
 
-          {message && (
-            <div
-              className={`mb-6 p-4 rounded-xl border ${
-                message.type === 'success'
-                  ? 'bg-green-50 border-green-200 text-green-800'
-                  : 'bg-red-50 border-red-200 text-red-800'
-              }`}
-            >
+          {message && message.type !== 'success' && (
+            <div className="mb-6 p-4 rounded-xl border bg-red-50 border-red-200 text-red-800">
               <div className="flex items-center">
-                {message.type === 'success' ? (
-                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <span className="font-medium">{message.text}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Success popup: show for 30 seconds then redirect to home */}
+          {showSuccessPopup && message?.type === 'success' && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center border-2 border-amber-200/60">
+                <div className="mx-auto w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                ) : (
-                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                )}
-                <span className="font-medium">{message.text}</span>
+                </div>
+                <h3 className="text-xl font-bold text-stone-800 mb-2">Booking received</h3>
+                <p className="text-stone-600 mb-6">{message.text}</p>
+                <p className="text-sm text-stone-500">
+                  Redirecting to home in <span className="font-semibold text-amber-600">{redirectCountdown}</span> second{redirectCountdown !== 1 ? 's' : ''}...
+                </p>
               </div>
             </div>
           )}
@@ -225,7 +271,7 @@ export default function ReservationsPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="name" className="block text-sm font-semibold text-stone-700 mb-2">
                   {t('common.name')} <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -235,13 +281,13 @@ export default function ReservationsPage() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-amber-400 transition-all bg-stone-50/80 focus:bg-white"
                   placeholder="John Doe"
                 />
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="phone" className="block text-sm font-semibold text-stone-700 mb-2">
                   {t('common.phone')} <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -251,14 +297,14 @@ export default function ReservationsPage() {
                   required
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-amber-400 transition-all bg-stone-50/80 focus:bg-white"
                   placeholder="+1 (555) 123-4567"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                  {t('common.email')} <span className="text-gray-400 font-normal">({t('reservation.emailOptional')})</span>
+                <label htmlFor="email" className="block text-sm font-semibold text-stone-700 mb-2">
+                  {t('common.email')} <span className="text-stone-400 font-normal">({t('reservation.emailOptional')})</span>
                 </label>
                 <input
                   type="email"
@@ -266,7 +312,7 @@ export default function ReservationsPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-amber-400 transition-all bg-stone-50/80 focus:bg-white"
                   placeholder="you@example.com"
                 />
               </div>
@@ -274,7 +320,7 @@ export default function ReservationsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="date" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="date" className="block text-sm font-semibold text-stone-700 mb-2">
                   {t('common.date')} <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -286,12 +332,12 @@ export default function ReservationsPage() {
                   max={maxDateStr}
                   value={formData.date}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-amber-400 transition-all bg-stone-50/80 focus:bg-white"
                 />
               </div>
 
               <div>
-                <label htmlFor="time" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="time" className="block text-sm font-semibold text-stone-700 mb-2">
                   {t('common.time')} <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -301,16 +347,16 @@ export default function ReservationsPage() {
                   required
                   value={formData.time}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-amber-400 transition-all bg-stone-50/80 focus:bg-white"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="guests" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="guests" className="block text-sm font-semibold text-stone-700 mb-2">
                 {t('common.guests')} <span className="text-red-500">*</span>
                 {availableSeats !== null && (
-                  <span className="ml-2 text-xs font-normal text-gray-500">
+                  <span className="ml-2 text-xs font-normal text-stone-500">
                     (Max: {availableSeats} available)
                   </span>
                 )}
@@ -322,7 +368,7 @@ export default function ReservationsPage() {
                 value={formData.guests}
                 onChange={handleChange}
                 disabled={availableSeats === 0}
-                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white ${
+                className={`w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-amber-400 transition-all bg-stone-50/80 focus:bg-white ${
                   availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
@@ -339,7 +385,7 @@ export default function ReservationsPage() {
             </div>
 
             <div>
-              <label htmlFor="specialRequests" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="specialRequests" className="block text-sm font-semibold text-stone-700 mb-2">
                 {t('common.specialRequests')}
               </label>
               <textarea
@@ -348,7 +394,7 @@ export default function ReservationsPage() {
                 rows={4}
                 value={formData.specialRequests}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all bg-gray-50 focus:bg-white resize-none"
+                className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-amber-400 transition-all bg-stone-50/80 focus:bg-white resize-none"
                 placeholder="Any dietary restrictions, allergies, or special requests..."
               />
             </div>
@@ -374,14 +420,15 @@ export default function ReservationsPage() {
               <button
                 type="button"
                 onClick={() => router.push('/')}
-                className="flex-1 bg-gray-100 text-gray-700 px-8 py-4 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 border border-gray-200"
+                className="flex-1 bg-stone-100 text-stone-700 px-8 py-4 rounded-xl font-semibold hover:bg-stone-200 transition-all duration-300 border border-stone-200"
               >
                 {t('common.cancel')}
               </button>
             </div>
           </form>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

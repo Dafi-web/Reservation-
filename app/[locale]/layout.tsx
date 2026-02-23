@@ -29,7 +29,7 @@ export default async function LocaleLayout({
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <div className="min-h-screen bg-gray-50">
+          <div className="min-h-screen bg-gradient-to-b from-stone-100 via-slate-50 to-gray-50">
             <Navigation />
             <main>{children}</main>
             <FloatingAdminButton />

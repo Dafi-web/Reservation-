@@ -97,9 +97,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Interactive Menu with Collapsible Categories - professional color background, no image */}
-      <section className="bg-gradient-to-b from-stone-100 via-slate-50 to-gray-50">
-        <InteractiveMenu categories={categories} menuItems={safeMenuItems} />
+      {/* Interactive Menu - same gradient + floating orbs as reservations */}
+      <section className="relative bg-gradient-to-b from-stone-100 via-slate-50 to-gray-50 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-amber-700/15 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" />
+          <div className="absolute bottom-40 right-10 w-96 h-96 bg-stone-700/15 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-1/3 right-1/4 w-[28rem] h-[28rem] bg-amber-800/10 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float" style={{ animationDelay: '4s' }} />
+        </div>
+        <div className="relative z-10">
+          <InteractiveMenu categories={categories} menuItems={safeMenuItems} />
+        </div>
       </section>
 
       {/* Footer with Admin Access */}

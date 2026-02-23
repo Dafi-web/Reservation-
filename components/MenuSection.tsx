@@ -24,7 +24,7 @@ export default function MenuSection({ category, items, isOpen, onToggle }: MenuS
   if (items.length === 0) return null;
 
   return (
-    <div className={`mb-6 border-2 ${category.borderColor} rounded-3xl overflow-hidden bg-white shadow-elegant hover:shadow-elegant-lg transition-all duration-500 ease-out`}>
+    <div className={`mb-6 border-2 ${category.borderColor} rounded-3xl overflow-hidden bg-white/95 backdrop-blur-sm shadow-elegant hover:shadow-elegant-lg transition-all duration-500 ease-out`}>
       {/* Category Header - Clickable and Centered */}
       <button
         onClick={onToggle}

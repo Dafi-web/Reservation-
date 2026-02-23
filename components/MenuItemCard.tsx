@@ -20,7 +20,7 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
   return (
     <>
       <div
-        className="group rounded-xl shadow-elegant overflow-hidden hover-lift border border-gray-200/80 transition-all duration-500 ease-out relative cursor-pointer bg-gradient-to-br from-slate-50 via-gray-50 to-stone-100 hover:from-slate-100 hover:via-gray-100 hover:to-stone-200"
+        className="group rounded-xl shadow-elegant overflow-hidden hover-lift border border-stone-200/90 transition-all duration-500 ease-out relative cursor-pointer bg-gradient-to-br from-stone-50 via-slate-50 to-amber-50/30 hover:from-stone-100 hover:via-amber-50/40 hover:to-stone-100"
         style={
           isVisible
             ? {
@@ -32,7 +32,7 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
         onClick={() => setIsModalOpen(true)}
       >
         {/* Subtle hover gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-transparent to-white/0 group-hover:from-amber-50/20 group-hover:via-transparent group-hover:to-stone-50/20 transition-all duration-500 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-transparent to-white/0 group-hover:from-amber-50/30 group-hover:via-transparent group-hover:to-stone-50/20 transition-all duration-500 pointer-events-none" />
         {/* Shine Effect */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
           <div className="absolute inset-0 shimmer"></div>
@@ -91,7 +91,7 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
           </div>
 
           {/* Description */}
-          <p className="text-gray-600 mb-3 text-xs leading-relaxed line-clamp-2 group-hover:text-gray-700 transition-colors">
+          <p className="text-stone-600 mb-3 text-xs leading-relaxed line-clamp-2 group-hover:text-stone-700 transition-colors">
             {item.description}
           </p>
 
