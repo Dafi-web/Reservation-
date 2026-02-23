@@ -47,7 +47,7 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
               </button>
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                 <h2 className="text-3xl md:text-4xl font-bold mb-2">{item.name}</h2>
-                <div className="text-2xl font-bold text-amber-200">${item.price.toFixed(2)}</div>
+                <div className="text-2xl font-bold text-amber-200">€{item.price.toFixed(2)}</div>
               </div>
             </div>
           ) : (
@@ -61,7 +61,7 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
                 </svg>
               </button>
               <h2 className="text-3xl md:text-4xl font-bold mb-2 pr-12">{item.name}</h2>
-              <div className="text-2xl font-bold text-amber-200">${item.price.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-amber-200">€{item.price.toFixed(2)}</div>
             </div>
           )}
         </div>

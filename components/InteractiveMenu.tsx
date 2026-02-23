@@ -38,7 +38,7 @@ export default function InteractiveMenu({ categories, menuItems }: InteractiveMe
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
       {categories.map((category, index) => {
         const categoryItems = items.filter((item) => item.category === category.key);
         return (
