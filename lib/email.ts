@@ -23,8 +23,13 @@ function isValidEmail(email: string): boolean {
   return true;
 }
 
-/** Options when sending email (e.g. Reply-To so admin can reply to guest). */
-type SendEmailOptions = { replyTo?: string };
+/** Options when sending email (e.g. Reply-To, custom From display name). */
+type SendEmailOptions = { replyTo?: string; fromLabel?: string };
+
+/** Escape a string for use inside a quoted email display name (e.g. "Name" <addr>). */
+function escapeFromLabel(s: string): string {
+  return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
 
 /** Send one email to one or more recipients. Uses Gmail if configured (no domain needed), else Resend. */
 async function sendEmail(to: string[], subject: string, html: string, options?: SendEmailOptions): Promise<boolean> {
@@ -34,6 +39,7 @@ async function sendEmail(to: string[], subject: string, html: string, options?: 
 
   const replyTo = options?.replyTo?.trim();
   const replyToValid = replyTo && isValidEmail(replyTo) ? replyTo : undefined;
+  const fromLabel = options?.fromLabel?.trim();
 
   // Prefer Gmail for all sends when configured (checked at send-time so Vercel env is used)
   const gmailUser = process.env.GMAIL_USER?.trim();
@@ -47,8 +53,9 @@ async function sendEmail(to: string[], subject: string, html: string, options?: 
         service: 'gmail',
         auth: { user: gmailUser, pass: gmailPass },
       });
+      const fromDisplay = fromLabel ? `"${escapeFromLabel(fromLabel)}" <${gmailUser}>` : `"Ristorante Africa" <${gmailUser}>`;
       await transport.sendMail({
-        from: `"Ristorante Africa" <${gmailUser}>`,
+        from: fromDisplay,
         to: toList.join(', '),
         ...(replyToValid && { replyTo: replyToValid }),
         subject,
@@ -71,11 +78,14 @@ async function sendEmail(to: string[], subject: string, html: string, options?: 
 
   const key = process.env.RESEND_API_KEY;
   if (!key) return false;
+  const fromEmailMatch = FROM_EMAIL_RESEND.match(/<([^>]+)>/);
+  const resendFromEmail = fromEmailMatch ? fromEmailMatch[1].trim() : FROM_EMAIL_RESEND;
   try {
     const { Resend } = await import('resend');
     const client = new Resend(key);
+    const resendFrom = fromLabel ? `"${escapeFromLabel(fromLabel)}" <${resendFromEmail}>` : FROM_EMAIL_RESEND;
     const { error } = await client.emails.send({
-      from: FROM_EMAIL_RESEND,
+      from: resendFrom,
       to: toList,
       ...(replyToValid && { reply_to: replyToValid }),
       subject,
@@ -217,10 +227,15 @@ export async function sendAdminReservationNotification(
 </html>
 `.trim();
 
-  // Reply-To: guest email so when admin hits "Reply" it goes to the customer, not to self
+  // Always show this email as FROM the guest, not from the restaurant/admin – so admin sees "From: guest@email.com" or "From: Guest: John"
   const guestEmail = (reservation.email || '').trim();
   const replyTo = isValidEmail(guestEmail) ? guestEmail : undefined;
-  return sendEmail([ADMIN_EMAIL], subject, html, { replyTo });
+  const fromLabel = isValidEmail(guestEmail)
+    ? guestEmail
+    : (reservation.name || 'Guest').trim()
+      ? `Guest: ${(reservation.name || 'Guest').trim()}`
+      : undefined;
+  return sendEmail([ADMIN_EMAIL], subject, html, { replyTo, fromLabel });
 }
 
 /**
