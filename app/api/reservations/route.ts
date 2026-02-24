@@ -8,7 +8,7 @@ import {
 } from '@/lib/data';
 import { Reservation } from '@/lib/types';
 import { sendConfirmationSMS, sendRejectionSMS, sendAdminReservationWhatsApp, sendAdminReservationSMS } from '@/lib/sms';
-import { sendAdminReservationNotification, sendCustomerConfirmationEmail, sendGuestRequestReceivedEmail } from '@/lib/email';
+import { sendAdminReservationNotification, sendCustomerConfirmationEmail, sendCustomerRejectionEmail, sendGuestRequestReceivedEmail } from '@/lib/email';
 
 export async function GET() {
   try {
@@ -104,7 +104,11 @@ export async function POST(request: NextRequest) {
       console.error('[Reservation] Admin email error:', e);
     }
     try {
-      await sendGuestRequestReceivedEmail(reservation);
+      if ((reservation.email || '').trim()) {
+        await sendGuestRequestReceivedEmail(reservation);
+      } else {
+        console.warn('[Reservation] No guest email provided – request-received email not sent. Ask customers to enter email to get confirmations.');
+      }
     } catch (e) {
       console.error('[Reservation] Guest request-received email error:', e);
     }
@@ -195,16 +199,27 @@ export async function PATCH(request: NextRequest) {
         smsSent = await sendConfirmationSMS(reservation);
         if (smsSent) console.log('✅ Confirmation SMS sent');
         else console.warn('⚠️ Confirmation SMS not sent (check Twilio)');
-        try {
-          await sendCustomerConfirmationEmail(reservation);
-        } catch (e) {
-          console.error('Customer confirmation email failed:', e);
+        if ((reservation.email || '').trim()) {
+          try {
+            await sendCustomerConfirmationEmail(reservation);
+          } catch (e) {
+            console.error('Customer confirmation email failed:', e);
+          }
+        } else {
+          console.warn('[Reservation] No guest email – confirmation email not sent. Set GMAIL_USER + GMAIL_APP_PASSWORD so guest emails work.');
         }
       } else if (status === 'rejected') {
         console.log('📱 Attempting to send rejection SMS...');
         smsSent = await sendRejectionSMS(reservation, rejectionReason);
         if (smsSent) console.log('✅ Rejection SMS sent');
         else console.warn('⚠️ Rejection SMS not sent (check Twilio)');
+        if ((reservation.email || '').trim()) {
+          try {
+            await sendCustomerRejectionEmail(reservation, rejectionReason);
+          } catch (e) {
+            console.error('Customer rejection email failed:', e);
+          }
+        }
       }
     } catch (error: any) {
       smsError = error.message || 'Unknown error';

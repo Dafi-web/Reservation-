@@ -62,3 +62,6 @@ All of these are sent **from** your Gmail address and can be delivered to **any*
 
 - **Admin email**  
   By default the code sends admin notifications to **ristoranteafrica88@gmail.com**. You can use the same Gmail for sending and receiving, or set `ADMIN_EMAIL` to another address.
+
+- **Guests don’t receive emails (admin does)**  
+  If you only use Resend (no Gmail), Resend delivers only to the account owner. Set **GMAIL_USER** and **GMAIL_APP_PASSWORD** in Vercel so the app can send to any address (guests get “request received”, “confirmed”, and “rejected” emails).

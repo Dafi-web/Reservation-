@@ -315,6 +315,7 @@ export default function ReservationsPage() {
                   className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:ring-2 focus:ring-amber-600 focus:border-amber-400 transition-all bg-stone-50/80 focus:bg-white"
                   placeholder="you@example.com"
                 />
+                <p className="mt-1.5 text-xs text-stone-500">Enter your email to receive confirmation and updates</p>
               </div>
             </div>
 

@@ -52,6 +52,10 @@ async function sendEmail(to: string[], subject: string, html: string): Promise<b
 
   const key = process.env.RESEND_API_KEY;
   if (!key) return false;
+  const isToGuest = toList.some((e) => e.toLowerCase() !== ADMIN_EMAIL.toLowerCase());
+  if (isToGuest && FROM_EMAIL_RESEND.includes('onboarding@resend.dev')) {
+    console.warn('⚠️ Resend with onboarding@resend.dev only delivers to the account owner. Guest emails will fail (403). Set GMAIL_USER + GMAIL_APP_PASSWORD in Vercel to send to guests.');
+  }
   try {
     const { Resend } = await import('resend');
     const client = new Resend(key);
@@ -279,6 +283,48 @@ export async function sendCustomerConfirmationEmail(reservation: Reservation): P
             </td></tr>
           </table>
           <p style="margin:24px 0 0;color:#64748b;font-size:13px;">If you need to change or cancel, please contact us.</p>
+        </td></tr>
+        <tr><td style="padding:16px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
+          <p style="margin:0;color:#64748b;font-size:12px;">Ristorante Africa</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+  return sendEmail([to], subject, html);
+}
+
+/**
+ * Send rejection email to the customer when admin rejects (if they gave an email).
+ */
+export async function sendCustomerRejectionEmail(
+  reservation: Reservation,
+  reason?: string
+): Promise<boolean> {
+  const to = (reservation.email || '').trim();
+  if (!isValidEmail(to)) return false;
+  if (!USE_GMAIL && !process.env.RESEND_API_KEY?.trim()) return false;
+  const formattedDate = formatDate(reservation.date);
+  const subject = `Update on your reservation – Ristorante Africa`;
+  const reasonLine = reason && reason.trim() ? `<p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;"><strong>Reason:</strong> ${escapeHtml(reason.trim())}</p>` : '';
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f5f5;padding:24px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+        <tr><td style="background:linear-gradient(135deg,#b45309 0%,#92400e 100%);padding:28px 32px;text-align:center;">
+          <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Ristorante Africa</h1>
+          <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Reservation update</p>
+        </td></tr>
+        <tr><td style="padding:32px 28px;">
+          <p style="margin:0 0 20px;color:#374151;font-size:16px;">Hello ${escapeHtml(reservation.name)},</p>
+          <p style="margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;">Unfortunately we are unable to confirm your table reservation for <strong>${escapeHtml(formattedDate)}</strong> at ${escapeHtml(reservation.time)}.</p>
+          ${reasonLine}
+          <p style="margin:0 0 20px;color:#64748b;font-size:14px;">Please contact us to make a new reservation or choose another date. We look forward to hearing from you.</p>
         </td></tr>
         <tr><td style="padding:16px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
           <p style="margin:0;color:#64748b;font-size:12px;">Ristorante Africa</p>
