@@ -79,7 +79,8 @@ Click **"Environment Variables"** and add these **3 required variables**:
    ```
    re_xxxxxxxxxxxx
    ```
-   - Get an API key at [resend.com](https://resend.com). Admin receives new-reservation emails at ristoranteafrica88@gmail.com. To change it, set **ADMIN_EMAIL** in Vercel (e.g. `ristoranteafrica88@gmail.com`) and redeploy..
+   - Get an API key at [resend.com](https://resend.com). Admin receives new-reservation emails at ristoranteafrica88@gmail.com. To change it, set **ADMIN_EMAIL** in Vercel and redeploy.  
+**Guests only receive emails (confirmations, rejections) if you set GMAIL_USER and GMAIL_APP_PASSWORD** in Vercel – see [EMAIL_SETUP_SIMPLE.md](./EMAIL_SETUP_SIMPLE.md). Without Gmail, only the admin gets emails..
    - Environment: **Production** (and others if needed)
 
 **After adding or changing any variable:** go to **Deployments** → open the **⋯** menu on the latest deployment → **Redeploy**. Env vars are applied on the next deploy.

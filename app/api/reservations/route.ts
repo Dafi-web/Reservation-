@@ -199,14 +199,16 @@ export async function PATCH(request: NextRequest) {
         smsSent = await sendConfirmationSMS(reservation);
         if (smsSent) console.log('✅ Confirmation SMS sent');
         else console.warn('⚠️ Confirmation SMS not sent (check Twilio)');
-        if ((reservation.email || '').trim()) {
+        const guestEmail = (reservation.email || '').trim();
+        if (guestEmail) {
           try {
+            console.log('[Reservation] Sending confirmation email to guest:', guestEmail);
             await sendCustomerConfirmationEmail(reservation);
           } catch (e) {
             console.error('Customer confirmation email failed:', e);
           }
         } else {
-          console.warn('[Reservation] No guest email – confirmation email not sent. Set GMAIL_USER + GMAIL_APP_PASSWORD so guest emails work.');
+          console.warn('[Reservation] No guest email on reservation – confirmation not sent. Guest must enter email on the booking form.');
         }
       } else if (status === 'rejected') {
         console.log('📱 Attempting to send rejection SMS...');

@@ -23,26 +23,38 @@ function isValidEmail(email: string): boolean {
   return true;
 }
 
+/** Options when sending email (e.g. Reply-To so admin can reply to guest). */
+type SendEmailOptions = { replyTo?: string };
+
 /** Send one email to one or more recipients. Uses Gmail if configured (no domain needed), else Resend. */
-async function sendEmail(to: string[], subject: string, html: string): Promise<boolean> {
+async function sendEmail(to: string[], subject: string, html: string, options?: SendEmailOptions): Promise<boolean> {
   if (to.length === 0) return false;
   const toList = to.filter((e) => isValidEmail(e));
   if (toList.length === 0) return false;
 
-  if (USE_GMAIL && GMAIL_USER) {
+  const replyTo = options?.replyTo?.trim();
+  const replyToValid = replyTo && isValidEmail(replyTo) ? replyTo : undefined;
+
+  // Prefer Gmail for all sends when configured (checked at send-time so Vercel env is used)
+  const gmailUser = process.env.GMAIL_USER?.trim();
+  const gmailPass = process.env.GMAIL_APP_PASSWORD?.trim();
+  const useGmail = Boolean(gmailUser && gmailPass);
+
+  if (useGmail && gmailUser) {
     try {
       const nodemailer = await import('nodemailer');
       const transport = nodemailer.default.createTransport({
         service: 'gmail',
-        auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD },
+        auth: { user: gmailUser, pass: gmailPass },
       });
       await transport.sendMail({
-        from: `"Ristorante Africa" <${GMAIL_USER}>`,
+        from: `"Ristorante Africa" <${gmailUser}>`,
         to: toList.join(', '),
+        ...(replyToValid && { replyTo: replyToValid }),
         subject,
         html,
       });
-      console.log('✅ Email sent via Gmail to', toList.join(', '));
+      console.log('✅ Email sent via Gmail to', toList.join(', '), replyToValid ? `(Reply-To: ${replyToValid})` : '');
       return true;
     } catch (err) {
       console.error('❌ Gmail send failed:', err);
@@ -50,18 +62,22 @@ async function sendEmail(to: string[], subject: string, html: string): Promise<b
     }
   }
 
+  // Resend: only works for guest emails if you have a verified domain. Otherwise 403.
+  const isToGuest = toList.some((e) => e.toLowerCase() !== ADMIN_EMAIL.toLowerCase());
+  if (isToGuest) {
+    console.error('❌ Guest email NOT sent. To send confirmations to customers, set GMAIL_USER and GMAIL_APP_PASSWORD in Vercel (Settings → Environment Variables), then redeploy. Resend cannot deliver to guest addresses without a verified domain.');
+    return false;
+  }
+
   const key = process.env.RESEND_API_KEY;
   if (!key) return false;
-  const isToGuest = toList.some((e) => e.toLowerCase() !== ADMIN_EMAIL.toLowerCase());
-  if (isToGuest && FROM_EMAIL_RESEND.includes('onboarding@resend.dev')) {
-    console.warn('⚠️ Resend with onboarding@resend.dev only delivers to the account owner. Guest emails will fail (403). Set GMAIL_USER + GMAIL_APP_PASSWORD in Vercel to send to guests.');
-  }
   try {
     const { Resend } = await import('resend');
     const client = new Resend(key);
     const { error } = await client.emails.send({
       from: FROM_EMAIL_RESEND,
       to: toList,
+      ...(replyToValid && { reply_to: replyToValid }),
       subject,
       html,
     });
@@ -201,7 +217,10 @@ export async function sendAdminReservationNotification(
 </html>
 `.trim();
 
-  return sendEmail([ADMIN_EMAIL], subject, html);
+  // Reply-To: guest email so when admin hits "Reply" it goes to the customer, not to self
+  const guestEmail = (reservation.email || '').trim();
+  const replyTo = isValidEmail(guestEmail) ? guestEmail : undefined;
+  return sendEmail([ADMIN_EMAIL], subject, html, { replyTo });
 }
 
 /**
@@ -252,8 +271,12 @@ export async function sendGuestRequestReceivedEmail(reservation: Reservation): P
  */
 export async function sendCustomerConfirmationEmail(reservation: Reservation): Promise<boolean> {
   const to = (reservation.email || '').trim();
-  if (!isValidEmail(to)) return false;
+  if (!isValidEmail(to)) {
+    console.warn('[Email] Confirmation not sent: guest email missing or invalid on reservation', { name: reservation.name, hasEmail: !!reservation.email });
+    return false;
+  }
   if (!USE_GMAIL && !process.env.RESEND_API_KEY?.trim()) return false;
+  console.log('[Email] Sending confirmation to guest:', to);
   const formattedDate = formatDate(reservation.date);
   const subject = `Your reservation at Ristorante Africa is confirmed – ${formattedDate}`;
   const html = `
