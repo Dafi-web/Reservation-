@@ -41,7 +41,7 @@ If you prefer Resend (or have a domain), follow the steps below.
 
 ## Step 3b: Send to ANY email (admin + any guest)
 
-By default, Resend may only deliver to the **email address you used to sign up**. To deliver to **any address** (admin wediabrhana@gmail.com, and any guest who enters their email), you must **verify a domain** in Resend and send from that domain.
+By default, Resend may only deliver to the **email address you used to sign up**. To deliver to **any address** (admin ristoranteafrica88@gmail.com, and any guest who enters their email), you must **verify a domain** in Resend and send from that domain.
 
 1. In **Resend**, go to **Domains** (left sidebar).
 2. Click **Add Domain** and enter your domain (e.g. `yourrestaurant.com` or the domain of your Vercel app, e.g. `your-app.vercel.app` is not a custom domain – use a domain you own).
@@ -72,7 +72,7 @@ Environment variables only apply on the **next** deployment.
 
 1. Open your live site (e.g. `https://your-app.vercel.app`).
 2. Go to the **Reservations** page and submit a test reservation (use a real email for the guest if you want to test customer confirmation later).
-3. **Admin email:** You should receive an email at **wediabrhana@gmail.com** with the new reservation details.
+3. **Admin email:** You should receive an email at **ristoranteafrica88@gmail.com** with the new reservation details.
 4. **Customer email:** Log in to the admin panel, find the test reservation, and click **Accept**. If the guest entered an email, they should receive a confirmation email.
 
 ---
@@ -81,7 +81,7 @@ Environment variables only apply on the **next** deployment.
 
 | Event | Recipient | Email |
 |-------|-----------|--------|
-| User submits a reservation | Admin | wediabrhana@gmail.com (new reservation alert) |
+| User submits a reservation | Admin | ristoranteafrica88@gmail.com (new reservation alert) |
 | User submits a reservation and entered their email | Guest | The email they entered (“We received your request”) |
 | Admin accepts a reservation and the guest left an email | Guest | The email they entered (confirmation) |
 
@@ -90,11 +90,11 @@ Environment variables only apply on the **next** deployment.
 ## Troubleshooting
 
 - **Emails only go to the Resend account email, not to admin or guests**
-  - Resend restricts delivery until you **verify a domain**. Follow **Step 3b** above: add and verify your domain in Resend, then set `RESEND_FROM_EMAIL` in Vercel (e.g. `noreply@yourdomain.com`) and redeploy. After that, admin (wediabrhana@gmail.com) and any guest email will receive messages.
+  - Resend restricts delivery until you **verify a domain**. Follow **Step 3b** above: add and verify your domain in Resend, then set `RESEND_FROM_EMAIL` in Vercel (e.g. `noreply@yourdomain.com`) and redeploy. After that, admin (ristoranteafrica88@gmail.com) and any guest email will receive messages.
 
 - **No admin email when someone books**
   - Confirm `RESEND_API_KEY` is set in Vercel (Step 3) and you **redeployed** (Step 4).
-  - If you need delivery to wediabrhana@gmail.com (not your Resend signup email), complete **Step 3b** (domain verification + `RESEND_FROM_EMAIL`).
+  - If you need delivery to ristoranteafrica88@gmail.com (not your Resend signup email), complete **Step 3b** (domain verification + `RESEND_FROM_EMAIL`).
 
 - **No customer “request received” or confirmation when you accept**
   - The guest must have entered a **valid email** on the reservation form (optional field).

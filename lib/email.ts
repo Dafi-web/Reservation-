@@ -1,6 +1,6 @@
 import { Reservation } from './types';
 
-const ADMIN_EMAIL = 'wediabrhana@gmail.com';
+const ADMIN_EMAIL = 'ristoranteafrica88@gmail.com';
 const ADMIN_PHONE = '+31686371240';
 
 /** Resend: use RESEND_FROM_EMAIL after verifying a domain so emails reach any address. With onboarding@resend.dev, Resend only allows sending to the account owner email (403 to other addresses). */
