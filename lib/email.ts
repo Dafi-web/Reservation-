@@ -130,7 +130,28 @@ export async function sendAdminReservationNotification(
   }
 
   const formattedDate = formatDate(reservation.date);
-  const subject = `🍽️ New reservation – ${reservation.name} – ${formattedDate}`;
+  const guestEmail = (reservation.email || '').trim();
+  const hasGuestEmail = isValidEmail(guestEmail);
+  const subject = hasGuestEmail
+    ? `🍽️ New reservation FROM ${guestEmail} – ${reservation.name} – ${formattedDate}`
+    : `🍽️ New reservation – ${reservation.name} – ${formattedDate}`;
+
+  const submittedByLine = hasGuestEmail
+    ? `Submitted by customer: ${escapeHtml(reservation.name)} &lt;<a href="mailto:${escapeHtml(guestEmail)}" style="color:#b45309;font-weight:600;">${escapeHtml(guestEmail)}</a>&gt; — Reply to this email to respond to the customer.`
+    : `Submitted by customer: ${escapeHtml(reservation.name)} (no email given).`;
+
+  const guestEmailRow = hasGuestEmail
+    ? `
+                <tr><td style="height: 10px;"></td></tr>
+                <tr>
+                  <td style="padding: 14px 16px; background: #ecfdf5; border-radius: 10px; border-left: 4px solid #10b981;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr><td style="color: #78716c; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;">Guest email (reply goes to customer)</td></tr>
+                      <tr><td style="color: #1c1917; font-size: 16px; font-weight: 500; padding-top: 4px;"><a href="mailto:${escapeHtml(guestEmail)}" style="color: #b45309; font-weight: 600;">${escapeHtml(guestEmail)}</a></td></tr>
+                    </table>
+                  </td>
+                </tr>`
+    : '';
 
   const html = `
 <!DOCTYPE html>
@@ -149,13 +170,19 @@ export async function sendAdminReservationNotification(
           <tr>
             <td style="background: linear-gradient(135deg, #b45309 0%, #92400e 50%, #78350f 100%); padding: 28px 32px; text-align: center;">
               <h1 style="margin: 0; color: #fff; font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Ristorante Africa</h1>
-              <p style="margin: 6px 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">New reservation request</p>
+              <p style="margin: 6px 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">New reservation request from customer</p>
+            </td>
+          </tr>
+          <!-- Submitted by (customer) – prominent so admin sees it's FROM the user -->
+          <tr>
+            <td style="padding: 16px 28px; background: #fffbeb; border-bottom: 2px solid #f59e0b;">
+              <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.5; font-weight: 600;">📩 ${submittedByLine}</p>
             </td>
           </tr>
           <!-- Content -->
           <tr>
             <td style="padding: 32px 28px 28px;">
-              <p style="margin: 0 0 20px; color: #374151; font-size: 15px; line-height: 1.5;">You have received a new table reservation request. Details below.</p>
+              <p style="margin: 0 0 20px; color: #374151; font-size: 15px; line-height: 1.5;">Customer details below.</p>
               
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin-top: 8px;">
                 <tr>
@@ -166,6 +193,7 @@ export async function sendAdminReservationNotification(
                     </table>
                   </td>
                 </tr>
+                ${guestEmailRow}
                 <tr><td style="height: 10px;"></td></tr>
                 <tr>
                   <td style="padding: 14px 16px; background: #f8fafc; border-radius: 10px;">
@@ -227,14 +255,8 @@ export async function sendAdminReservationNotification(
 </html>
 `.trim();
 
-  // Always show this email as FROM the guest, not from the restaurant/admin – so admin sees "From: guest@email.com" or "From: Guest: John"
-  const guestEmail = (reservation.email || '').trim();
-  const replyTo = isValidEmail(guestEmail) ? guestEmail : undefined;
-  const fromLabel = isValidEmail(guestEmail)
-    ? guestEmail
-    : (reservation.name || 'Guest').trim()
-      ? `Guest: ${(reservation.name || 'Guest').trim()}`
-      : undefined;
+  const replyTo = hasGuestEmail ? guestEmail : undefined;
+  const fromLabel = hasGuestEmail ? guestEmail : (reservation.name || 'Guest').trim() ? `Guest: ${(reservation.name || 'Guest').trim()}` : undefined;
   return sendEmail([ADMIN_EMAIL], subject, html, { replyTo, fromLabel });
 }
 
