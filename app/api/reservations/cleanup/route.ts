@@ -1,38 +1,41 @@
 import { NextResponse } from 'next/server';
-import { cancelExpiredReservations, cancelPreviousDayReservations } from '@/lib/data';
+import {
+  cancelExpiredReservations,
+  cancelPreviousDayReservations,
+  deleteOldCheckedInAndRejectedReservations,
+} from '@/lib/data';
 
 /**
- * API endpoint to manually trigger cleanup of expired reservations
- * This can be called by a cron job or scheduled task
- * 
- * Usage:
- * - GET /api/reservations/cleanup - Run cleanup and return count
- * - Can be called periodically (e.g., every 15 minutes) via cron
+ * API endpoint to run reservation cleanup. Call via cron (e.g. daily).
+ * - Cancels previous-day and expired reservations
+ * - Deletes checked-in reservations older than 1 week and rejected reservations older than 1 week
  */
 export async function GET() {
   try {
-    // First, cancel all previous day reservations (daily reset)
     const previousDayCount = await cancelPreviousDayReservations();
-    
-    // Then, cancel expired reservations for today
     const expiredCount = await cancelExpiredReservations();
-    
+    const { deletedCheckedIn, deletedRejected } = await deleteOldCheckedInAndRejectedReservations();
+
     const totalCancelled = previousDayCount + expiredCount;
-    
+    const totalDeleted = deletedCheckedIn + deletedRejected;
+
     return NextResponse.json({
       success: true,
-      cancelledCount: totalCancelled,
       previousDayCount,
       expiredCount,
-      message: `Cleanup completed. ${previousDayCount} previous day reservation(s) cancelled, ${expiredCount} expired reservation(s) cancelled.`,
+      cancelledCount: totalCancelled,
+      deletedCheckedIn,
+      deletedRejected,
+      totalDeleted,
+      message: `Cleanup done. Cancelled: ${totalCancelled} (previous day + expired). Deleted: ${totalDeleted} (checked-in & rejected older than 1 week).`,
     });
   } catch (error) {
-    console.error('Error cleaning up expired reservations:', error);
+    console.error('Error cleaning up reservations:', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to cleanup expired reservations',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Failed to cleanup reservations',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

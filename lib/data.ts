@@ -494,6 +494,40 @@ export async function cancelExpiredReservations(): Promise<number> {
   return cancelledCount;
 }
 
+const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * Delete reservations that are no longer needed:
+ * - Confirmed + checked in: delete if checkedInAt was more than 1 week ago
+ * - Rejected: delete if updated more than 1 week ago (Mongoose updatedAt)
+ */
+export async function deleteOldCheckedInAndRejectedReservations(): Promise<{ deletedCheckedIn: number; deletedRejected: number }> {
+  await connectDB();
+  const now = Date.now();
+  const oneWeekAgo = new Date(now - ONE_WEEK_MS);
+  const oneWeekAgoISO = oneWeekAgo.toISOString();
+
+  const deletedCheckedIn = (
+    await ReservationModel.deleteMany({
+      status: 'confirmed',
+      checkedIn: true,
+      checkedInAt: { $lt: oneWeekAgoISO },
+    })
+  ).deletedCount;
+
+  const deletedRejected = (
+    await ReservationModel.deleteMany({
+      status: 'rejected',
+      updatedAt: { $lt: oneWeekAgo },
+    })
+  ).deletedCount;
+
+  if (deletedCheckedIn > 0 || deletedRejected > 0) {
+    console.log(`✅ Old reservations deleted: ${deletedCheckedIn} checked-in, ${deletedRejected} rejected (older than 1 week)`);
+  }
+  return { deletedCheckedIn, deletedRejected };
+}
+
 /** Get available seats for a specific date (YYYY-MM-DD). Does not run cleanup (cleanup runs only via /api/reservations/cleanup) so new submissions stay pending for admin. */
 export async function getAvailableSeatsForDate(date: string): Promise<number> {
   await connectDB();
