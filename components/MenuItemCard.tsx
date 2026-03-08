@@ -50,6 +50,7 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
                   height={300}
                   className="w-full h-full object-contain"
                   unoptimized
+                  referrerPolicy="no-referrer"
                 />
               ) : (
                 <div className="w-full h-full bg-stone-900/80 flex items-center justify-center">

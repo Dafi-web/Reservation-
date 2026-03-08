@@ -69,6 +69,7 @@ export default function Navigation() {
                   src="https://raw.githubusercontent.com/Dafi-web/Restorante-Africa/1db382115d05cb6560ddfb878de045d5315830ee/IMG-20250401-WA0000.jpg"
                   alt="Ristorante Africa Logo"
                   className="relative w-12 h-12 object-contain transform group-hover:scale-110 transition-all duration-300"
+                  referrerPolicy="no-referrer"
                 />
               </div>
               <span className="text-2xl font-bold gradient-text">

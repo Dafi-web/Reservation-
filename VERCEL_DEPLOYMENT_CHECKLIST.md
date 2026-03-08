@@ -125,41 +125,36 @@ Your app will be available at:
 - **Admin Panel**: `https://your-app-name.vercel.app/en/admin`
   - Password: The `ADMIN_PASSWORD` you set in Step 2.4
 
-## 🌐 Step 6: Add Custom Subdomain (menu.dafitech.org)
+## 🌐 Step 6: Add a Subdomain (e.g. menu.yourdomain.com)
 
-### 6.1 Add Domain in Vercel
-1. Go to your project in Vercel dashboard
-2. Click **Settings** → **Domains**
-3. Click **"Add Domain"**
-4. Enter: `menu.dafitech.org`
-5. Click **"Add"**
+Use **your own domain** so this app is available at e.g. `menu.yourdomain.com` or `book.yourdomain.com`.
 
-### 6.2 Configure DNS
-Vercel will show you DNS records to add. Follow these steps:
+### 6.1 Add the subdomain in Vercel
+1. Open your project on [vercel.com](https://vercel.com) → **Settings** → **Domains**
+2. Click **"Add"** (or **"Add Domain"**)
+3. Enter your subdomain, e.g. **`menu.yourdomain.com`** (replace `yourdomain.com` with your real domain)
+4. Click **"Add"**
+5. Vercel will show the DNS record you need (usually a **CNAME**)
 
-1. **Go to your DNS provider** (where `dafitech.org` is managed)
-   - GoDaddy, Namecheap, Cloudflare, etc.
+### 6.2 Configure DNS at your domain provider
+1. Log in where your domain is managed (GoDaddy, Namecheap, Cloudflare, Google Domains, etc.)
+2. Open **DNS** / **Manage DNS** for your domain (`yourdomain.com`)
+3. **Add a CNAME record:**
+   - **Name / Host:** `menu` (for `menu.yourdomain.com`) or `book`, `reserve`, etc.
+   - **Value / Points to:** `cname.vercel-dns.com` (or the exact value Vercel shows)
+   - **TTL:** 3600 or default
+4. Save the record.
 
-2. **Add CNAME Record:**
-   - **Type**: CNAME
-   - **Name**: `menu` (or `menu.dafitech.org`)
-   - **Value**: `cname.vercel-dns.com` (or the value Vercel shows)
-   - **TTL**: 3600 (or default)
+### 6.3 Wait and verify
+- Wait **5–30 minutes** (sometimes up to 48 hours) for DNS to update.
+- In Vercel → **Settings** → **Domains**, the subdomain should show **"Valid Configuration"**.
+- Vercel will issue an SSL certificate automatically (HTTPS).
 
-3. **Save the DNS record**
+### 6.4 Test
+- Open **`https://menu.yourdomain.com`** (or whatever subdomain you chose).
+- Your app should load. Share this link with customers.
 
-4. **Wait 5-30 minutes** for DNS propagation
-
-5. **Check Status in Vercel:**
-   - Go back to Vercel → Settings → Domains
-   - Status should show **"Valid Configuration"** when ready
-   - SSL certificate is automatically provided
-
-6. **Test:**
-   - Visit `https://menu.dafitech.org`
-   - Your app should be live!
-
-**See `SUBDOMAIN_SETUP.md` for detailed DNS provider instructions.**
+**Detailed steps per provider (GoDaddy, Namecheap, Cloudflare):** see **`SUBDOMAIN_SETUP.md`**.
 
 ## 🔍 Troubleshooting
 
@@ -226,5 +221,5 @@ Once deployed, your Ristorante Africa menu will be live and accessible worldwide
 
 **Next Steps:**
 1. Test all features (menu, reservations, admin)
-2. Add custom subdomain (menu.dafitech.org)
-3. Share the link with customers!
+2. Add a subdomain with your domain (see Step 6 and `SUBDOMAIN_SETUP.md`)
+3. Share the link with customers (e.g. `https://menu.yourdomain.com`)

@@ -36,9 +36,15 @@ export default function MenuSection({ category, items, isOpen, onToggle }: MenuS
             className={`relative rounded-2xl shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 ease-out overflow-hidden ${
               category.iconImageUrl ? 'w-24 h-24 md:w-28 md:h-28 ring-2 ring-amber-500/40' : `p-4 bg-gradient-to-br ${category.color}`
             }`}
-            style={category.iconImageUrl ? { backgroundImage: `url(${category.iconImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
           >
-            {!category.iconImageUrl && (
+            {category.iconImageUrl ? (
+              <img
+                src={category.iconImageUrl}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
               <>
                 <span className="text-5xl md:text-6xl relative z-10 block">{category.icon}</span>
                 <div className="absolute inset-0 rounded-2xl bg-white opacity-20" />

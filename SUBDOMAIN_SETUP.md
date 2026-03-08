@@ -1,71 +1,42 @@
-# Subdomain Setup Guide - menu.dafitech.org
+# Subdomain Setup – Use Your Domain for This App
 
-This guide will help you set up a subdomain for your Ristorante Africa menu application.
+Use **your domain** so this web app (menu + reservations) is available at e.g. **menu.yourdomain.com** or **book.yourdomain.com**.
 
-## Option 1: Using Vercel (Recommended)
+## 1. Add the subdomain in Vercel
 
-### Step 1: Deploy to Vercel (if not already done)
-
-1. Go to [vercel.com](https://vercel.com)
-2. Import your GitHub repository: `https://github.com/Dafi-web/Reservation-`
-3. Deploy the project
-
-### Step 2: Add Custom Domain in Vercel
-
-1. Go to your Vercel project dashboard
-2. Click on **Settings** → **Domains**
-3. Click **Add Domain**
-4. Enter your subdomain: `menu.dafitech.org`
+1. Go to [vercel.com](https://vercel.com) → your project
+2. **Settings** → **Domains**
+3. Click **Add** (or **Add Domain**)
+4. Enter the subdomain you want, e.g. **`menu.yourdomain.com`** (use your real domain instead of `yourdomain.com`)
 5. Click **Add**
+6. Vercel will show the exact DNS record to add (usually a **CNAME**)
 
-### Step 3: Configure DNS Records
+## 2. Add the DNS record at your domain provider
 
-Vercel will show you DNS records to add. You need to add a **CNAME record**:
+You need **one CNAME record**. Use the **exact value** Vercel shows; often it is:
 
-**DNS Configuration:**
-- **Type**: CNAME
-- **Name**: `menu` (or `menu.dafitech.org` depending on your DNS provider)
-- **Value**: `cname.vercel-dns.com` (or the value Vercel provides)
-- **TTL**: 3600 (or default)
+- **Type:** CNAME  
+- **Name / Host:** `menu` (for `menu.yourdomain.com`) — some providers want just `menu`, others `menu.yourdomain.com`  
+- **Value / Points to:** `cname.vercel-dns.com`  
+- **TTL:** 3600 or default  
 
-### Step 4: Where to Add DNS Records
+**Where to add it (examples):**
 
-**Common DNS Providers:**
+- **GoDaddy:** My Products → your domain → **DNS** / **Manage DNS** → Add CNAME
+- **Namecheap:** Domain List → your domain → **Manage** → **Advanced DNS** → Add CNAME
+- **Cloudflare:** Select your domain → **DNS** → **Records** → Add CNAME
+- **Google Domains / Squarespace / other:** Find “DNS” or “Manage DNS” for your domain → Add CNAME with the name and value above
 
-1. **GoDaddy:**
-   - Log in to GoDaddy
-   - Go to **My Products** → **DNS**
-   - Find your `dafitech.org` domain
-   - Click **Manage DNS**
-   - Add new CNAME record with values above
+## 3. Wait and check
 
-2. **Namecheap:**
-   - Log in to Namecheap
-   - Go to **Domain List** → Select `dafitech.org`
-   - Click **Manage** → **Advanced DNS**
-   - Add new CNAME record
+- DNS can take **5–30 minutes** (sometimes up to 48 hours).
+- In Vercel → **Settings** → **Domains**, the subdomain should change to **Valid Configuration**.
+- Vercel will enable **HTTPS** automatically.
 
-3. **Cloudflare:**
-   - Log in to Cloudflare
-   - Select `dafitech.org` domain
-   - Go to **DNS** → **Records**
-   - Add CNAME record
+## 4. Test
 
-4. **Other Providers:**
-   - Look for "DNS Management" or "DNS Settings"
-   - Add CNAME record with values from Vercel
-
-### Step 5: Wait for DNS Propagation
-
-- DNS changes can take 5 minutes to 48 hours
-- Usually takes 5-30 minutes
-- Vercel will show "Valid Configuration" when ready
-
-### Step 6: SSL Certificate
-
-- Vercel automatically provides SSL (HTTPS) for your domain
-- No additional setup needed
-- Your site will be available at `https://menu.dafitech.org`
+- Open **`https://menu.yourdomain.com`** (or your chosen subdomain).
+- The app should load. You can use this link as the main URL for this web app.
 
 ## Option 2: Using Other Hosting Providers
 
@@ -79,43 +50,21 @@ If you're not using Vercel, the process is similar:
 1. Add custom domain in their dashboard
 2. Follow their DNS instructions
 
-## DNS Record Examples
+## DNS record example
 
-### CNAME Record (Most Common)
 ```
-Type: CNAME
-Name: menu
-Value: cname.vercel-dns.com
-TTL: 3600
-```
-
-### A Record (Alternative - if CNAME not supported)
-```
-Type: A
-Name: menu
-Value: 76.76.21.21 (Vercel's IP - check Vercel for current IPs)
-TTL: 3600
+Type:   CNAME
+Name:   menu          (for menu.yourdomain.com)
+Value:  cname.vercel-dns.com
+TTL:    3600
 ```
 
-## Verify DNS Configuration
+If your provider does not support CNAME for the root, use the subdomain (e.g. `menu`). Vercel may also offer an **A** record; use the value they show.
 
-**Check if DNS is configured correctly:**
+## Check that DNS is correct
 
-1. **Using Command Line:**
-   ```bash
-   nslookup menu.dafitech.org
-   # or
-   dig menu.dafitech.org
-   ```
-
-2. **Online Tools:**
-   - https://dnschecker.org
-   - https://www.whatsmydns.net
-   - Enter `menu.dafitech.org` and check if it resolves
-
-3. **In Vercel:**
-   - Go to Settings → Domains
-   - Status should show "Valid Configuration" when ready
+- **Vercel:** Settings → Domains → status should become **Valid Configuration**.
+- **Online:** [dnschecker.org](https://dnschecker.org) or [whatsmydns.net](https://www.whatsmydns.net) — enter `menu.yourdomain.com` and confirm it resolves.
 
 ## Common Issues
 
@@ -135,30 +84,14 @@ TTL: 3600
 - **Solution**: Wait 5-10 minutes after DNS is configured
 - Vercel automatically provisions SSL certificates
 
-## Recommended Subdomain Names
+## Subdomain name ideas (use your domain)
 
-Choose one that fits your needs:
-- `menu.dafitech.org` - Simple and clear
-- `restaurant.dafitech.org` - More descriptive
-- `africa.dafitech.org` - Brand-focused
-- `book.dafitech.org` - Reservation-focused
-- `reserve.dafitech.org` - Action-oriented
+- `menu.yourdomain.com` – menu + reservations
+- `book.yourdomain.com` – booking focus
+- `reserve.yourdomain.com` – reservations
+- `restaurant.yourdomain.com` – general
 
-## After Setup
-
-Once your subdomain is working:
-
-1. **Update your app** (if needed):
-   - The app will automatically work on the new domain
-   - No code changes needed
-
-2. **Test the subdomain:**
-   - Visit `https://menu.dafitech.org`
-   - Test all features (menu, reservations, admin)
-
-3. **Share the link:**
-   - Share `https://menu.dafitech.org` with customers
-   - Update any marketing materials
+No code changes are needed; the app works on the subdomain as soon as DNS and Vercel show valid.
 
 ## Security Notes
 
@@ -172,12 +105,11 @@ Once your subdomain is working:
 - **DNS Provider Docs**: Check your DNS provider's documentation
 - **Check Status**: Vercel dashboard shows domain status
 
-## Quick Checklist
+## Quick checklist
 
-- [ ] Project deployed on Vercel
-- [ ] Added `menu.dafitech.org` in Vercel Domains
-- [ ] Added CNAME record in DNS provider
-- [ ] Waited for DNS propagation (5-30 min)
-- [ ] Verified domain shows "Valid Configuration" in Vercel
-- [ ] Tested `https://menu.dafitech.org` in browser
-- [ ] SSL certificate is active (HTTPS works)
+- [ ] App deployed on Vercel
+- [ ] Added `menu.yourdomain.com` (or your choice) in Vercel → Settings → Domains
+- [ ] Added CNAME record at your DNS provider
+- [ ] Waited 5–30 min (or up to 48 h) for DNS
+- [ ] Vercel shows **Valid Configuration**
+- [ ] Opened `https://menu.yourdomain.com` and confirmed the app loads (HTTPS works)

@@ -35,6 +35,7 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
                 height={600}
                 className="w-full h-auto max-h-[70vh] object-contain"
                 unoptimized
+                referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
               <button
