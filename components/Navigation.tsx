@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Link, usePathname, useRouter, routing } from '@/i18n/routing';
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 export default function Navigation() {
   const t = useTranslations('common');
@@ -66,11 +67,10 @@ export default function Navigation() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-stone-700 rounded-2xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
                 <img 
-                  src="https://raw.githubusercontent.com/Dafi-web/Restorante-Africa/1db382115d05cb6560ddfb878de045d5315830ee/IMG-20250401-WA0000.jpg"
+                  src={getProxiedImageUrl('https://raw.githubusercontent.com/Dafi-web/Restorante-Africa/1db382115d05cb6560ddfb878de045d5315830ee/IMG-20250401-WA0000.jpg')}
                   alt="Ristorante Africa Logo"
                   className="relative w-12 h-12 object-contain transform group-hover:scale-110 transition-all duration-300"
-                  referrerPolicy="no-referrer"
-                />
+                  />
               </div>
               <span className="text-2xl font-bold gradient-text">
                 Ristorante Africa

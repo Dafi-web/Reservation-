@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { MenuItem } from '@/lib/types';
 import MenuItemCard from './MenuItemCard';
+import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 interface MenuSectionProps {
   category: {
@@ -39,10 +40,9 @@ export default function MenuSection({ category, items, isOpen, onToggle }: MenuS
           >
             {category.iconImageUrl ? (
               <img
-                src={category.iconImageUrl}
+                src={getProxiedImageUrl(category.iconImageUrl)}
                 alt=""
                 className="absolute inset-0 w-full h-full object-cover"
-                referrerPolicy="no-referrer"
               />
             ) : (
               <>

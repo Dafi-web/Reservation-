@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import Image from 'next/image';
 import MenuItemModal from './MenuItemModal';
+import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -44,13 +45,12 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
             <div className="w-full h-48 bg-stone-900/80 rounded-lg group-hover:scale-105 transition-transform duration-500 ease-out relative flex items-center justify-center overflow-hidden border border-stone-600/50">
               {item.image ? (
                 <Image
-                  src={item.image}
+                  src={getProxiedImageUrl(item.image)}
                   alt={item.name}
                   width={400}
                   height={300}
                   className="w-full h-full object-contain"
                   unoptimized
-                  referrerPolicy="no-referrer"
                 />
               ) : (
                 <div className="w-full h-full bg-stone-900/80 flex items-center justify-center">

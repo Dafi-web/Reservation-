@@ -3,6 +3,7 @@
 import { MenuItem } from '@/lib/types';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 interface MenuItemModalProps {
   item: MenuItem | null;
@@ -29,13 +30,12 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
           {item.image ? (
             <div className="relative w-full min-h-[280px] max-h-[70vh] flex items-center justify-center bg-gray-100 rounded-t-3xl overflow-hidden">
               <Image
-                src={item.image}
+                src={getProxiedImageUrl(item.image)}
                 alt={item.name}
                 width={800}
                 height={600}
                 className="w-full h-auto max-h-[70vh] object-contain"
                 unoptimized
-                referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
               <button
