@@ -83,6 +83,12 @@ Click **"Environment Variables"** and add these **3 required variables**:
 **Guests only receive emails (confirmations, rejections) if you set GMAIL_USER and GMAIL_APP_PASSWORD** in Vercel – see [EMAIL_SETUP_SIMPLE.md](./EMAIL_SETUP_SIMPLE.md). Without Gmail, only the admin gets emails..
    - Environment: **Production** (and others if needed)
 
+9. **NEXT_PUBLIC_SITE_URL** (recommended — QR code on the home page)
+   ```
+   https://ristorante-africa.dafitech.org
+   ```
+   - Use your **canonical public URL** (no trailing slash). The QR code encodes `{this URL}/{locale}` so scans always open your live site. If unset, the QR uses whatever domain the visitor is on (fine for testing).
+
 **After adding or changing any variable:** go to **Deployments** → open the **⋯** menu on the latest deployment → **Redeploy**. Env vars are applied on the next deploy.
 
 ### 2.5 Deploy

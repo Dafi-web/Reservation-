@@ -35,7 +35,9 @@
     "beverages": "Beverages",
     "wine": "Wine",
     "beer": "Beer",
-    "cocktails": "Cocktails"
+    "cocktails": "Cocktails",
+    "qrTitle": "Scan our menu",
+    "qrSubtitle": "Open this site on your phone — point your camera at the code."
   },
   "reservation": {
     "title": "Make a Reservation",

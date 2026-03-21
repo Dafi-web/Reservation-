@@ -1,13 +1,27 @@
 import { getTranslations } from 'next-intl/server';
+import { headers } from 'next/headers';
 import { getMenuItems } from '@/lib/data';
 import InteractiveMenu from '@/components/InteractiveMenu';
+import SiteQRCode from '@/components/SiteQRCode';
 import { Link } from '@/i18n/routing';
 
 // Force dynamic rendering to avoid build-time MongoDB connection
 export const dynamic = 'force-dynamic';
 
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: { locale: string } }) {
   const t = await getTranslations();
+  const locale = params.locale;
+
+  /** Public URL for QR (works on SSR — no `window` needed). */
+  const headerList = headers();
+  const publicBase =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
+    (() => {
+      const host = headerList.get('x-forwarded-host') ?? headerList.get('host');
+      const proto = headerList.get('x-forwarded-proto') ?? 'https';
+      return host ? `${proto}://${host}` : '';
+    })();
+  const qrEncodedUrl = publicBase ? `${publicBase}/${locale}` : '';
   let menuItems: Awaited<ReturnType<typeof getMenuItems>>;
   try {
     menuItems = await getMenuItems();
@@ -27,7 +41,7 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen overflow-hidden">
+    <div className="min-h-screen overflow-x-hidden">
       {/* Hero Section - Ristorante Africa */}
       <section className="relative py-32 lg:py-40 overflow-hidden min-h-screen">
         {/* Background - professional gradient, no image */}
@@ -93,6 +107,18 @@ export default async function HomePage() {
                 </div>
               </div>
             </div>
+
+            {/* QR code — scan to open this site (set NEXT_PUBLIC_SITE_URL on Vercel for production URL) */}
+            <div className="mt-16 pt-10 border-t border-amber-500/20 flex justify-center animate-fade-in-up animation-delay-500">
+              <SiteQRCode
+                encodedUrl={qrEncodedUrl}
+                siteUrl={process.env.NEXT_PUBLIC_SITE_URL}
+                title={t('menu.qrTitle')}
+                subtitle={t('menu.qrSubtitle')}
+                size={176}
+                showUrl
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -112,12 +138,23 @@ export default async function HomePage() {
       {/* Footer with Admin Access */}
       <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-amber-100 py-10 mt-20 border-t border-stone-700/50 animate-fade-in-up animation-delay-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-sm">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-8">
+            <div className="text-sm text-center lg:text-left order-2 lg:order-1">
               <p className="font-semibold text-amber-200 mb-1">Ristorante Africa</p>
               <p>&copy; {new Date().getFullYear()} Ristorante Africa. All rights reserved.</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="order-1 lg:order-2 flex flex-col items-center">
+              <SiteQRCode
+                encodedUrl={qrEncodedUrl}
+                siteUrl={process.env.NEXT_PUBLIC_SITE_URL}
+                title={t('menu.qrTitle')}
+                subtitle={t('menu.qrSubtitle')}
+                size={132}
+                showUrl={false}
+                className="[&_h3]:text-amber-400 [&_p]:text-amber-200/80"
+              />
+            </div>
+            <div className="flex items-center gap-4 order-3">
               <Link
                 href="/admin"
                 className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-2 border border-stone-700/50 px-4 py-2 rounded-lg hover:bg-stone-800/30"

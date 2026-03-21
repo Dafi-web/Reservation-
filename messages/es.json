@@ -35,7 +35,9 @@
     "beverages": "Bebidas",
     "wine": "Vino",
     "beer": "Cerveza",
-    "cocktails": "Cócteles"
+    "cocktails": "Cócteles",
+    "qrTitle": "Escanea nuestro menú",
+    "qrSubtitle": "Abre este sitio en tu móvil: apunta la cámara al código."
   },
   "reservation": {
     "title": "Hacer una Reserva",
