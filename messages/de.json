@@ -37,7 +37,8 @@
     "beer": "Bier",
     "cocktails": "Cocktails",
     "qrTitle": "Menü scannen",
-    "qrSubtitle": "Website auf dem Handy öffnen — Kamera auf den Code richten."
+    "qrSubtitle": "Website auf dem Handy öffnen — Kamera auf den Code richten.",
+    "downloadQr": "QR-Bild herunterladen (PNG)"
   },
   "reservation": {
     "title": "Reservierung Buchen",

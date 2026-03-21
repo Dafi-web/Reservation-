@@ -37,7 +37,8 @@
     "beer": "Bière",
     "cocktails": "Cocktails",
     "qrTitle": "Scannez notre menu",
-    "qrSubtitle": "Ouvrez ce site sur votre téléphone — pointez l’appareil photo sur le code."
+    "qrSubtitle": "Ouvrez ce site sur votre téléphone — pointez l’appareil photo sur le code.",
+    "downloadQr": "Télécharger le QR (PNG)"
   },
   "reservation": {
     "title": "Faire une Réservation",

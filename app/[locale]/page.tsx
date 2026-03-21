@@ -151,6 +151,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                 subtitle={t('menu.qrSubtitle')}
                 size={132}
                 showUrl={false}
+                showDownload={false}
                 className="[&_h3]:text-amber-400 [&_p]:text-amber-200/80"
               />
             </div>
