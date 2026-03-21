@@ -38,7 +38,8 @@
     "cocktails": "Cocktail",
     "qrTitle": "Scansiona il menu",
     "qrSubtitle": "Apri questo sito sul telefono — punta la fotocamera sul codice.",
-    "downloadQr": "Scarica immagine QR (PNG)"
+    "downloadQr": "Scarica immagine QR (PNG)",
+    "qrRestaurantName": "Ristorante Africa"
   },
   "reservation": {
     "title": "Fare una Prenotazione",

@@ -57,17 +57,56 @@ export default function SiteQRCode({
     return getMenuPageUrl(siteUrl, locale);
   }, [encodedUrl, siteUrl, locale]);
 
+  const restaurantName = t('qrRestaurantName');
+
   const handleDownloadPng = useCallback(async () => {
     if (!value) return;
     try {
       setDownloading(true);
       const QRCode = (await import('qrcode')).default;
-      const dataUrl = await QRCode.toDataURL(value, {
-        width: 800,
-        margin: 2,
-        errorCorrectionLevel: 'M',
-        color: { dark: '#1c1917', light: '#ffffff' },
+
+      const padding = 28;
+      const nameBlockH = 52;
+      const gap = 14;
+      const qrPixelSize = 640;
+      const W = Math.max(qrPixelSize + padding * 2, 420);
+      const H = padding + nameBlockH + gap + qrPixelSize + padding;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas not supported');
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#1c1917';
+      ctx.font =
+        'bold 26px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(restaurantName, W / 2, padding + nameBlockH / 2);
+
+      const qrCanvas = document.createElement('canvas');
+      await new Promise<void>((resolve, reject) => {
+        QRCode.toCanvas(
+          qrCanvas,
+          value,
+          {
+            width: qrPixelSize,
+            margin: 2,
+            errorCorrectionLevel: 'M',
+            color: { dark: '#1c1917', light: '#ffffff' },
+          },
+          (err) => (err ? reject(err) : resolve())
+        );
       });
+
+      const xOff = (W - qrCanvas.width) / 2;
+      const yOff = padding + nameBlockH + gap;
+      ctx.drawImage(qrCanvas, xOff, yOff);
+
+      const dataUrl = canvas.toDataURL('image/png');
       const a = document.createElement('a');
       a.href = dataUrl;
       a.download = 'ristorante-africa-menu-qr.png';
@@ -80,7 +119,7 @@ export default function SiteQRCode({
     } finally {
       setDownloading(false);
     }
-  }, [value]);
+  }, [value, restaurantName]);
 
   if (!value) {
     return null;
@@ -92,7 +131,10 @@ export default function SiteQRCode({
         <h3 className="text-sm font-bold uppercase tracking-wider text-amber-300 mb-1">{title}</h3>
       )}
       {subtitle && <p className="text-xs text-amber-100/90 mb-3 max-w-[220px]">{subtitle}</p>}
-      <div className="inline-flex flex-col items-center gap-2 rounded-2xl bg-white p-4 shadow-lg ring-2 ring-amber-500/30">
+      <div className="inline-flex flex-col items-center gap-3 rounded-2xl bg-white px-5 py-4 shadow-lg ring-2 ring-amber-500/30">
+        <p className="text-center text-base font-bold tracking-tight text-stone-900 sm:text-lg">
+          {restaurantName}
+        </p>
         <QRCodeSVG
           value={value}
           size={size}

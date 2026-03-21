@@ -38,7 +38,8 @@
     "cocktails": "كوكتيلات",
     "qrTitle": "امسح رمز القائمة",
     "qrSubtitle": "افتح الموقع على هاتفك — وجّه الكاميرا نحو الرمز.",
-    "downloadQr": "تحميل صورة الرمز (PNG)"
+    "downloadQr": "تحميل صورة الرمز (PNG)",
+    "qrRestaurantName": "Ristorante Africa"
   },
   "reservation": {
     "title": "إجراء حجز",
