@@ -164,7 +164,7 @@ export default function ReservationsPage() {
   const maxDateStr = maxDate.toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden text-left" dir="ltr">
       {/* Hero strip - same as home page */}
       <section className="relative py-16 lg:py-20 overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900" />
@@ -202,7 +202,7 @@ export default function ReservationsPage() {
         </div>
 
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="glass-effect rounded-3xl shadow-elegant-lg p-8 lg:p-12 border border-amber-200/40 bg-white/90 backdrop-blur-sm">
+          <div className="glass-effect rounded-3xl shadow-elegant-lg p-8 lg:p-12 border border-amber-200/40 bg-white/90 backdrop-blur-sm form-ltr">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-stone-800 mb-1">Your details</h2>
               <p className="text-stone-600 text-sm">Fill in the form below to book your table</p>
@@ -240,9 +240,9 @@ export default function ReservationsPage() {
           </div>
 
           {message && message.type !== 'success' && (
-            <div className="mb-6 p-4 rounded-xl border bg-red-50 border-red-200 text-red-800">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <div className="mb-6 p-4 rounded-xl border bg-red-50 border-red-200 text-red-800 text-left">
+              <div className="flex flex-row items-start gap-2">
+                <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
                 <span className="font-medium">{message.text}</span>
@@ -268,8 +268,8 @@ export default function ReservationsPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-6 form-ltr">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 [direction:ltr]">
               <div>
                 <label htmlFor="name" className="block text-sm font-semibold text-stone-700 mb-2">
                   {t('common.name')} <span className="text-red-500">*</span>
@@ -319,7 +319,7 @@ export default function ReservationsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 [direction:ltr]">
               <div>
                 <label htmlFor="date" className="block text-sm font-semibold text-stone-700 mb-2">
                   {t('common.date')} <span className="text-red-500">*</span>
@@ -400,7 +400,7 @@ export default function ReservationsPage() {
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row sm:flex-nowrap gap-4 pt-4 [direction:ltr]">
               <button
                 type="submit"
                 disabled={isSubmitting || availableSeats === 0 || (availableSeats !== null && parseInt(formData.guests, 10) > availableSeats)}

@@ -201,6 +201,20 @@ h1, h2, h3, h4, h5, h6 {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Forms: keep labels & fields left-to-right (readable order) even when page is RTL */
+  .form-ltr {
+    direction: ltr;
+    text-align: left;
+  }
+
+  .form-ltr input,
+  .form-ltr textarea,
+  .form-ltr select,
+  .form-ltr option {
+    text-align: left;
+    direction: ltr;
+  }
 }
 
 /* Custom utility classes - outside @layer for better compatibility */
