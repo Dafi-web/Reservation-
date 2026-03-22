@@ -39,7 +39,8 @@
     "qrTitle": "Escanea nuestro menú",
     "qrSubtitle": "Abre este sitio en tu móvil: apunta la cámara al código.",
     "downloadQr": "Descargar imagen QR (PNG)",
-    "qrRestaurantName": "Ristorante Africa"
+    "qrRestaurantName": "Ristorante Africa",
+    "qrMenuReservations": "Menú y reservas"
   },
   "reservation": {
     "title": "Hacer una Reserva",

@@ -58,6 +58,7 @@ export default function SiteQRCode({
   }, [encodedUrl, siteUrl, locale]);
 
   const restaurantName = t('qrRestaurantName');
+  const menuReservationsLine = t('qrMenuReservations');
 
   const handleDownloadPng = useCallback(async () => {
     if (!value) return;
@@ -66,26 +67,10 @@ export default function SiteQRCode({
       const QRCode = (await import('qrcode')).default;
 
       const padding = 28;
-      const nameBlockH = 52;
-      const gap = 14;
+      const gapAfterName = 8;
+      const gapBeforeQr = 16;
       const qrPixelSize = 640;
       const W = Math.max(qrPixelSize + padding * 2, 420);
-      const H = padding + nameBlockH + gap + qrPixelSize + padding;
-
-      const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = H;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) throw new Error('Canvas not supported');
-
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = '#1c1917';
-      ctx.font =
-        'bold 26px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(restaurantName, W / 2, padding + nameBlockH / 2);
 
       const qrCanvas = document.createElement('canvas');
       await new Promise<void>((resolve, reject) => {
@@ -102,9 +87,38 @@ export default function SiteQRCode({
         );
       });
 
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas not supported');
+
+      const titleLineH = 30;
+      const taglineLineH = 22;
+      const headerH = titleLineH + gapAfterName + taglineLineH;
+      const H = padding + headerH + gapBeforeQr + qrCanvas.height + padding;
+
+      canvas.width = W;
+      canvas.height = H;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+
+      let y = padding;
+      ctx.fillStyle = '#1c1917';
+      ctx.font =
+        'bold 26px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillText(restaurantName, W / 2, y);
+      y += titleLineH + gapAfterName;
+
+      ctx.fillStyle = '#57534e';
+      ctx.font =
+        '500 16px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillText(menuReservationsLine, W / 2, y);
+      y += taglineLineH + gapBeforeQr;
+
       const xOff = (W - qrCanvas.width) / 2;
-      const yOff = padding + nameBlockH + gap;
-      ctx.drawImage(qrCanvas, xOff, yOff);
+      ctx.drawImage(qrCanvas, xOff, y);
 
       const dataUrl = canvas.toDataURL('image/png');
       const a = document.createElement('a');
@@ -119,7 +133,7 @@ export default function SiteQRCode({
     } finally {
       setDownloading(false);
     }
-  }, [value, restaurantName]);
+  }, [value, restaurantName, menuReservationsLine]);
 
   if (!value) {
     return null;
@@ -131,9 +145,12 @@ export default function SiteQRCode({
         <h3 className="text-sm font-bold uppercase tracking-wider text-amber-300 mb-1">{title}</h3>
       )}
       {subtitle && <p className="text-xs text-amber-100/90 mb-3 max-w-[220px]">{subtitle}</p>}
-      <div className="inline-flex flex-col items-center gap-3 rounded-2xl bg-white px-5 py-4 shadow-lg ring-2 ring-amber-500/30">
+      <div className="inline-flex max-w-[min(100%,280px)] flex-col items-center gap-2 rounded-2xl bg-white px-5 py-4 shadow-lg ring-2 ring-amber-500/30 sm:gap-2.5">
         <p className="text-center text-base font-bold tracking-tight text-stone-900 sm:text-lg">
           {restaurantName}
+        </p>
+        <p className="text-center text-sm font-medium text-stone-600 leading-snug px-1">
+          {menuReservationsLine}
         </p>
         <QRCodeSVG
           value={value}
