@@ -1,33 +1,20 @@
 import { NextResponse } from 'next/server';
 import {
-  cancelExpiredReservations,
-  cancelPreviousDayReservations,
-  deleteOldCheckedInAndRejectedReservations,
+  deleteReservationsOlderThanOneDayAfterReservationDate,
 } from '@/lib/data';
 
 /**
  * API endpoint to run reservation cleanup. Call via cron (e.g. daily).
- * - Cancels previous-day and expired reservations
- * - Deletes checked-in reservations older than 1 week and rejected reservations older than 1 week
+ * - Deletes all reservations that are older than 1 day after reservation date/time
  */
 export async function GET() {
   try {
-    const previousDayCount = await cancelPreviousDayReservations();
-    const expiredCount = await cancelExpiredReservations();
-    const { deletedCheckedIn, deletedRejected } = await deleteOldCheckedInAndRejectedReservations();
-
-    const totalCancelled = previousDayCount + expiredCount;
-    const totalDeleted = deletedCheckedIn + deletedRejected;
+    const { deletedCount } = await deleteReservationsOlderThanOneDayAfterReservationDate();
 
     return NextResponse.json({
       success: true,
-      previousDayCount,
-      expiredCount,
-      cancelledCount: totalCancelled,
-      deletedCheckedIn,
-      deletedRejected,
-      totalDeleted,
-      message: `Cleanup done. Cancelled: ${totalCancelled} (previous day + expired). Deleted: ${totalDeleted} (checked-in & rejected older than 1 week).`,
+      deletedCount,
+      message: `Cleanup done. Deleted: ${deletedCount} reservation(s) older than 1 day after reservation date/time.`,
     });
   } catch (error) {
     console.error('Error cleaning up reservations:', error);

@@ -143,18 +143,6 @@ export default async function HomePage({ params }: { params: { locale: string } 
               <p className="font-semibold text-amber-200 mb-1">Ristorante Africa</p>
               <p>&copy; {new Date().getFullYear()} Ristorante Africa. All rights reserved.</p>
             </div>
-            <div className="order-1 lg:order-2 flex flex-col items-center">
-              <SiteQRCode
-                encodedUrl={qrEncodedUrl}
-                siteUrl={process.env.NEXT_PUBLIC_SITE_URL}
-                title={t('menu.qrTitle')}
-                subtitle={t('menu.qrSubtitle')}
-                size={132}
-                showUrl={false}
-                showDownload={false}
-                className="[&_h3]:text-amber-400 [&_p]:text-amber-200/80"
-              />
-            </div>
             <div className="flex items-center gap-4 order-3">
               <Link
                 href="/admin"

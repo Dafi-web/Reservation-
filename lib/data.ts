@@ -494,38 +494,37 @@ export async function cancelExpiredReservations(): Promise<number> {
   return cancelledCount;
 }
 
-const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
- * Delete reservations that are no longer needed:
- * - Confirmed + checked in: delete if checkedInAt was more than 1 week ago
- * - Rejected: delete if updated more than 1 week ago (Mongoose updatedAt)
+ * Delete reservations when they are older than 1 day after reservation date/time.
+ * This applies to all statuses (pending, confirmed, rejected).
  */
-export async function deleteOldCheckedInAndRejectedReservations(): Promise<{ deletedCheckedIn: number; deletedRejected: number }> {
+export async function deleteReservationsOlderThanOneDayAfterReservationDate(): Promise<{ deletedCount: number }> {
   await connectDB();
-  const now = Date.now();
-  const oneWeekAgo = new Date(now - ONE_WEEK_MS);
-  const oneWeekAgoISO = oneWeekAgo.toISOString();
+  const cutoffTime = Date.now() - ONE_DAY_MS;
 
-  const deletedCheckedIn = (
-    await ReservationModel.deleteMany({
-      status: 'confirmed',
-      checkedIn: true,
-      checkedInAt: { $lt: oneWeekAgoISO },
-    })
-  ).deletedCount;
+  const reservations = await ReservationModel.find({}, { id: 1, date: 1, time: 1 }).lean();
+  const idsToDelete: string[] = [];
 
-  const deletedRejected = (
-    await ReservationModel.deleteMany({
-      status: 'rejected',
-      updatedAt: { $lt: oneWeekAgo },
-    })
-  ).deletedCount;
-
-  if (deletedCheckedIn > 0 || deletedRejected > 0) {
-    console.log(`✅ Old reservations deleted: ${deletedCheckedIn} checked-in, ${deletedRejected} rejected (older than 1 week)`);
+  for (const reservation of reservations as Array<{ id?: string; date?: string; time?: string }>) {
+    if (!reservation.id || !reservation.date || !reservation.time) continue;
+    const reservationDateTime = new Date(`${reservation.date}T${reservation.time}:00`);
+    if (!Number.isFinite(reservationDateTime.getTime())) continue;
+    if (reservationDateTime.getTime() <= cutoffTime) {
+      idsToDelete.push(reservation.id);
+    }
   }
-  return { deletedCheckedIn, deletedRejected };
+
+  if (idsToDelete.length === 0) {
+    return { deletedCount: 0 };
+  }
+
+  const deletedCount = (await ReservationModel.deleteMany({ id: { $in: idsToDelete } })).deletedCount;
+  if (deletedCount > 0) {
+    console.log(`✅ Old reservations deleted: ${deletedCount} (older than 1 day after reservation date/time)`);
+  }
+  return { deletedCount };
 }
 
 /** Get available seats for a specific date (YYYY-MM-DD). Does not run cleanup (cleanup runs only via /api/reservations/cleanup) so new submissions stay pending for admin. */

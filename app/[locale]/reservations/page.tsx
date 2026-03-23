@@ -373,7 +373,7 @@ export default function ReservationsPage() {
                   availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
+                {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => {
                   const isDisabled = availableSeats !== null && num > availableSeats;
                   return (
                     <option key={num} value={num} disabled={isDisabled}>
