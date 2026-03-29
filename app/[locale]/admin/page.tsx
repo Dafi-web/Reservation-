@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Reservation, MenuItem } from '@/lib/types';
+import { getMenuItemImageUrls, parseImageUrlsFromMultiline } from '@/lib/menuImages';
 import { format } from 'date-fns';
 import AdminAuth from '@/components/AdminAuth';
 
@@ -31,7 +32,7 @@ export default function AdminPage() {
     description: '',
     price: '',
     category: 'main' as MenuItem['category'],
-    image: '',
+    imagesText: '',
     tags: [] as string[],
     available: true,
   });
@@ -42,7 +43,7 @@ export default function AdminPage() {
     description: '',
     price: '',
     category: 'main' as MenuItem['category'],
-    image: '',
+    imagesText: '',
     tags: [] as string[],
     available: true,
   });
@@ -124,6 +125,7 @@ export default function AdminPage() {
     setAddMenuItemMessage(null);
     setAddMenuItemLoading(true);
     try {
+      const imageUrls = parseImageUrlsFromMultiline(menuForm.imagesText);
       const response = await fetch('/api/menu', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -132,7 +134,8 @@ export default function AdminPage() {
           description: menuForm.description.trim(),
           price: Number(menuForm.price),
           category: menuForm.category,
-          image: menuForm.image.trim() || undefined,
+          image: imageUrls[0],
+          images: imageUrls,
           tags: menuForm.tags,
           available: menuForm.available,
         }),
@@ -140,7 +143,7 @@ export default function AdminPage() {
       const data = await response.json().catch(() => ({}));
       if (response.ok) {
         setAddMenuItemMessage({ type: 'success', text: `"${menuForm.name}" added to the menu. It will appear on the main menu page.` });
-        setMenuForm({ name: '', description: '', price: '', category: 'main', image: '', tags: [], available: true });
+        setMenuForm({ name: '', description: '', price: '', category: 'main', imagesText: '', tags: [], available: true });
         fetchMenuItems();
       } else {
         setAddMenuItemMessage({ type: 'error', text: data.error || data.details || 'Failed to add menu item.' });
@@ -166,7 +169,7 @@ export default function AdminPage() {
       description: item.description,
       price: String(item.price),
       category: item.category,
-      image: item.image || '',
+      imagesText: getMenuItemImageUrls(item).join('\n'),
       tags: item.tags || [],
       available: item.available,
     });
@@ -184,6 +187,7 @@ export default function AdminPage() {
     setEditMessage(null);
     setEditLoading(true);
     try {
+      const imageUrls = parseImageUrlsFromMultiline(editForm.imagesText);
       const response = await fetch(`/api/menu/${editingItem.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -192,7 +196,8 @@ export default function AdminPage() {
           description: editForm.description.trim(),
           price: Number(editForm.price),
           category: editForm.category,
-          image: editForm.image.trim() || undefined,
+          image: imageUrls[0],
+          images: imageUrls,
           tags: editForm.tags,
           available: editForm.available,
         }),
@@ -534,14 +539,19 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="menu-image" className="block text-sm font-semibold text-gray-700 mb-1">Image URL (optional)</label>
-                    <input
-                      id="menu-image"
-                      type="url"
-                      value={menuForm.image}
-                      onChange={(e) => setMenuForm((f) => ({ ...f, image: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                      placeholder="https://..."
+                    <label htmlFor="menu-images" className="block text-sm font-semibold text-gray-700 mb-1">
+                      Image URLs (optional)
+                    </label>
+                    <p className="text-xs text-gray-500 mb-1">
+                      One URL per line. The first line is the main photo on the menu card; the rest show in the detail view.
+                    </p>
+                    <textarea
+                      id="menu-images"
+                      rows={4}
+                      value={menuForm.imagesText}
+                      onChange={(e) => setMenuForm((f) => ({ ...f, imagesText: e.target.value }))}
+                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-y font-mono text-sm"
+                      placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg"
                     />
                   </div>
                   <div>
@@ -1016,12 +1026,15 @@ export default function AdminPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Image URL (optional)</label>
-                <input
-                  type="url"
-                  value={editForm.image}
-                  onChange={(e) => setEditForm((f) => ({ ...f, image: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500"
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Image URLs (optional)</label>
+                <p className="text-xs text-gray-500 mb-1">
+                  One URL per line. First line = main photo; additional lines = more photos in the detail view.
+                </p>
+                <textarea
+                  rows={4}
+                  value={editForm.imagesText}
+                  onChange={(e) => setEditForm((f) => ({ ...f, imagesText: e.target.value }))}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 resize-y font-mono text-sm"
                 />
               </div>
               <div>

@@ -2,6 +2,20 @@ import connectDB from './mongodb';
 import MenuItemModel from './models/MenuItem';
 import ReservationModel from './models/Reservation';
 import { MenuItem, Reservation } from './types';
+import { getMenuItemImageUrls, parseImageUrlsFromBody } from './menuImages';
+
+function mapLeanMenuItem(item: any): MenuItem {
+  const urls = getMenuItemImageUrls({
+    image: item.image,
+    images: item.images,
+  });
+  return {
+    ...item,
+    id: item.id || item._id?.toString() || String(item._id),
+    image: urls[0],
+    images: urls.length ? urls : undefined,
+  } as MenuItem;
+}
 
 // Initial menu items data for seeding
 export const initialMenuItems: Omit<MenuItem, 'id'>[] = [
@@ -229,10 +243,7 @@ export async function getMenuItems(): Promise<MenuItem[]> {
     await connectDB();
     const items = await MenuItemModel.find({ available: true }).lean();
     if (items.length > 0) {
-      return items.map((item: any) => ({
-        ...item,
-        id: item.id || item._id?.toString() || String(item._id),
-      })) as MenuItem[];
+      return items.map((item: any) => mapLeanMenuItem(item));
     }
     return MENU_FALLBACK;
   };
@@ -263,10 +274,7 @@ export async function getAllMenuItems(): Promise<MenuItem[]> {
   try {
     await connectDB();
     const items = await MenuItemModel.find().lean().sort({ category: 1, name: 1 });
-    return items.map((item: any) => ({
-      ...item,
-      id: item.id || item._id?.toString() || String(item._id),
-    })) as MenuItem[];
+    return items.map((item: any) => mapLeanMenuItem(item));
   } catch (e) {
     return [];
   }
@@ -275,18 +283,18 @@ export async function getAllMenuItems(): Promise<MenuItem[]> {
 export async function createMenuItem(payload: Omit<MenuItem, 'id'>): Promise<MenuItem> {
   await connectDB();
   const id = Date.now().toString();
+  const urls = parseImageUrlsFromBody(payload.image, payload.images);
   const doc = {
     ...payload,
     id,
     tags: payload.tags ?? [],
     allergens: payload.allergens ?? [],
+    image: urls[0],
+    images: urls,
   };
   const created = await MenuItemModel.create(doc);
   const saved = created.toObject() as any;
-  return {
-    ...saved,
-    id: saved.id || saved._id?.toString() || String(saved._id),
-  } as MenuItem;
+  return mapLeanMenuItem(saved);
 }
 
 export async function updateMenuItem(id: string, updates: Partial<Omit<MenuItem, 'id'>>): Promise<MenuItem | null> {
@@ -298,10 +306,7 @@ export async function updateMenuItem(id: string, updates: Partial<Omit<MenuItem,
   ).lean();
   if (!updated) return null;
   const item = updated as any;
-  return {
-    ...item,
-    id: item.id || item._id?.toString() || String(item._id),
-  } as MenuItem;
+  return mapLeanMenuItem(item);
 }
 
 export async function deleteMenuItem(id: string): Promise<boolean> {

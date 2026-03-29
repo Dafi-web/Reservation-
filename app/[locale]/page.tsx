@@ -138,12 +138,23 @@ export default async function HomePage({ params }: { params: { locale: string } 
       {/* Footer with Admin Access */}
       <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-amber-100 py-10 mt-20 border-t border-stone-700/50 animate-fade-in-up animation-delay-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-8">
-            <div className="text-sm text-center lg:text-left order-2 lg:order-1">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 w-full">
+            <div className="text-sm text-center md:text-left order-2 md:order-1">
               <p className="font-semibold text-amber-200 mb-1">Ristorante Africa</p>
               <p>&copy; {new Date().getFullYear()} Ristorante Africa. All rights reserved.</p>
             </div>
-            <div className="flex items-center gap-4 order-3">
+            <div className="flex flex-col items-center md:items-end gap-4 order-1 md:order-2 shrink-0">
+              <SiteQRCode
+                encodedUrl={qrEncodedUrl}
+                siteUrl={process.env.NEXT_PUBLIC_SITE_URL}
+                title={t('menu.qrTitle')}
+                subtitle={t('menu.qrSubtitle')}
+                size={108}
+                showUrl={false}
+                showDownload={false}
+                alignEnd
+                className="[&_h3]:text-amber-400 [&_p]:text-amber-200/85"
+              />
               <Link
                 href="/admin"
                 className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-2 border border-stone-700/50 px-4 py-2 rounded-lg hover:bg-stone-800/30"

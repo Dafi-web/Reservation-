@@ -7,6 +7,8 @@ export interface MenuItem {
   price: number;
   category: 'appetizer' | 'main' | 'dessert' | 'beverage' | 'wine' | 'beer' | 'cocktail';
   image?: string;
+  /** Additional image URLs (first is also stored in `image` for compatibility). */
+  images?: string[];
   allergens?: string[];
   tags?: ('vegetarian' | 'vegan' | 'glutenFree' | 'spicy')[];
   available: boolean;

@@ -79,7 +79,9 @@ export default function MenuSection({ category, items, isOpen, onToggle }: MenuS
         <div className="p-6 pt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {items.map((item, index) => (
-              <MenuItemCard key={item.id} item={item} index={index} isVisible={isOpen} />
+              <div key={item.id} className="min-w-0">
+                <MenuItemCard item={item} index={index} isVisible={isOpen} />
+              </div>
             ))}
           </div>
         </div>

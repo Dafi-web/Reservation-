@@ -39,6 +39,10 @@ const MenuItemSchema = new Schema<MenuItem>(
       type: String,
       required: false,
     },
+    images: {
+      type: [String],
+      default: [],
+    },
     allergens: {
       type: [String],
       default: [],

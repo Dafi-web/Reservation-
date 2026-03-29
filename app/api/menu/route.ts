@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getMenuItems, getAllMenuItems, createMenuItem } from '@/lib/data';
 import { MenuItem } from '@/lib/types';
+import { parseImageUrlsFromBody } from '@/lib/menuImages';
 
 export async function GET(request: Request) {
   try {
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
       price,
       category,
       image,
+      images,
       tags,
       allergens,
       available = true,
@@ -58,6 +60,8 @@ export async function POST(request: Request) {
       );
     }
 
+    const imageUrls = parseImageUrlsFromBody(image, images);
+
     const payload: Omit<MenuItem, 'id'> = {
       name: name.trim(),
       description: description.trim(),
@@ -65,7 +69,10 @@ export async function POST(request: Request) {
       category,
       available: Boolean(available),
     };
-    if (image != null && String(image).trim()) payload.image = String(image).trim();
+    if (imageUrls.length > 0) {
+      payload.image = imageUrls[0];
+      payload.images = imageUrls;
+    }
     if (Array.isArray(tags)) payload.tags = tags.filter((t: string) => ['vegetarian', 'vegan', 'glutenFree', 'spicy'].includes(t));
     if (Array.isArray(allergens)) payload.allergens = allergens.filter((a: unknown) => typeof a === 'string');
 

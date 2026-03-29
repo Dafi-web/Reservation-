@@ -20,6 +20,8 @@ type SiteQRCodeProps = {
   showUrl?: boolean;
   /** Show “Download PNG” button (print / flyers) */
   showDownload?: boolean;
+  /** Right-align block (e.g. footer corner) */
+  alignEnd?: boolean;
 };
 
 /**
@@ -46,6 +48,7 @@ export default function SiteQRCode({
   subtitle,
   showUrl = true,
   showDownload = true,
+  alignEnd = false,
 }: SiteQRCodeProps) {
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
@@ -139,17 +142,25 @@ export default function SiteQRCode({
     return null;
   }
 
+  const outerAlign = alignEnd ? 'items-end text-right' : 'items-center text-center';
+  const innerAlign = alignEnd ? 'items-end' : 'items-center';
+  const textAlign = alignEnd ? 'text-right' : 'text-center';
+
   return (
-    <div className={`flex flex-col items-center text-center ${className}`} dir="ltr">
+    <div className={`flex flex-col ${outerAlign} ${className}`} dir="ltr">
       {title && (
-        <h3 className="text-sm font-bold uppercase tracking-wider text-amber-300 mb-1">{title}</h3>
+        <h3 className={`text-sm font-bold uppercase tracking-wider text-amber-300 mb-1 ${textAlign}`}>{title}</h3>
       )}
-      {subtitle && <p className="text-xs text-amber-100/90 mb-3 max-w-[220px]">{subtitle}</p>}
-      <div className="inline-flex max-w-[min(100%,280px)] flex-col items-center gap-2 rounded-2xl bg-white px-5 py-4 shadow-lg ring-2 ring-amber-500/30 sm:gap-2.5">
-        <p className="text-center text-base font-bold tracking-tight text-stone-900 sm:text-lg">
+      {subtitle && (
+        <p className={`text-xs text-amber-100/90 mb-3 max-w-[220px] ${textAlign}`}>{subtitle}</p>
+      )}
+      <div
+        className={`inline-flex max-w-[min(100%,280px)] flex-col ${innerAlign} gap-2 rounded-2xl bg-white px-5 py-4 shadow-lg ring-2 ring-amber-500/30 sm:gap-2.5`}
+      >
+        <p className={`${textAlign} text-base font-bold tracking-tight text-stone-900 sm:text-lg`}>
           {restaurantName}
         </p>
-        <p className="text-center text-sm font-medium text-stone-600 leading-snug px-1">
+        <p className={`${textAlign} text-sm font-medium text-stone-600 leading-snug px-1`}>
           {menuReservationsLine}
         </p>
         <QRCodeSVG
@@ -175,7 +186,9 @@ export default function SiteQRCode({
         </button>
       )}
       {showUrl && (
-        <p className="mt-3 text-[11px] text-amber-200/80 break-all max-w-[240px] font-mono leading-tight">
+        <p
+          className={`mt-3 text-[11px] text-amber-200/80 break-all max-w-[240px] font-mono leading-tight ${textAlign}`}
+        >
           {value}
         </p>
       )}

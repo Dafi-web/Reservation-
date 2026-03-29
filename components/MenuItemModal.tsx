@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { MenuItem } from '@/lib/types';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+import { getMenuItemImageUrls } from '@/lib/menuImages';
 
 interface MenuItemModalProps {
   item: MenuItem | null;
@@ -13,8 +15,20 @@ interface MenuItemModalProps {
 
 export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalProps) {
   const t = useTranslations('common');
+  const [photoIndex, setPhotoIndex] = useState(0);
+
+  const urls = item ? getMenuItemImageUrls(item) : [];
+  const hasPhotos = urls.length > 0;
+  const currentUrl = urls[photoIndex] ?? urls[0];
+
+  useEffect(() => {
+    setPhotoIndex(0);
+  }, [item?.id, isOpen]);
 
   if (!item || !isOpen) return null;
+
+  const goPrev = () => setPhotoIndex((i) => (i <= 0 ? urls.length - 1 : i - 1));
+  const goNext = () => setPhotoIndex((i) => (i >= urls.length - 1 ? 0 : i + 1));
 
   return (
     <div
@@ -25,28 +39,71 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
         className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header with Image */}
+        {/* Header with Image(s) */}
         <div className="relative">
-          {item.image ? (
+          {hasPhotos ? (
             <div className="relative w-full min-h-[280px] max-h-[70vh] flex items-center justify-center bg-gray-100 rounded-t-3xl overflow-hidden">
               <Image
-                src={getProxiedImageUrl(item.image)}
+                key={currentUrl}
+                src={getProxiedImageUrl(currentUrl)}
                 alt={item.name}
                 width={800}
                 height={600}
                 className="w-full h-auto max-h-[70vh] object-contain"
                 unoptimized
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
+              {urls.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goPrev();
+                    }}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/55 text-white flex items-center justify-center backdrop-blur-sm z-10"
+                    aria-label="Previous photo"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goNext();
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/55 text-white flex items-center justify-center backdrop-blur-sm z-10"
+                    aria-label="Next photo"
+                  >
+                    ›
+                  </button>
+                  <div className="absolute bottom-20 left-0 right-0 flex justify-center gap-1.5 z-10">
+                    {urls.map((_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPhotoIndex(i);
+                        }}
+                        className={`h-2 rounded-full transition-all ${
+                          i === photoIndex ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/70'
+                        }`}
+                        aria-label={`Photo ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+                className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm z-10"
               >
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
                 <h2 className="text-3xl md:text-4xl font-bold mb-2">{item.name}</h2>
                 <div className="text-2xl font-bold text-amber-200">€{item.price.toFixed(2)}</div>
               </div>
@@ -72,7 +129,7 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
           {/* Description */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
-            <p className="text-gray-700 leading-relaxed">{item.description}</p>
+            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap break-words">{item.description}</p>
           </div>
 
           {/* Tags */}

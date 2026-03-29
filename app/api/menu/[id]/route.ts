@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { updateMenuItem, deleteMenuItem } from '@/lib/data';
 import { MenuItem } from '@/lib/types';
+import { parseImageUrlsFromBody } from '@/lib/menuImages';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -17,6 +18,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       price,
       category,
       image,
+      images,
       tags,
       allergens,
       available,
@@ -33,7 +35,11 @@ export async function PATCH(request: Request, context: RouteContext) {
       const valid: MenuItem['category'][] = ['appetizer', 'main', 'dessert', 'beverage', 'wine', 'beer', 'cocktail'];
       if (valid.includes(category)) updates.category = category;
     }
-    if (image !== undefined) updates.image = String(image).trim() || undefined;
+    if (image !== undefined || images !== undefined) {
+      const urls = parseImageUrlsFromBody(image, images);
+      updates.image = urls[0] || undefined;
+      updates.images = urls;
+    }
     if (Array.isArray(tags)) updates.tags = tags.filter((t: string) => ['vegetarian', 'vegan', 'glutenFree', 'spicy'].includes(t));
     if (Array.isArray(allergens)) updates.allergens = allergens.filter((a: unknown) => typeof a === 'string');
     if (typeof available === 'boolean') updates.available = available;

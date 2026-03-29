@@ -6,6 +6,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import MenuItemModal from './MenuItemModal';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+import { getMenuItemImageUrls } from '@/lib/menuImages';
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -17,11 +18,13 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
   const t = useTranslations('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const staggerDelay = isVisible ? index * 0.06 : 0;
+  const imageUrls = getMenuItemImageUrls(item);
+  const primaryImage = imageUrls[0];
 
   return (
     <>
       <div
-        className="group rounded-xl shadow-elegant overflow-hidden hover-lift border border-amber-500/30 transition-all duration-500 ease-out relative cursor-pointer bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900 hover:border-amber-400/50 hover:shadow-amber-900/30"
+        className="group flex flex-col h-full min-w-0 rounded-xl shadow-elegant overflow-hidden hover-lift border border-amber-500/30 transition-all duration-500 ease-out relative cursor-pointer bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900 hover:border-amber-400/50 hover:shadow-amber-900/30"
         style={
           isVisible
             ? {
@@ -39,13 +42,13 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
           <div className="absolute inset-0 shimmer"></div>
         </div>
 
-        <div className="p-4 relative z-10">
+        <div className="p-4 relative z-10 flex flex-col flex-1 min-w-0">
           {/* Clickable Image Area */}
-          <div className="mb-3 relative overflow-hidden rounded-lg">
+          <div className="mb-3 relative overflow-hidden rounded-lg shrink-0">
             <div className="w-full h-48 bg-stone-900/80 rounded-lg group-hover:scale-105 transition-transform duration-500 ease-out relative flex items-center justify-center overflow-hidden border border-stone-600/50">
-              {item.image ? (
+              {primaryImage ? (
                 <Image
-                  src={getProxiedImageUrl(item.image)}
+                  src={getProxiedImageUrl(primaryImage)}
                   alt={item.name}
                   width={400}
                   height={300}
@@ -64,40 +67,44 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
                   </span>
                 </div>
               )}
-              <div className={`absolute inset-0 flex items-center justify-center ${item.image ? 'bg-black/0 group-hover:bg-black/20' : ''} transition-all duration-300`}>
+              <div className={`absolute inset-0 flex items-center justify-center ${primaryImage ? 'bg-black/0 group-hover:bg-black/20' : ''} transition-all duration-300`}>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-white text-xs font-semibold bg-black/50 px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                     Click for details
                   </span>
                 </div>
               </div>
+              {imageUrls.length > 1 && (
+                <span className="absolute bottom-2 right-2 z-10 rounded-full bg-black/60 text-amber-100 text-[10px] font-bold px-2 py-0.5 border border-amber-500/40">
+                  +{imageUrls.length - 1} photo{imageUrls.length - 1 !== 1 ? 's' : ''}
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Header with Price Badge */}
-          <div className="flex justify-between items-start mb-2 gap-2">
-            <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors duration-300 flex-1 leading-tight line-clamp-2">
-              {item.name}
-            </h3>
-            <div className="flex-shrink-0">
-              <div className="relative">
-                <div className="absolute inset-0 bg-amber-500/50 rounded-lg blur-sm opacity-60 group-hover:opacity-80 transition-opacity" />
-                <div className="relative px-3 py-1.5 bg-gradient-to-r from-amber-600 to-stone-700 rounded-lg shadow-elegant border border-amber-500/30">
-                  <span className="text-lg font-bold text-white">
-                    €{item.price.toFixed(2)}
-                  </span>
+          <div className="flex flex-col min-w-0 flex-1">
+            {/* Title + price */}
+            <div className="flex flex-row justify-between items-start gap-2 w-full min-w-0">
+              <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors duration-300 flex-1 min-w-0 leading-tight line-clamp-2">
+                {item.name}
+              </h3>
+              <div className="flex-shrink-0">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-amber-500/50 rounded-lg blur-sm opacity-60 group-hover:opacity-80 transition-opacity" />
+                  <div className="relative px-3 py-1.5 bg-gradient-to-r from-amber-600 to-stone-700 rounded-lg shadow-elegant border border-amber-500/30">
+                    <span className="text-lg font-bold text-white">€{item.price.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Description */}
-          <p className="text-amber-100/90 mb-3 text-xs leading-relaxed line-clamp-2 group-hover:text-amber-100 transition-colors">
-            {item.description}
-          </p>
+            {/* Description — full width below title/price */}
+            <p className="text-amber-100/90 mt-2 mb-3 text-sm leading-relaxed w-full break-words whitespace-pre-wrap group-hover:text-amber-100 transition-colors">
+              {item.description}
+            </p>
 
-          {/* Tags */}
-          {item.tags && item.tags.length > 0 && (
+            {/* Tags */}
+            {item.tags && item.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-2">
               {item.tags.slice(0, 2).map((tag) => (
                 <span
@@ -113,17 +120,18 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
                 </span>
               )}
             </div>
-          )}
+            )}
 
-          {/* Allergens Indicator */}
-          {item.allergens && item.allergens.length > 0 && (
-            <div className="flex items-center gap-1 text-xs text-amber-200">
+            {/* Allergens Indicator */}
+            {item.allergens && item.allergens.length > 0 && (
+            <div className="flex items-center gap-1 text-xs text-amber-200 mt-auto">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
               <span>Contains allergens</span>
             </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
       <MenuItemModal item={item} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
