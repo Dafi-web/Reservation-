@@ -117,6 +117,27 @@ function formatDate(dateStr: string): string {
   }
 }
 
+/** Italian long date for guest emails (bilingual IT + EN). */
+function formatDateIt(dateStr: string): string {
+  try {
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('it-IT', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+/** Inside a single table cell: separator + “English” heading before the English paragraph block. */
+function bilingualSectionLabel(): string {
+  return `<div style="border-top:1px solid #e2e8f0;margin:24px 0 16px;"></div>
+          <p style="margin:0 0 12px;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">English</p>`;
+}
+
 /**
  * Send email to the admin when a new reservation is submitted.
  * Uses Gmail (no domain) or Resend if configured.
@@ -268,7 +289,10 @@ export async function sendGuestRequestReceivedEmail(reservation: Reservation): P
   if (!isValidEmail(to)) return false;
   if (!USE_GMAIL && !process.env.RESEND_API_KEY?.trim()) return false;
   const formattedDate = formatDate(reservation.date);
-  const subject = `We received your reservation request – Ristorante Africa`;
+  const formattedDateIt = formatDateIt(reservation.date);
+  const guestsIt = reservation.guests === 1 ? '1 ospite' : `${reservation.guests} ospiti`;
+  const guestsEn = `${reservation.guests} guest${reservation.guests !== 1 ? 's' : ''}`;
+  const subject = `Richiesta ricevuta / Request received – Ristorante Africa`;
   const html = `
 <!DOCTYPE html>
 <html>
@@ -279,15 +303,26 @@ export async function sendGuestRequestReceivedEmail(reservation: Reservation): P
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <tr><td style="background:linear-gradient(135deg,#b45309 0%,#92400e 100%);padding:28px 32px;text-align:center;">
           <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Ristorante Africa</h1>
-          <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Request received</p>
+          <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Richiesta ricevuta · Request received</p>
         </td></tr>
         <tr><td style="padding:32px 28px;">
+          <p style="margin:0 0 8px;color:#92400e;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Italiano</p>
+          <p style="margin:0 0 20px;color:#374151;font-size:16px;">Ciao ${escapeHtml(reservation.name)},</p>
+          <p style="margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;">Abbiamo ricevuto la sua richiesta di prenotazione tavolo. Riceverà un'altra e-mail non appena la confermeremo.</p>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:16px;">
+            <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;">
+              <span style="color:#64748b;font-size:12px;">La sua richiesta</span><br/>
+              <span style="color:#1c1917;font-size:16px;font-weight:600;">${escapeHtml(formattedDateIt)} · ${escapeHtml(reservation.time)} · ${guestsIt}</span>
+            </td></tr>
+          </table>
+          <p style="margin:24px 0 0;color:#64748b;font-size:13px;">Grazie per aver scelto Ristorante Africa.</p>
+          ${bilingualSectionLabel()}
           <p style="margin:0 0 20px;color:#374151;font-size:16px;">Hello ${escapeHtml(reservation.name)},</p>
           <p style="margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;">We have received your table reservation request. You will receive another email once we confirm it.</p>
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:16px;">
             <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;">
               <span style="color:#64748b;font-size:12px;">Your request</span><br/>
-              <span style="color:#1c1917;font-size:16px;font-weight:600;">${escapeHtml(formattedDate)} · ${escapeHtml(reservation.time)} · ${reservation.guests} guest${reservation.guests !== 1 ? 's' : ''}</span>
+              <span style="color:#1c1917;font-size:16px;font-weight:600;">${escapeHtml(formattedDate)} · ${escapeHtml(reservation.time)} · ${guestsEn}</span>
             </td></tr>
           </table>
           <p style="margin:24px 0 0;color:#64748b;font-size:13px;">Thank you for choosing Ristorante Africa.</p>
@@ -315,7 +350,10 @@ export async function sendCustomerConfirmationEmail(reservation: Reservation): P
   if (!USE_GMAIL && !process.env.RESEND_API_KEY?.trim()) return false;
   console.log('[Email] Sending confirmation to guest:', to);
   const formattedDate = formatDate(reservation.date);
-  const subject = `Your reservation at Ristorante Africa is confirmed – ${formattedDate}`;
+  const formattedDateIt = formatDateIt(reservation.date);
+  const guestsIt = reservation.guests === 1 ? '1 ospite' : `${reservation.guests} ospiti`;
+  const guestsEn = `${reservation.guests} ${reservation.guests === 1 ? 'guest' : 'guests'}`;
+  const subject = `Prenotazione confermata / Reservation confirmed – Ristorante Africa`;
   const html = `
 <!DOCTYPE html>
 <html>
@@ -326,20 +364,36 @@ export async function sendCustomerConfirmationEmail(reservation: Reservation): P
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <tr><td style="background:linear-gradient(135deg,#b45309 0%,#92400e 100%);padding:28px 32px;text-align:center;">
           <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Ristorante Africa</h1>
-          <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Reservation confirmed</p>
+          <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Prenotazione confermata · Reservation confirmed</p>
         </td></tr>
         <tr><td style="padding:32px 28px;">
+          <p style="margin:0 0 8px;color:#92400e;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Italiano</p>
+          <p style="margin:0 0 20px;color:#374151;font-size:16px;">Ciao ${escapeHtml(reservation.name)},</p>
+          <p style="margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;">La sua prenotazione tavolo è stata <strong>confermata</strong>. Non vediamo l'ora di accoglierla.</p>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:16px;border-collapse:collapse;">
+            <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;">
+              <span style="color:#64748b;font-size:12px;">Data e ora</span><br/>
+              <span style="color:#1c1917;font-size:16px;font-weight:600;">${escapeHtml(formattedDateIt)} · ${escapeHtml(reservation.time)}</span>
+            </td></tr>
+            <tr><td style="height:8px;"></td></tr>
+            <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;">
+              <span style="color:#64748b;font-size:12px;">Ospiti</span><br/>
+              <span style="color:#1c1917;font-size:16px;font-weight:600;">${guestsIt}</span>
+            </td></tr>
+          </table>
+          <p style="margin:24px 0 0;color:#64748b;font-size:13px;">Per modifiche o cancellazioni, la preghiamo di contattarci.</p>
+          ${bilingualSectionLabel()}
           <p style="margin:0 0 20px;color:#374151;font-size:16px;">Hello ${escapeHtml(reservation.name)},</p>
           <p style="margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;">Your table reservation has been <strong>confirmed</strong>. We look forward to welcoming you.</p>
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:16px;border-collapse:collapse;">
-            <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;margin-bottom:8px;">
+            <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;">
               <span style="color:#64748b;font-size:12px;">Date & time</span><br/>
               <span style="color:#1c1917;font-size:16px;font-weight:600;">${escapeHtml(formattedDate)} · ${escapeHtml(reservation.time)}</span>
             </td></tr>
             <tr><td style="height:8px;"></td></tr>
             <tr><td style="padding:12px 16px;background:#f8fafc;border-radius:10px;">
               <span style="color:#64748b;font-size:12px;">Guests</span><br/>
-              <span style="color:#1c1917;font-size:16px;font-weight:600;">${reservation.guests} ${reservation.guests === 1 ? 'guest' : 'guests'}</span>
+              <span style="color:#1c1917;font-size:16px;font-weight:600;">${guestsEn}</span>
             </td></tr>
           </table>
           <p style="margin:24px 0 0;color:#64748b;font-size:13px;">If you need to change or cancel, please contact us.</p>
@@ -366,8 +420,16 @@ export async function sendCustomerRejectionEmail(
   if (!isValidEmail(to)) return false;
   if (!USE_GMAIL && !process.env.RESEND_API_KEY?.trim()) return false;
   const formattedDate = formatDate(reservation.date);
-  const subject = `Update on your reservation – Ristorante Africa`;
-  const reasonLine = reason && reason.trim() ? `<p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;"><strong>Reason:</strong> ${escapeHtml(reason.trim())}</p>` : '';
+  const formattedDateIt = formatDateIt(reservation.date);
+  const subject = `Aggiornamento prenotazione / Reservation update – Ristorante Africa`;
+  const reasonIt =
+    reason && reason.trim()
+      ? `<p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;"><strong>Motivo:</strong> ${escapeHtml(reason.trim())}</p>`
+      : '';
+  const reasonEn =
+    reason && reason.trim()
+      ? `<p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;"><strong>Reason:</strong> ${escapeHtml(reason.trim())}</p>`
+      : '';
   const html = `
 <!DOCTYPE html>
 <html>
@@ -378,12 +440,18 @@ export async function sendCustomerRejectionEmail(
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <tr><td style="background:linear-gradient(135deg,#b45309 0%,#92400e 100%);padding:28px 32px;text-align:center;">
           <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Ristorante Africa</h1>
-          <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Reservation update</p>
+          <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Aggiornamento · Reservation update</p>
         </td></tr>
         <tr><td style="padding:32px 28px;">
+          <p style="margin:0 0 8px;color:#92400e;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Italiano</p>
+          <p style="margin:0 0 20px;color:#374151;font-size:16px;">Ciao ${escapeHtml(reservation.name)},</p>
+          <p style="margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;">Purtroppo non possiamo confermare la sua prenotazione tavolo per il <strong>${escapeHtml(formattedDateIt)}</strong> alle ore ${escapeHtml(reservation.time)}.</p>
+          ${reasonIt}
+          <p style="margin:0 0 20px;color:#64748b;font-size:14px;">La preghiamo di contattarci per una nuova prenotazione o un'altra data. Restiamo a disposizione.</p>
+          ${bilingualSectionLabel()}
           <p style="margin:0 0 20px;color:#374151;font-size:16px;">Hello ${escapeHtml(reservation.name)},</p>
           <p style="margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;">Unfortunately we are unable to confirm your table reservation for <strong>${escapeHtml(formattedDate)}</strong> at ${escapeHtml(reservation.time)}.</p>
-          ${reasonLine}
+          ${reasonEn}
           <p style="margin:0 0 20px;color:#64748b;font-size:14px;">Please contact us to make a new reservation or choose another date. We look forward to hearing from you.</p>
         </td></tr>
         <tr><td style="padding:16px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">

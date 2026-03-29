@@ -107,18 +107,6 @@ export default async function HomePage({ params }: { params: { locale: string } 
                 </div>
               </div>
             </div>
-
-            {/* QR code — scan to open this site (set NEXT_PUBLIC_SITE_URL on Vercel for production URL) */}
-            <div className="mt-16 pt-10 border-t border-amber-500/20 flex justify-center animate-fade-in-up animation-delay-500">
-              <SiteQRCode
-                encodedUrl={qrEncodedUrl}
-                siteUrl={process.env.NEXT_PUBLIC_SITE_URL}
-                title={t('menu.qrTitle')}
-                subtitle={t('menu.qrSubtitle')}
-                size={176}
-                showUrl
-              />
-            </div>
           </div>
         </div>
       </section>
