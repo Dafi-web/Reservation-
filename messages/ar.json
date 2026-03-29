@@ -40,7 +40,11 @@
     "qrSubtitle": "افتح الموقع على هاتفك — وجّه الكاميرا نحو الرمز.",
     "downloadQr": "تحميل صورة الرمز (PNG)",
     "qrRestaurantName": "Ristorante Africa",
-    "qrMenuReservations": "القائمة والحجوزات"
+    "qrMenuReservations": "القائمة والحجوزات",
+    "qrPageTitle": "رمز QR للموقع",
+    "qrPageSubtitle": "افتح هذا الموقع على هاتفك — امسح الرمز أدناه.",
+    "footerQrLink": "رمز QR للموقع",
+    "backToMenu": "العودة إلى القائمة"
   },
   "reservation": {
     "title": "إجراء حجز",

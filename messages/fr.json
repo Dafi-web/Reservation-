@@ -40,7 +40,11 @@
     "qrSubtitle": "Ouvrez ce site sur votre téléphone — pointez l’appareil photo sur le code.",
     "downloadQr": "Télécharger le QR (PNG)",
     "qrRestaurantName": "Ristorante Africa",
-    "qrMenuReservations": "Menu et réservations"
+    "qrMenuReservations": "Menu et réservations",
+    "qrPageTitle": "Code QR du site",
+    "qrPageSubtitle": "Ouvrez ce site sur votre téléphone — scannez le code ci-dessous.",
+    "footerQrLink": "Code QR du site",
+    "backToMenu": "Retour au menu"
   },
   "reservation": {
     "title": "Faire une Réservation",
