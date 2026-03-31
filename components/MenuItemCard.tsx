@@ -83,12 +83,12 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
           </div>
 
           <div className="flex flex-col min-w-0 flex-1">
-            {/* Title + price */}
-            <div className="flex flex-row justify-between items-start gap-2 w-full min-w-0">
-              <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors duration-300 flex-1 min-w-0 leading-tight line-clamp-2">
+            {/* Title + price: stacked on mobile so description stays directly below */}
+            <div className="flex flex-col gap-2 w-full min-w-0 sm:flex-row sm:justify-between sm:items-start">
+              <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors duration-300 min-w-0 leading-tight">
                 {item.name}
               </h3>
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 self-start sm:self-auto">
                 <div className="relative">
                   <div className="absolute inset-0 bg-amber-500/50 rounded-lg blur-sm opacity-60 group-hover:opacity-80 transition-opacity" />
                   <div className="relative px-3 py-1.5 bg-gradient-to-r from-amber-600 to-stone-700 rounded-lg shadow-elegant border border-amber-500/30">
