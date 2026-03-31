@@ -10,15 +10,15 @@ import { getMenuItemImageUrls } from '@/lib/menuImages';
 
 interface MenuItemCardProps {
   item: MenuItem;
-  index?: number;
   isVisible?: boolean;
 }
 
-export default function MenuItemCard({ item, index = 0, isVisible = true }: MenuItemCardProps) {
+export default function MenuItemCard({ item, isVisible = true }: MenuItemCardProps) {
   const t = useTranslations('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [expandedMobile, setExpandedMobile] = useState(false);
-  const staggerDelay = isVisible ? index * 0.06 : 0;
+  /** No stagger — avoids cards looking misaligned in multi-column grids */
+  const staggerDelay = 0;
   const imageUrls = getMenuItemImageUrls(item);
   const primaryImage = imageUrls[0];
 
@@ -33,11 +33,11 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
   return (
     <>
       <div
-        className="group flex flex-col h-full min-w-0 rounded-xl shadow-elegant overflow-hidden hover-lift border border-amber-500/30 transition-all duration-500 ease-out relative cursor-pointer bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900 hover:border-amber-400/50 hover:shadow-amber-900/30"
+        className="group flex flex-col h-full min-h-0 w-full min-w-0 rounded-xl shadow-elegant overflow-hidden border border-amber-500/30 transition-shadow duration-300 ease-out relative cursor-pointer bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900 hover:border-amber-400/50 hover:shadow-xl"
         style={
           isVisible
             ? {
-                animation: 'fadeInUpScale 0.5s cubic-bezier(0.22, 1, 0.36, 1) both',
+                animation: 'fadeInUpScale 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
                 animationDelay: `${staggerDelay}s`,
               }
             : undefined
@@ -60,10 +60,10 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
           <div className="absolute inset-0 shimmer"></div>
         </div>
 
-        <div className="p-4 relative z-10 flex flex-col flex-1 min-w-0">
+        <div className="p-4 relative z-10 flex flex-col flex-1 min-h-0 min-w-0">
           {/* Clickable Image Area */}
           <div className="mb-3 relative overflow-hidden rounded-lg shrink-0">
-            <div className="w-full h-48 bg-stone-900/80 rounded-lg group-hover:scale-105 transition-transform duration-500 ease-out relative flex items-center justify-center overflow-hidden border border-stone-600/50">
+            <div className="w-full h-48 bg-stone-900/80 rounded-lg group-hover:scale-[1.02] transition-transform duration-300 ease-out relative flex items-center justify-center overflow-hidden border border-stone-600/50">
               {primaryImage ? (
                 <Image
                   src={getProxiedImageUrl(primaryImage)}
@@ -107,10 +107,10 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
             </div>
           )}
 
-          <div className="flex flex-col min-w-0 flex-1">
+          <div className="flex flex-col min-w-0 flex-1 min-h-0">
             {/* Title + price: stacked on mobile so description stays directly below */}
             <div className="flex flex-col gap-2 w-full min-w-0 sm:flex-row sm:justify-between sm:items-start">
-              <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors duration-300 min-w-0 leading-tight">
+              <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors duration-300 min-w-0 leading-tight line-clamp-3 break-words">
                 {item.name}
               </h3>
               <div className="flex-shrink-0 self-start sm:self-auto">
@@ -154,7 +154,7 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
 
             {/* Allergens Indicator */}
             {item.allergens && item.allergens.length > 0 && (
-            <div className="flex items-center gap-1 text-xs text-amber-200 mt-auto">
+            <div className="flex items-center gap-1 text-xs text-amber-200 mt-3">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
