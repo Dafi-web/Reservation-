@@ -10,15 +10,12 @@ import { getMenuItemImageUrls } from '@/lib/menuImages';
 
 interface MenuItemCardProps {
   item: MenuItem;
-  isVisible?: boolean;
 }
 
-export default function MenuItemCard({ item, isVisible = true }: MenuItemCardProps) {
+export default function MenuItemCard({ item }: MenuItemCardProps) {
   const t = useTranslations('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [expandedMobile, setExpandedMobile] = useState(false);
-  /** No stagger — avoids cards looking misaligned in multi-column grids */
-  const staggerDelay = 0;
   const imageUrls = getMenuItemImageUrls(item);
   const primaryImage = imageUrls[0];
 
@@ -34,14 +31,6 @@ export default function MenuItemCard({ item, isVisible = true }: MenuItemCardPro
     <>
       <div
         className="group flex flex-col h-full min-h-0 w-full min-w-0 rounded-xl shadow-elegant overflow-hidden border border-amber-500/30 transition-shadow duration-300 ease-out relative cursor-pointer bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900 hover:border-amber-400/50 hover:shadow-xl"
-        style={
-          isVisible
-            ? {
-                animation: 'fadeInUpScale 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
-                animationDelay: `${staggerDelay}s`,
-              }
-            : undefined
-        }
         onClick={handleCardActivate}
         role="button"
         tabIndex={0}

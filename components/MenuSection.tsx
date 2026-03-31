@@ -80,7 +80,7 @@ export default function MenuSection({ category, items, isOpen, onToggle }: MenuS
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
             {items.map((item) => (
               <div key={item.id} className="min-w-0 flex h-full min-h-0">
-                <MenuItemCard item={item} isVisible={isOpen} />
+                <MenuItemCard item={item} />
               </div>
             ))}
           </div>
