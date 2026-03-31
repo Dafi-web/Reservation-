@@ -17,9 +17,18 @@ interface MenuItemCardProps {
 export default function MenuItemCard({ item, index = 0, isVisible = true }: MenuItemCardProps) {
   const t = useTranslations('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [expandedMobile, setExpandedMobile] = useState(false);
   const staggerDelay = isVisible ? index * 0.06 : 0;
   const imageUrls = getMenuItemImageUrls(item);
   const primaryImage = imageUrls[0];
+
+  const handleCardActivate = () => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
+      setExpandedMobile((v) => !v);
+    } else {
+      setIsModalOpen(true);
+    }
+  };
 
   return (
     <>
@@ -33,7 +42,16 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
               }
             : undefined
         }
-        onClick={() => setIsModalOpen(true)}
+        onClick={handleCardActivate}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expandedMobile}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleCardActivate();
+          }
+        }}
       >
         {/* Subtle hover glow */}
         <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/5 transition-all duration-500 pointer-events-none rounded-xl" />
@@ -82,6 +100,13 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
             </div>
           </div>
 
+          {/* Mobile only: description opens directly under the image (md+ uses block below) */}
+          {expandedMobile && (
+            <div className="mb-3 rounded-lg border border-amber-500/25 bg-stone-900/80 px-3 py-2.5 md:hidden">
+              <p className="text-amber-50 text-sm leading-relaxed break-words whitespace-pre-wrap">{item.description}</p>
+            </div>
+          )}
+
           <div className="flex flex-col min-w-0 flex-1">
             {/* Title + price: stacked on mobile so description stays directly below */}
             <div className="flex flex-col gap-2 w-full min-w-0 sm:flex-row sm:justify-between sm:items-start">
@@ -98,10 +123,15 @@ export default function MenuItemCard({ item, index = 0, isVisible = true }: Menu
               </div>
             </div>
 
-            {/* Description — full width below title/price */}
-            <p className="text-amber-100/90 mt-2 mb-3 text-sm leading-relaxed w-full break-words whitespace-pre-wrap group-hover:text-amber-100 transition-colors">
+            {/* md+: description below title + price; hidden on small screens (use expand under image) */}
+            <p className="hidden md:block text-amber-100/90 mt-2 mb-3 text-sm leading-relaxed w-full break-words whitespace-pre-wrap group-hover:text-amber-100 transition-colors">
               {item.description}
             </p>
+
+            {/* Mobile collapsed: short hint only */}
+            {!expandedMobile && (
+              <p className="md:hidden text-amber-200/75 mt-2 mb-0 text-xs leading-snug">Tap to show description under the photo</p>
+            )}
 
             {/* Tags */}
             {item.tags && item.tags.length > 0 && (
