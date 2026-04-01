@@ -67,7 +67,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in-up animation-delay-400">
               <Link
                 href="/reservations"
-                className="group relative inline-flex items-center justify-center px-12 py-5 bg-gradient-to-r from-amber-600 via-amber-700 to-stone-800 text-white rounded-full font-bold text-lg shadow-2xl hover:shadow-amber-600/50 transition-all duration-300 transform hover:scale-105 overflow-hidden border-2 border-amber-500/30 animate-glow-pulse"
+                className="group relative inline-flex items-center justify-center px-12 py-5 bg-gradient-to-r from-amber-600 via-amber-700 to-stone-800 text-white rounded-full font-bold text-lg shadow-2xl hover:shadow-amber-600/50 transition-all duration-300 transform hover:scale-105 overflow-hidden animate-glow-pulse"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-amber-700 via-stone-800 to-stone-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <span className="relative z-10 flex items-center">

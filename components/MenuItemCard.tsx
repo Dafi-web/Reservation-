@@ -30,7 +30,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
   return (
     <>
       <div
-        className="group flex flex-col h-full min-h-0 w-full min-w-0 rounded-xl shadow-elegant overflow-hidden border border-amber-500/30 transition-shadow duration-300 ease-out relative cursor-pointer bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900 hover:border-amber-400/50 hover:shadow-xl"
+        className="group flex flex-col w-full min-w-0 max-w-full min-h-0 h-auto md:h-full rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.2)] transition-shadow duration-300 ease-out relative cursor-pointer touch-manipulation [-webkit-tap-highlight-color:transparent] bg-gradient-to-br from-stone-800 via-amber-950 to-stone-900 md:hover:shadow-[0_8px_32px_rgba(0,0,0,0.28)] isolate"
         onClick={handleCardActivate}
         role="button"
         tabIndex={0}
@@ -49,17 +49,17 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
           <div className="absolute inset-0 shimmer"></div>
         </div>
 
-        <div className="p-4 relative z-10 flex flex-col flex-1 min-h-0 min-w-0">
-          {/* Clickable Image Area */}
-          <div className="mb-3 relative overflow-hidden rounded-lg shrink-0">
-            <div className="w-full h-48 bg-stone-900/80 rounded-lg group-hover:scale-[1.02] transition-transform duration-300 ease-out relative flex items-center justify-center overflow-hidden border border-stone-600/50">
+        <div className="p-3 sm:p-4 relative z-10 flex flex-col flex-1 min-h-0 min-w-0 max-w-full">
+          {/* Clickable Image Area — no hover-scale on touch (avoids iOS sticky-hover layout glitches) */}
+          <div className="mb-3 relative overflow-hidden rounded-lg shrink-0 max-w-full">
+            <div className="w-full max-w-full h-48 bg-stone-900/80 rounded-xl transition-transform duration-300 ease-out relative flex items-center justify-center overflow-hidden md:group-hover:scale-[1.02]">
               {primaryImage ? (
                 <Image
                   src={getProxiedImageUrl(primaryImage)}
                   alt={item.name}
                   width={400}
                   height={300}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full max-w-full object-contain"
                   unoptimized
                 />
               ) : (
@@ -82,7 +82,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
                 </div>
               </div>
               {imageUrls.length > 1 && (
-                <span className="absolute bottom-2 right-2 z-10 rounded-full bg-black/60 text-amber-100 text-[10px] font-bold px-2 py-0.5 border border-amber-500/40">
+                <span className="absolute bottom-2 right-2 z-10 rounded-full bg-black/65 text-amber-100 text-[10px] font-bold px-2 py-0.5 shadow-md">
                   +{imageUrls.length - 1} photo{imageUrls.length - 1 !== 1 ? 's' : ''}
                 </span>
               )}
@@ -91,21 +91,23 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
 
           {/* Mobile only: description opens directly under the image (md+ uses block below) */}
           {expandedMobile && (
-            <div className="mb-3 rounded-lg border border-amber-500/25 bg-stone-900/80 px-3 py-2.5 md:hidden">
-              <p className="text-amber-50 text-sm leading-relaxed break-words whitespace-pre-wrap">{item.description}</p>
+            <div className="mb-3 max-w-full rounded-xl bg-stone-900/70 px-3 py-2.5 md:hidden max-h-[min(55vh,24rem)] overflow-y-auto overscroll-y-contain shadow-inner">
+              <p className="text-amber-50 text-sm leading-relaxed break-words [overflow-wrap:anywhere] whitespace-pre-wrap">
+                {item.description}
+              </p>
             </div>
           )}
 
           <div className="flex flex-col min-w-0 flex-1 min-h-0">
             {/* Title + price: stacked on mobile so description stays directly below */}
-            <div className="flex flex-col gap-2 w-full min-w-0 sm:flex-row sm:justify-between sm:items-start">
-              <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors duration-300 min-w-0 leading-tight line-clamp-3 break-words">
+            <div className="flex flex-col gap-2 w-full min-w-0 max-w-full sm:flex-row sm:justify-between sm:items-start">
+              <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-amber-300 transition-colors duration-300 min-w-0 max-w-full leading-tight line-clamp-4 break-words [overflow-wrap:anywhere]">
                 {item.name}
               </h3>
               <div className="flex-shrink-0 self-start sm:self-auto">
                 <div className="relative">
                   <div className="absolute inset-0 bg-amber-500/50 rounded-lg blur-sm opacity-60 group-hover:opacity-80 transition-opacity" />
-                  <div className="relative px-3 py-1.5 bg-gradient-to-r from-amber-600 to-stone-700 rounded-lg shadow-elegant border border-amber-500/30">
+                  <div className="relative px-3 py-1.5 bg-gradient-to-r from-amber-600 to-stone-700 rounded-lg shadow-md">
                     <span className="text-lg font-bold text-white">€{item.price.toFixed(2)}</span>
                   </div>
                 </div>
@@ -128,7 +130,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
               {item.tags.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 bg-amber-500/20 text-amber-200 text-xs rounded-full font-semibold border border-amber-500/40"
+                  className="px-2 py-1 bg-amber-500/25 text-amber-200 text-xs rounded-full font-semibold"
                 >
                   {t(tag)}
                 </span>

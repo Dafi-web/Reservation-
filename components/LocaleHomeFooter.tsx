@@ -18,7 +18,7 @@ export default function LocaleHomeFooter() {
   const isHome = pathname === '/';
 
   return (
-    <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-amber-100 py-10 mt-20 border-t border-stone-700/50 animate-fade-in-up animation-delay-600">
+    <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-amber-100 py-10 mt-20 shadow-[0_-12px_40px_rgba(0,0,0,0.18)] animate-fade-in-up animation-delay-600">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 w-full">
           <div className="text-sm text-center md:text-left order-2 md:order-1">
@@ -29,21 +29,21 @@ export default function LocaleHomeFooter() {
             {isHome ? (
               <Link
                 href="/qr"
-                className="text-sm font-semibold text-amber-200 hover:text-amber-100 transition-colors text-center md:text-right border border-amber-500/40 px-4 py-3 rounded-xl hover:bg-stone-800/40"
+                className="text-sm font-semibold text-amber-200 hover:text-amber-100 transition-colors text-center md:text-right px-4 py-3 rounded-xl bg-stone-800/35 hover:bg-stone-800/55 shadow-md"
               >
                 {tMenu('footerQrLink')}
               </Link>
             ) : (
               <Link
                 href="/"
-                className="text-sm font-semibold text-amber-200 hover:text-amber-100 transition-colors text-center md:text-right border border-amber-500/40 px-4 py-3 rounded-xl hover:bg-stone-800/40"
+                className="text-sm font-semibold text-amber-200 hover:text-amber-100 transition-colors text-center md:text-right px-4 py-3 rounded-xl bg-stone-800/35 hover:bg-stone-800/55 shadow-md"
               >
                 {tMenu('backToMenu')}
               </Link>
             )}
             <Link
               href="/admin"
-              className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-2 border border-stone-700/50 px-4 py-2 rounded-lg hover:bg-stone-800/30"
+              className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-800/25 hover:bg-stone-800/45 shadow-md"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

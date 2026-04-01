@@ -25,17 +25,18 @@ export default function MenuSection({ category, items, isOpen, onToggle }: MenuS
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-6 rounded-3xl overflow-hidden bg-stone-800/60 backdrop-blur-sm border-2 border-amber-500/30 shadow-elegant-lg hover:shadow-amber-900/20 hover:border-amber-400/50 transition-all duration-500 ease-out">
+    <div className="mb-6 w-full min-w-0 max-w-full rounded-3xl overflow-hidden bg-stone-800/60 backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-shadow duration-500 ease-out">
       {/* Category Header - dark theme, same as home hero */}
       <button
         onClick={onToggle}
-        className="w-full p-8 flex flex-col items-center justify-center bg-stone-800/40 hover:bg-stone-700/50 transition-all duration-500 ease-out group relative overflow-hidden"
+        type="button"
+        className="w-full p-6 sm:p-8 flex flex-col items-center justify-center bg-stone-800/40 hover:bg-stone-700/50 transition-all duration-500 ease-out group relative overflow-hidden touch-manipulation"
       >
         <div className={`absolute inset-0 bg-gradient-to-r ${category.color} opacity-0 group-hover:opacity-15 transition-opacity duration-500`} />
         <div className="relative z-10 flex flex-col items-center gap-4 w-full">
           <div
             className={`relative rounded-2xl shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 ease-out overflow-hidden ${
-              category.iconImageUrl ? 'w-24 h-24 md:w-28 md:h-28 ring-2 ring-amber-500/40' : `p-4 bg-gradient-to-br ${category.color}`
+              category.iconImageUrl ? 'w-24 h-24 md:w-28 md:h-28 shadow-lg shadow-black/25' : `p-4 bg-gradient-to-br ${category.color}`
             }`}
           >
             {category.iconImageUrl ? (
@@ -76,10 +77,13 @@ export default function MenuSection({ category, items, isOpen, onToggle }: MenuS
           isOpen ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="p-6 pt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+        <div className="p-3 pt-0 sm:p-6 sm:pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 items-stretch">
             {items.map((item) => (
-              <div key={item.id} className="min-w-0 flex h-full min-h-0">
+              <div
+                key={item.id}
+                className="min-w-0 w-full max-w-full min-h-0 md:flex md:h-full"
+              >
                 <MenuItemCard item={item} />
               </div>
             ))}
